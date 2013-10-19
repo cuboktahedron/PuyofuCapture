@@ -523,6 +523,7 @@ namespace Cubokta.Puyo
                 if (pixelingTargetIndex > (int)PuyoType.MURASAKI)
                 {
                     isPixeling = false;
+                    statusLabel.Text = "";
                 }
                 else
                 {
