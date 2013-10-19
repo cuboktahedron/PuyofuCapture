@@ -424,7 +424,7 @@ namespace Cubokta.Puyo
         {
             using (Pen redPen = new Pen(Color.Red, 2))
             using (Pen greenPen = new Pen(Color.Green, 2))
-            using (Pen bluePen = new Pen(Color.Blue, 2))
+            using (Pen bluePen = new Pen(Color.LightBlue, 2))
             using (Pen yellowPen = new Pen(Color.Yellow, 2))
             using (Pen purplePen = new Pen(Color.Purple, 2))
             {
@@ -461,6 +461,10 @@ namespace Cubokta.Puyo
                                 continue;
                         }
 
+                        rect.X++;
+                        rect.Width -= 2;
+                        rect.Y++;
+                        rect.Height -= 2;
                         g.DrawRectangle(pen, rect);
                     }
                 }
@@ -481,13 +485,6 @@ namespace Cubokta.Puyo
                 }
             }
 
-            //for (int y = 0; y < 1; y++)
-            //{
-            //    for (int x = 0; x < 1; x++)
-            //    {
-            //        field.SetPuyoType(x, y, DetectPuyoType(field.GetRect(x, y), ba));
-            //    }
-            //}
             ba.EndAccess();
             return field;
         }
@@ -647,7 +644,7 @@ namespace Cubokta.Puyo
         {
             using (Pen redPen = new Pen(Color.Red, 2))
             using (Pen greenPen = new Pen(Color.Green, 2))
-            using (Pen bluePen = new Pen(Color.Blue, 2))
+            using (Pen bluePen = new Pen(Color.LightBlue, 2))
             using (Pen yellowPen = new Pen(Color.Yellow, 2))
             using (Pen purplePen = new Pen(Color.Purple, 2))
             {
@@ -682,6 +679,10 @@ namespace Cubokta.Puyo
                             continue;
                     }
 
+                    rect.X++;
+                    rect.Width -= 2;
+                    rect.Y++;
+                    rect.Height -= 2;
                     g.DrawRectangle(pen, rect);
 
                 }
