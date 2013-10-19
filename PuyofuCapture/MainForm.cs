@@ -9,6 +9,7 @@ using Cubokta;
 using System.Collections.Generic;
 using Cubokta.Common;
 using Cubokta.Puyo.Common;
+using System.Diagnostics;
 
 namespace Cubokta.Puyo
 {
@@ -384,30 +385,38 @@ namespace Cubokta.Puyo
 
         private void fieldImg_Paint(object sender, PaintEventArgs e)
         {
-            if (!IsCapturing)
+            try
             {
-                return;
+                if (!IsCapturing)
+                {
+                    return;
+                }
+
+                Graphics fieldImageG = e.Graphics;
+                using (Graphics captureBmpG = Graphics.FromImage(captureBmp))
+                using (Bitmap forAnalyzeBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
+                using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
+                {
+                    // フィールドのキャプチャ範囲を取り込む
+                    captureBmpG.CopyFromScreen(new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBmp.Size);
+
+                    // 取り込んだ画像を画面に出力
+                    Rectangle dest = new Rectangle(0, 0, 192, 384);
+                    Rectangle src = new Rectangle(0, 0, captureRect.Width, captureRect.Height);
+                    forAnalyzeG.DrawImage(captureBmp, dest, src, GraphicsUnit.Pixel);
+
+                    // 解析用のBMPにも画面と同じ内容を出力
+                    fieldImageG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
+
+                    // フィールドの状態を解析し、結果を描画
+                    CaptureField field = a(forAnalyzeBmp);
+                    DrawDebugRect(fieldImageG, field);
+                }
             }
-
-            Graphics fieldImageG = e.Graphics;
-            using (Graphics captureBmpG = Graphics.FromImage(captureBmp))
-            using (Bitmap forAnalyzeBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
-            using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
+            catch (Exception exp)
             {
-                // フィールドのキャプチャ範囲を取り込む
-                captureBmpG.CopyFromScreen(new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBmp.Size);
-
-                // 取り込んだ画像を画面に出力
-                Rectangle dest = new Rectangle(0, 0, 192, 384);
-                Rectangle src = new Rectangle(0, 0, captureRect.Width, captureRect.Height);
-                forAnalyzeG.DrawImage(captureBmp, dest, src, GraphicsUnit.Pixel);
-
-                // 解析用のBMPにも画面と同じ内容を出力
-                fieldImageG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
-
-                // フィールドの状態を解析し、結果を描画
-                CaptureField field = a(forAnalyzeBmp);
-                DrawDebugRect(fieldImageG, field);
+                Debug.WriteLine(exp.ToString());
+                throw exp;
             }
         }
 
@@ -494,58 +503,53 @@ namespace Cubokta.Puyo
             {
                 nextBmp.Dispose();
             }
+
+            Debug.Flush();
         }
 
         private void fieldImg_MouseClick(object sender, MouseEventArgs e)
         {
-            try
+            if (!isPixeling)
             {
-                if (!isPixeling)
-                {
-                    return;
-                }
-
-                if (e.Button == MouseButtons.Left)
-                {
-                    using (Bitmap fieldBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
-                    {
-                        fieldImg.DrawToBitmap(fieldBmp, new Rectangle(0, 0, fieldImg.Width, fieldImg.Height));
-                        RapidBitmapAccessor ba = new RapidBitmapAccessor(fieldBmp);
-
-                        ba.BeginAccess();
-                        Color c = ba.GetPixel(e.X, e.Y);
-                        detector.BaseColors[(PuyoType)pixelingTargetIndex] = c;
-                        ba.EndAccess();
-                    }
-                }
-
-                pixelingTargetIndex++;
-                if (pixelingTargetIndex > (int)PuyoType.MURASAKI)
-                {
-                    isPixeling = false;
-                    statusLabel.Text = "";
-                }
-                else
-                {
-                    statusLabel.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
-                }
-
-                Func<Color, String> f = (c) =>
-                {
-                    return "" + string.Format("{0:x2}{1:x2}{2:x2}", c.R, c.G, c.B);
-                };
-
-                colorInfoLbl.Text =
-                    "赤:：" + f(detector.BaseColors[PuyoType.AKA]) + "\n" +
-                    "緑:：" + f(detector.BaseColors[PuyoType.MIDORI]) + "\n" +
-                    "青:：" + f(detector.BaseColors[PuyoType.AO]) + "\n" +
-                    "黄:：" + f(detector.BaseColors[PuyoType.KI]) + "\n" +
-                    "紫:：" + f(detector.BaseColors[PuyoType.MURASAKI]);
+                return;
             }
-            catch (Exception exp)
+
+            if (e.Button == MouseButtons.Left)
             {
-                Console.WriteLine(exp.ToString());
+                using (Bitmap fieldBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
+                {
+                    fieldImg.DrawToBitmap(fieldBmp, new Rectangle(0, 0, fieldImg.Width, fieldImg.Height));
+                    RapidBitmapAccessor ba = new RapidBitmapAccessor(fieldBmp);
+
+                    ba.BeginAccess();
+                    Color c = ba.GetPixel(e.X, e.Y);
+                    detector.BaseColors[(PuyoType)pixelingTargetIndex] = c;
+                    ba.EndAccess();
+                }
             }
+
+            pixelingTargetIndex++;
+            if (pixelingTargetIndex > (int)PuyoType.MURASAKI)
+            {
+                isPixeling = false;
+                statusLabel.Text = "";
+            }
+            else
+            {
+                statusLabel.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
+            }
+
+            Func<Color, String> f = (c) =>
+            {
+                return "" + string.Format("{0:x2}{1:x2}{2:x2}", c.R, c.G, c.B);
+            };
+
+            colorInfoLbl.Text =
+                "赤:：" + f(detector.BaseColors[PuyoType.AKA]) + "\n" +
+                "緑:：" + f(detector.BaseColors[PuyoType.MIDORI]) + "\n" +
+                "青:：" + f(detector.BaseColors[PuyoType.AO]) + "\n" +
+                "黄:：" + f(detector.BaseColors[PuyoType.KI]) + "\n" +
+                "紫:：" + f(detector.BaseColors[PuyoType.MURASAKI]);
         }
 
         private ColorPairPuyo prevNext;
@@ -617,7 +621,7 @@ namespace Cubokta.Puyo
             }
             catch (Exception exp)
             {
-                Console.WriteLine(exp.ToString());
+                Debug.WriteLine(exp.ToString());
                 throw exp;
             }
         }
