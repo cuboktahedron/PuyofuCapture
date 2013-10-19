@@ -14,7 +14,7 @@ namespace Cubokta.Puyo
     public partial class CaptureForm : Form
     {
         /// <summary>スクリーン画像表示用ピクチャボックス</summary>
-        private PictureBox screenPict;
+        private PictureBox screenImg;
 
         /// <summary>
         /// キャプチャ開始時点の画面イメージ
@@ -54,31 +54,31 @@ namespace Cubokta.Puyo
         /// </summary>
         private void InitializeComponent()
         {
-            this.screenPict = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.screenPict)).BeginInit();
+            this.screenImg = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.screenImg)).BeginInit();
             this.SuspendLayout();
             // 
-            // screenPict
+            // screenImg
             // 
-            this.screenPict.Location = new System.Drawing.Point(0, 0);
-            this.screenPict.Name = "screenPict";
-            this.screenPict.Size = new System.Drawing.Size(37, 37);
-            this.screenPict.TabIndex = 0;
-            this.screenPict.TabStop = false;
-            this.screenPict.Paint += new System.Windows.Forms.PaintEventHandler(this.screenPict_Paint);
-            this.screenPict.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pict_MouseDown);
-            this.screenPict.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pict_MouseMove);
+            this.screenImg.Location = new System.Drawing.Point(0, 0);
+            this.screenImg.Name = "screenImg";
+            this.screenImg.Size = new System.Drawing.Size(37, 37);
+            this.screenImg.TabIndex = 0;
+            this.screenImg.TabStop = false;
+            this.screenImg.Paint += new System.Windows.Forms.PaintEventHandler(this.screenPict_Paint);
+            this.screenImg.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pict_MouseDown);
+            this.screenImg.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pict_MouseMove);
             // 
             // CaptureForm
             // 
             this.ClientSize = new System.Drawing.Size(284, 356);
-            this.Controls.Add(this.screenPict);
+            this.Controls.Add(this.screenImg);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "CaptureForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CaptureForm_FormClosed);
             this.Load += new System.EventHandler(this.CaptureForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.screenPict)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.screenImg)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -93,7 +93,7 @@ namespace Cubokta.Puyo
             // プライマリスクリーンと同じ幅、高さにフォームと、ピクチャボックスを拡張
             Size screenSize = new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
             this.Size = screenSize;
-            screenPict.Size = screenSize;
+            screenImg.Size = screenSize;
 
             // 画面全体をキャプチャ
             rawScreenImage = new Bitmap(screenSize.Width, screenSize.Height);

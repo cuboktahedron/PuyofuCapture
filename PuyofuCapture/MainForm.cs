@@ -12,26 +12,26 @@ using Cubokta.Puyo.Common;
 
 namespace Cubokta.Puyo
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         // エントリ・ポイント（1）
         [STAThread]
         static void Main()
         {
-            Application.Run(new Form1());
+            Application.Run(new MainForm());
         }
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
-            status.Text = "";
+            statusLabel.Text = "";
 
             Func<Color, String> f = (c) =>
             {
                 return "" + string.Format("{0:x2}{1:x2}{2:x2}", c.R, c.G, c.B);
             };
 
-            colorInfo.Text =
+            colorInfoLbl.Text =
                 "赤:：" + f(baseColors[PuyoType.AKA]) + "\n" + 
                 "緑:：" + f(baseColors[PuyoType.MIDORI]) + "\n" + 
                 "青:：" + f(baseColors[PuyoType.AO]) + "\n" + 
@@ -41,22 +41,22 @@ namespace Cubokta.Puyo
 
         private Button spoitBtn;
         private Button captureBtn;
-        private PictureBox fieldImage;
+        private PictureBox fieldImg;
         private System.Windows.Forms.Timer timer1;
         private System.ComponentModel.IContainer components;
-        private Label status;
-        private Label colorInfo;
-        private RadioButton radioButton1;
-        private RadioButton radioButton2;
-        private PictureBox nextImage;
-        private Label label1;
-        private Label label2;
-        private Label label3;
+        private Label statusLabel;
+        private Label colorInfoLbl;
+        private RadioButton FieldRadio1P;
+        private RadioButton FieldRadio2P;
+        private PictureBox nextImg;
+        private Label playDateLbl;
+        private Label playerNameLbl;
+        private Label stepIdLbl;
         private DateTimePicker playDate;
-        private TextBox playerTxt;
+        private TextBox playerNameTxt;
         private Button startBtn;
-        private Label label4;
-        private TextBox record;
+        private Label recordLbl;
+        private TextBox recordTxt;
         private TextBox stepDataTxt;
         private NumericUpDown stepIdTxt;
         private Button stopBtn;
@@ -67,27 +67,27 @@ namespace Cubokta.Puyo
             this.components = new System.ComponentModel.Container();
             this.spoitBtn = new System.Windows.Forms.Button();
             this.captureBtn = new System.Windows.Forms.Button();
-            this.fieldImage = new System.Windows.Forms.PictureBox();
+            this.fieldImg = new System.Windows.Forms.PictureBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.status = new System.Windows.Forms.Label();
-            this.colorInfo = new System.Windows.Forms.Label();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.nextImage = new System.Windows.Forms.PictureBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.statusLabel = new System.Windows.Forms.Label();
+            this.colorInfoLbl = new System.Windows.Forms.Label();
+            this.FieldRadio1P = new System.Windows.Forms.RadioButton();
+            this.FieldRadio2P = new System.Windows.Forms.RadioButton();
+            this.nextImg = new System.Windows.Forms.PictureBox();
+            this.playDateLbl = new System.Windows.Forms.Label();
+            this.playerNameLbl = new System.Windows.Forms.Label();
+            this.stepIdLbl = new System.Windows.Forms.Label();
             this.playDate = new System.Windows.Forms.DateTimePicker();
-            this.playerTxt = new System.Windows.Forms.TextBox();
+            this.playerNameTxt = new System.Windows.Forms.TextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.startBtn = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.record = new System.Windows.Forms.TextBox();
+            this.recordLbl = new System.Windows.Forms.Label();
+            this.recordTxt = new System.Windows.Forms.TextBox();
             this.stepDataTxt = new System.Windows.Forms.TextBox();
             this.stepIdTxt = new System.Windows.Forms.NumericUpDown();
             this.stopBtn = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.fieldImage)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nextImage)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nextImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).BeginInit();
             this.SuspendLayout();
             // 
@@ -112,98 +112,98 @@ namespace Cubokta.Puyo
             this.captureBtn.UseVisualStyleBackColor = true;
             this.captureBtn.Click += new System.EventHandler(this.button3_Click);
             // 
-            // fieldImage
+            // fieldImg
             // 
-            this.fieldImage.Location = new System.Drawing.Point(263, 33);
-            this.fieldImage.Name = "fieldImage";
-            this.fieldImage.Size = new System.Drawing.Size(192, 384);
-            this.fieldImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.fieldImage.TabIndex = 3;
-            this.fieldImage.TabStop = false;
-            this.fieldImage.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
-            this.fieldImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseClick);
+            this.fieldImg.Location = new System.Drawing.Point(263, 33);
+            this.fieldImg.Name = "fieldImg";
+            this.fieldImg.Size = new System.Drawing.Size(192, 384);
+            this.fieldImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.fieldImg.TabIndex = 3;
+            this.fieldImg.TabStop = false;
+            this.fieldImg.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+            this.fieldImg.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseClick);
             // 
             // timer1
             // 
             this.timer1.Interval = 50;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // status
+            // statusLabel
             // 
-            this.status.AutoSize = true;
-            this.status.Location = new System.Drawing.Point(61, 446);
-            this.status.Name = "status";
-            this.status.Size = new System.Drawing.Size(41, 12);
-            this.status.TabIndex = 4;
-            this.status.Text = "説明文";
+            this.statusLabel.AutoSize = true;
+            this.statusLabel.Location = new System.Drawing.Point(61, 446);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(41, 12);
+            this.statusLabel.TabIndex = 4;
+            this.statusLabel.Text = "説明文";
             // 
-            // colorInfo
+            // colorInfoLbl
             // 
-            this.colorInfo.AutoSize = true;
-            this.colorInfo.Location = new System.Drawing.Point(562, 33);
-            this.colorInfo.Name = "colorInfo";
-            this.colorInfo.Size = new System.Drawing.Size(41, 12);
-            this.colorInfo.TabIndex = 5;
-            this.colorInfo.Text = "色情報";
+            this.colorInfoLbl.AutoSize = true;
+            this.colorInfoLbl.Location = new System.Drawing.Point(562, 33);
+            this.colorInfoLbl.Name = "colorInfoLbl";
+            this.colorInfoLbl.Size = new System.Drawing.Size(41, 12);
+            this.colorInfoLbl.TabIndex = 5;
+            this.colorInfoLbl.Text = "色情報";
             // 
-            // radioButton1
+            // FieldRadio1P
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Location = new System.Drawing.Point(70, 209);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(36, 16);
-            this.radioButton1.TabIndex = 6;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "1P";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.FieldRadio1P.AutoSize = true;
+            this.FieldRadio1P.Checked = true;
+            this.FieldRadio1P.Location = new System.Drawing.Point(70, 209);
+            this.FieldRadio1P.Name = "FieldRadio1P";
+            this.FieldRadio1P.Size = new System.Drawing.Size(36, 16);
+            this.FieldRadio1P.TabIndex = 6;
+            this.FieldRadio1P.TabStop = true;
+            this.FieldRadio1P.Text = "1P";
+            this.FieldRadio1P.UseVisualStyleBackColor = true;
             // 
-            // radioButton2
+            // FieldRadio2P
             // 
-            this.radioButton2.AccessibleName = "";
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(112, 209);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(36, 16);
-            this.radioButton2.TabIndex = 6;
-            this.radioButton2.Text = "2P";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.FieldRadio2P.AccessibleName = "";
+            this.FieldRadio2P.AutoSize = true;
+            this.FieldRadio2P.Location = new System.Drawing.Point(112, 209);
+            this.FieldRadio2P.Name = "FieldRadio2P";
+            this.FieldRadio2P.Size = new System.Drawing.Size(36, 16);
+            this.FieldRadio2P.TabIndex = 6;
+            this.FieldRadio2P.Text = "2P";
+            this.FieldRadio2P.UseVisualStyleBackColor = true;
             // 
-            // nextImage
+            // nextImg
             // 
-            this.nextImage.Location = new System.Drawing.Point(477, 46);
-            this.nextImage.Name = "nextImage";
-            this.nextImage.Size = new System.Drawing.Size(32, 64);
-            this.nextImage.TabIndex = 7;
-            this.nextImage.TabStop = false;
-            this.nextImage.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
+            this.nextImg.Location = new System.Drawing.Point(477, 46);
+            this.nextImg.Name = "nextImg";
+            this.nextImg.Size = new System.Drawing.Size(32, 64);
+            this.nextImg.TabIndex = 7;
+            this.nextImg.TabStop = false;
+            this.nextImg.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
             // 
-            // label1
+            // playDateLbl
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(490, 209);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(29, 12);
-            this.label1.TabIndex = 8;
-            this.label1.Text = "日付";
+            this.playDateLbl.AutoSize = true;
+            this.playDateLbl.Location = new System.Drawing.Point(490, 209);
+            this.playDateLbl.Name = "playDateLbl";
+            this.playDateLbl.Size = new System.Drawing.Size(29, 12);
+            this.playDateLbl.TabIndex = 8;
+            this.playDateLbl.Text = "日付";
             // 
-            // label2
+            // playerNameLbl
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(490, 236);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(54, 12);
-            this.label2.TabIndex = 9;
-            this.label2.Text = "プレイヤ名";
+            this.playerNameLbl.AutoSize = true;
+            this.playerNameLbl.Location = new System.Drawing.Point(490, 236);
+            this.playerNameLbl.Name = "playerNameLbl";
+            this.playerNameLbl.Size = new System.Drawing.Size(54, 12);
+            this.playerNameLbl.TabIndex = 9;
+            this.playerNameLbl.Text = "プレイヤ名";
             // 
-            // label3
+            // stepIdLbl
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(490, 175);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(14, 12);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "id";
+            this.stepIdLbl.AutoSize = true;
+            this.stepIdLbl.Location = new System.Drawing.Point(490, 175);
+            this.stepIdLbl.Name = "stepIdLbl";
+            this.stepIdLbl.Size = new System.Drawing.Size(14, 12);
+            this.stepIdLbl.TabIndex = 10;
+            this.stepIdLbl.Text = "id";
             // 
             // playDate
             // 
@@ -213,12 +213,12 @@ namespace Cubokta.Puyo
             this.playDate.Size = new System.Drawing.Size(200, 19);
             this.playDate.TabIndex = 11;
             // 
-            // playerTxt
+            // playerNameTxt
             // 
-            this.playerTxt.Location = new System.Drawing.Point(564, 236);
-            this.playerTxt.Name = "playerTxt";
-            this.playerTxt.Size = new System.Drawing.Size(200, 19);
-            this.playerTxt.TabIndex = 13;
+            this.playerNameTxt.Location = new System.Drawing.Point(564, 236);
+            this.playerNameTxt.Name = "playerNameTxt";
+            this.playerNameTxt.Size = new System.Drawing.Size(200, 19);
+            this.playerNameTxt.TabIndex = 13;
             // 
             // splitter1
             // 
@@ -239,22 +239,22 @@ namespace Cubokta.Puyo
             this.startBtn.UseVisualStyleBackColor = true;
             this.startBtn.Click += new System.EventHandler(this.startBtn_Click);
             // 
-            // label4
+            // recordLbl
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(490, 269);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(41, 12);
-            this.label4.TabIndex = 16;
-            this.label4.Text = "レコード";
+            this.recordLbl.AutoSize = true;
+            this.recordLbl.Location = new System.Drawing.Point(490, 269);
+            this.recordLbl.Name = "recordLbl";
+            this.recordLbl.Size = new System.Drawing.Size(41, 12);
+            this.recordLbl.TabIndex = 16;
+            this.recordLbl.Text = "レコード";
             // 
-            // record
+            // recordTxt
             // 
-            this.record.Location = new System.Drawing.Point(564, 269);
-            this.record.Name = "record";
-            this.record.ReadOnly = true;
-            this.record.Size = new System.Drawing.Size(200, 19);
-            this.record.TabIndex = 17;
+            this.recordTxt.Location = new System.Drawing.Point(564, 269);
+            this.recordTxt.Name = "recordTxt";
+            this.recordTxt.ReadOnly = true;
+            this.recordTxt.Size = new System.Drawing.Size(200, 19);
+            this.recordTxt.TabIndex = 17;
             // 
             // stepDataTxt
             // 
@@ -282,34 +282,34 @@ namespace Cubokta.Puyo
             this.stopBtn.UseVisualStyleBackColor = true;
             this.stopBtn.Click += new System.EventHandler(this.stopBtn_Click);
             // 
-            // Form1
+            // MainForm
             // 
             this.ClientSize = new System.Drawing.Size(793, 482);
             this.Controls.Add(this.stopBtn);
             this.Controls.Add(this.stepIdTxt);
             this.Controls.Add(this.stepDataTxt);
-            this.Controls.Add(this.record);
-            this.Controls.Add(this.label4);
+            this.Controls.Add(this.recordTxt);
+            this.Controls.Add(this.recordLbl);
             this.Controls.Add(this.startBtn);
             this.Controls.Add(this.splitter1);
-            this.Controls.Add(this.playerTxt);
+            this.Controls.Add(this.playerNameTxt);
             this.Controls.Add(this.playDate);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.nextImage);
-            this.Controls.Add(this.radioButton2);
-            this.Controls.Add(this.radioButton1);
-            this.Controls.Add(this.colorInfo);
-            this.Controls.Add(this.status);
-            this.Controls.Add(this.fieldImage);
+            this.Controls.Add(this.stepIdLbl);
+            this.Controls.Add(this.playerNameLbl);
+            this.Controls.Add(this.playDateLbl);
+            this.Controls.Add(this.nextImg);
+            this.Controls.Add(this.FieldRadio2P);
+            this.Controls.Add(this.FieldRadio1P);
+            this.Controls.Add(this.colorInfoLbl);
+            this.Controls.Add(this.statusLabel);
+            this.Controls.Add(this.fieldImg);
             this.Controls.Add(this.captureBtn);
             this.Controls.Add(this.spoitBtn);
-            this.Name = "Form1";
-            this.Text = "movi";
+            this.Name = "MainForm";
+            this.Text = "PuyofuCapture";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
-            ((System.ComponentModel.ISupportInitialize)(this.fieldImage)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nextImage)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nextImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -322,7 +322,7 @@ namespace Cubokta.Puyo
         {
             isPixeling = true;
             pixelingTargetIndex = (int)PuyoType.AKA;
-            status.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
+            statusLabel.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -330,7 +330,7 @@ namespace Cubokta.Puyo
             timer1.Stop();
             IsCapturing = false;
 
-            int fieldNo = radioButton1.Checked ? 0 : 1;
+            int fieldNo = FieldRadio1P.Checked ? 0 : 1;
             Form captureForm = new CaptureForm(fieldNo);
             captureForm.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CaptureForm_FormClosed);
             captureForm.Show();
@@ -389,7 +389,7 @@ namespace Cubokta.Puyo
             }
             Graphics g = e.Graphics;
             using (Graphics gg = Graphics.FromImage(captureBm))
-            using (Bitmap bmp = new Bitmap(fieldImage.Width, fieldImage.Height))
+            using (Bitmap bmp = new Bitmap(fieldImg.Width, fieldImg.Height))
             using (Graphics ggg = Graphics.FromImage(bmp))
             {
                 gg.CopyFromScreen(new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBm.Size);
@@ -612,9 +612,9 @@ namespace Cubokta.Puyo
 
                 if (e.Button == MouseButtons.Left)
                 {
-                    using (Bitmap bmp = new Bitmap(fieldImage.Width, fieldImage.Height))
+                    using (Bitmap bmp = new Bitmap(fieldImg.Width, fieldImg.Height))
                     {
-                        fieldImage.DrawToBitmap(bmp, new Rectangle(0, 0, fieldImage.Width, fieldImage.Height));
+                        fieldImg.DrawToBitmap(bmp, new Rectangle(0, 0, fieldImg.Width, fieldImg.Height));
                         RapidBitmapAccessor ba = new RapidBitmapAccessor(bmp);
 
                         ba.BeginAccess();
@@ -631,7 +631,7 @@ namespace Cubokta.Puyo
                 }
                 else
                 {
-                    status.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
+                    statusLabel.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
                 }
 
                 Func<Color, String> f = (c) =>
@@ -639,7 +639,7 @@ namespace Cubokta.Puyo
                     return "" + string.Format("{0:x2}{1:x2}{2:x2}", c.R, c.G, c.B);
                 };
 
-                colorInfo.Text =
+                colorInfoLbl.Text =
                     "赤:：" + f(baseColors[PuyoType.AKA]) + "\n" +
                     "緑:：" + f(baseColors[PuyoType.MIDORI]) + "\n" +
                     "青:：" + f(baseColors[PuyoType.AO]) + "\n" +
@@ -666,7 +666,7 @@ namespace Cubokta.Puyo
                 }
                 Graphics g = e.Graphics;
                 using (Graphics gg = Graphics.FromImage(nextBm))
-                using (Bitmap bmp = new Bitmap(nextImage.Width, nextImage.Height))
+                using (Bitmap bmp = new Bitmap(nextImg.Width, nextImg.Height))
                 using (Graphics ggg = Graphics.FromImage(bmp))
                 {
                     gg.CopyFromScreen(new Point(nextRect.Left, nextRect.Top), new Point(0, 0), nextBm.Size);
