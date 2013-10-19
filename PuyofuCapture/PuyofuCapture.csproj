@@ -60,7 +60,7 @@
       <Project>{370be3eb-83db-43c4-8140-def10abe68ca}</Project>
       <Name>CommonLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PuyofuCapture\PuyoLib.csproj">
+    <ProjectReference Include="..\PuyoLib\PuyoLib.csproj">
       <Project>{88d0af84-d8ca-4be1-9d7d-1ef86cc8ca2e}</Project>
       <Name>PuyoLib</Name>
     </ProjectReference>
