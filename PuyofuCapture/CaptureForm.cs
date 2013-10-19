@@ -66,8 +66,8 @@ namespace Cubokta.Puyo
             this.screenImg.TabIndex = 0;
             this.screenImg.TabStop = false;
             this.screenImg.Paint += new System.Windows.Forms.PaintEventHandler(this.screenPict_Paint);
-            this.screenImg.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pict_MouseDown);
-            this.screenImg.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pict_MouseMove);
+            this.screenImg.MouseDown += new System.Windows.Forms.MouseEventHandler(this.screenImg_MouseDown);
+            this.screenImg.MouseMove += new System.Windows.Forms.MouseEventHandler(this.screenImg_MouseMove);
             // 
             // CaptureForm
             // 
@@ -108,7 +108,7 @@ namespace Cubokta.Puyo
         /// </summary>
         /// <param name="sender">イベント発生源</param>
         /// <param name="e">イベント情報</param>
-        private void pict_MouseDown(object sender, MouseEventArgs e)
+        private void screenImg_MouseDown(object sender, MouseEventArgs e)
         {
             if (!IsSelecting && e.Button != MouseButtons.Left)
             {
@@ -151,7 +151,7 @@ namespace Cubokta.Puyo
         /// </summary>
         /// <param name="sender">イベント発生源</param>
         /// <param name="e">イベント情報</param>
-        private void pict_MouseMove(object sender, MouseEventArgs e)
+        private void screenImg_MouseMove(object sender, MouseEventArgs e)
         {
             if (!IsSelecting)
             {

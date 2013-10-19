@@ -42,7 +42,7 @@ namespace Cubokta.Puyo
         private Button spoitBtn;
         private Button captureBtn;
         private PictureBox fieldImg;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer captureTimer;
         private System.ComponentModel.IContainer components;
         private Label statusLabel;
         private Label colorInfoLbl;
@@ -68,7 +68,7 @@ namespace Cubokta.Puyo
             this.spoitBtn = new System.Windows.Forms.Button();
             this.captureBtn = new System.Windows.Forms.Button();
             this.fieldImg = new System.Windows.Forms.PictureBox();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.captureTimer = new System.Windows.Forms.Timer(this.components);
             this.statusLabel = new System.Windows.Forms.Label();
             this.colorInfoLbl = new System.Windows.Forms.Label();
             this.FieldRadio1P = new System.Windows.Forms.RadioButton();
@@ -100,7 +100,7 @@ namespace Cubokta.Puyo
             this.spoitBtn.TabIndex = 1;
             this.spoitBtn.Text = "スポイト";
             this.spoitBtn.UseVisualStyleBackColor = true;
-            this.spoitBtn.Click += new System.EventHandler(this.button2_Click_1);
+            this.spoitBtn.Click += new System.EventHandler(this.spoitBtn_Click);
             // 
             // captureBtn
             // 
@@ -110,7 +110,7 @@ namespace Cubokta.Puyo
             this.captureBtn.TabIndex = 2;
             this.captureBtn.Text = "キャプチャスクリーン";
             this.captureBtn.UseVisualStyleBackColor = true;
-            this.captureBtn.Click += new System.EventHandler(this.button3_Click);
+            this.captureBtn.Click += new System.EventHandler(this.captureBtn_Click);
             // 
             // fieldImg
             // 
@@ -120,13 +120,13 @@ namespace Cubokta.Puyo
             this.fieldImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.fieldImg.TabIndex = 3;
             this.fieldImg.TabStop = false;
-            this.fieldImg.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
-            this.fieldImg.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseClick);
+            this.fieldImg.Paint += new System.Windows.Forms.PaintEventHandler(this.fieldImg_Paint);
+            this.fieldImg.MouseClick += new System.Windows.Forms.MouseEventHandler(this.fieldImg_MouseClick);
             // 
-            // timer1
+            // captureTimer
             // 
-            this.timer1.Interval = 50;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.captureTimer.Interval = 50;
+            this.captureTimer.Tick += new System.EventHandler(this.captureTimer_Tick);
             // 
             // statusLabel
             // 
@@ -176,7 +176,7 @@ namespace Cubokta.Puyo
             this.nextImg.Size = new System.Drawing.Size(32, 64);
             this.nextImg.TabIndex = 7;
             this.nextImg.TabStop = false;
-            this.nextImg.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
+            this.nextImg.Paint += new System.Windows.Forms.PaintEventHandler(this.nextImg_Paint);
             // 
             // playDateLbl
             // 
@@ -307,7 +307,7 @@ namespace Cubokta.Puyo
             this.Controls.Add(this.spoitBtn);
             this.Name = "MainForm";
             this.Text = "PuyofuCapture";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).EndInit();
@@ -318,16 +318,16 @@ namespace Cubokta.Puyo
 
         int pixelingTargetIndex;
         bool isPixeling = false;
-        private void button2_Click_1(object sender, EventArgs e)
+        private void spoitBtn_Click(object sender, EventArgs e)
         {
             isPixeling = true;
             pixelingTargetIndex = (int)PuyoType.AKA;
             statusLabel.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void captureBtn_Click(object sender, EventArgs e)
         {
-            timer1.Stop();
+            captureTimer.Stop();
             IsCapturing = false;
 
             int fieldNo = FieldRadio1P.Checked ? 0 : 1;
@@ -355,7 +355,7 @@ namespace Cubokta.Puyo
             IsCapturing = true;
             spoitBtn.Enabled = true;
             startBtn.Enabled = true;
-            timer1.Start();
+            captureTimer.Start();
 
             if (captureBm != null)
             {
@@ -371,7 +371,7 @@ namespace Cubokta.Puyo
             nextBm = new Bitmap(nextRect.Width, nextRect.Height);
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void captureTimer_Tick(object sender, EventArgs e)
         {
             if (!isPixeling)
             {
@@ -381,7 +381,7 @@ namespace Cubokta.Puyo
 
         private bool IsCapturing { get; set; }
 
-        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        private void fieldImg_Paint(object sender, PaintEventArgs e)
         {
             if (!IsCapturing)
             {
@@ -579,7 +579,7 @@ namespace Cubokta.Puyo
             return diffRed * diffRed + diffGreen * diffGreen + diffBlue * diffBlue;
         }
 
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (captureBm != null)
             {
@@ -601,7 +601,7 @@ namespace Cubokta.Puyo
             { PuyoType.MURASAKI, Color.FromArgb(0x65, 0x05, 0x6c) },
         };
 
-        private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
+        private void fieldImg_MouseClick(object sender, MouseEventArgs e)
         {
             try
             {
@@ -656,7 +656,7 @@ namespace Cubokta.Puyo
         bool readyForNextStepRecord = false;
         bool isFirstTsumo = true;
         bool isRecording = false;
-        private void pictureBox2_Paint(object sender, PaintEventArgs e)
+        private void nextImg_Paint(object sender, PaintEventArgs e)
         {
             try
             {
