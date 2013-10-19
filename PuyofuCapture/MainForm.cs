@@ -124,6 +124,7 @@ namespace Cubokta.Puyo
             this.fieldImg.TabStop = false;
             this.fieldImg.Paint += new System.Windows.Forms.PaintEventHandler(this.fieldImg_Paint);
             this.fieldImg.MouseClick += new System.Windows.Forms.MouseEventHandler(this.fieldImg_MouseClick);
+            this.fieldImg.MouseMove += new System.Windows.Forms.MouseEventHandler(this.fieldImg_MouseMove);
             // 
             // captureTimer
             // 
@@ -375,10 +376,7 @@ namespace Cubokta.Puyo
 
         private void captureTimer_Tick(object sender, EventArgs e)
         {
-            if (!isPixeling)
-            {
-                Refresh();
-            }
+            Refresh();
         }
 
         private bool IsCapturing { get; set; }
@@ -392,7 +390,7 @@ namespace Cubokta.Puyo
                     return;
                 }
 
-                Graphics fieldImageG = e.Graphics;
+                Graphics fieldImgG = e.Graphics;
                 using (Graphics captureBmpG = Graphics.FromImage(captureBmp))
                 using (Bitmap forAnalyzeBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
                 using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
@@ -406,11 +404,23 @@ namespace Cubokta.Puyo
                     forAnalyzeG.DrawImage(captureBmp, dest, src, GraphicsUnit.Pixel);
 
                     // 解析用のBMPにも画面と同じ内容を出力
-                    fieldImageG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
+                    fieldImgG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
 
-                    // フィールドの状態を解析し、結果を描画
-                    CaptureField field = a(forAnalyzeBmp);
-                    DrawDebugRect(fieldImageG, field);
+                    if (!isPixeling)
+                    {
+                        // フィールドの状態を解析し、結果を描画
+                        CaptureField field = a(forAnalyzeBmp);
+                        DrawDebugRect(fieldImgG, field);
+                    }
+                    else
+                    {
+                        // サンプル選択枠を描画
+                        int x = pointOnFieldImg.X - (pointOnFieldImg.X % CaptureField.UNIT);
+                        int y = pointOnFieldImg.Y - (pointOnFieldImg.Y % CaptureField.UNIT);
+
+                        Rectangle pixelingCellRect = new Rectangle(x, y, CaptureField.UNIT, CaptureField.UNIT);
+                        fieldImgG.DrawRectangle(new Pen(Color.Red, 2), pixelingCellRect);
+                    }
                 }
             }
             catch (Exception exp)
@@ -513,15 +523,22 @@ namespace Cubokta.Puyo
 
             if (e.Button == MouseButtons.Left)
             {
+                // サンプル選択
+                int x = pointOnFieldImg.X - (pointOnFieldImg.X % CaptureField.UNIT);
+                int y = pointOnFieldImg.Y - (pointOnFieldImg.Y % CaptureField.UNIT);
+                Rectangle pixelingCellRect = new Rectangle(x, y, CaptureField.UNIT, CaptureField.UNIT);
+
                 using (Bitmap fieldBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
                 {
                     fieldImg.DrawToBitmap(fieldBmp, new Rectangle(0, 0, fieldImg.Width, fieldImg.Height));
-                    RapidBitmapAccessor ba = new RapidBitmapAccessor(fieldBmp);
-
-                    ba.BeginAccess();
-                    Color c = ba.GetPixel(e.X, e.Y);
-                    detector.BaseColors[(PuyoType)pixelingTargetIndex] = c;
-                    ba.EndAccess();
+                    using (Bitmap cellBmp = fieldBmp.Clone(new Rectangle(0, 0, CaptureField.UNIT, CaptureField.UNIT), fieldBmp.PixelFormat))
+                    {
+                        // 選択したサンプルを設定
+                        RapidBitmapAccessor ba = new RapidBitmapAccessor(cellBmp);
+                        ba.BeginAccess();
+                        detector.UpdateSample((PuyoType)pixelingTargetIndex, ba);
+                        ba.EndAccess();
+                    }
                 }
             }
 
@@ -548,6 +565,7 @@ namespace Cubokta.Puyo
                 "黄:：" + f(detector.BaseColors[PuyoType.KI]) + "\n" +
                 "紫:：" + f(detector.BaseColors[PuyoType.MURASAKI]);
         }
+
 
         private ColorPairPuyo prevNext;
         bool readyForNextStepRecord = false;
@@ -708,6 +726,17 @@ namespace Cubokta.Puyo
         {
             isRecording = false;
             stopBtn.Enabled = false;
+        }
+
+        private Point pointOnFieldImg;
+        private void fieldImg_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!isPixeling)
+            {
+                return;
+            }
+
+            pointOnFieldImg = e.Location;
         }
     }
 }

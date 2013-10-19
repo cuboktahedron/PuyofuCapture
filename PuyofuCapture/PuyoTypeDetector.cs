@@ -2,6 +2,7 @@
 using Cubokta.Puyo.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,30 @@ namespace Cubokta.Puyo
 {
     class PuyoTypeDetector
     {
+        /// <summary>色識別用にRGBの各要素を分類する際に必要となるビット数</summary>
+        /// <remarks>3、4、5、6のいずれかを指定する。</remarks>
+        private const int COLOR_ELEMENT_BIT = 3;
+
+        /// <summary>色の分類数(0～255を何分割するか)</summary>
+        private const int COLOR_DIVISION_NUM = 2 << (COLOR_ELEMENT_BIT - 1);
+
+
+        /// <summary>色識別用サンプルデータ</summary>
+        private IDictionary<PuyoType, List<int>> colorSamples = new Dictionary<PuyoType, List<int>>();
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public PuyoTypeDetector()
+        {
+            colorSamples[PuyoType.AKA] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
+            colorSamples[PuyoType.MIDORI] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
+            colorSamples[PuyoType.AO] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
+            colorSamples[PuyoType.KI] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
+            colorSamples[PuyoType.MURASAKI] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
+        }
+
+        // TODO: いずれ消す
         private IDictionary<PuyoType, Color> baseColors = new Dictionary<PuyoType, Color>()
         {
             { PuyoType.AKA, Color.FromArgb(0xaf, 0x74, 0x85) },
@@ -31,7 +56,7 @@ namespace Cubokta.Puyo
                 baseColors = value;
             }
         }
-        
+
         public PuyoType Detect(RapidBitmapAccessor ba, Rectangle rect)
         {
             int r = 0;
@@ -135,6 +160,43 @@ namespace Cubokta.Puyo
             int diffBlue = (c1.B - c2.B);
 
             return diffRed * diffRed + diffGreen * diffGreen + diffBlue * diffBlue;
+        }
+
+        /// <summary>
+        /// ぷよタイプ識別用のサンプルデータを更新する。
+        /// </summary>
+        /// <param name="puyoType">ぷよタイプ</param>
+        /// <param name="ba">サンプルデータ画像アクセサ</param>
+        /// <remarks>サンプルデータ画像のサイズは1セルのサイズとする。</remarks>
+        public void UpdateSample(PuyoType puyoType, RapidBitmapAccessor ba)
+        {
+            colorSamples[puyoType] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
+            for (int x = 0; x < CaptureField.UNIT; x++)
+            {
+                for (int y = 0; y < CaptureField.UNIT; y++)
+                {
+                    // RGBから色番号を決定
+                    Color c = ba.GetPixel(x, y);
+                    int colorNo = c.R / (256 / COLOR_DIVISION_NUM);
+                    colorNo += COLOR_DIVISION_NUM;
+
+                    colorNo += (c.G / (256 / COLOR_DIVISION_NUM));
+                    colorNo += COLOR_DIVISION_NUM;
+
+                    colorNo += c.B / (256 / COLOR_DIVISION_NUM);
+
+                    colorSamples[puyoType][colorNo]++;
+                }
+            }
+
+#if DEBUG
+            Debug.WriteLine("サンプルデータセット(ぷよ種別 = " + puyoType + ")");
+            for (int i = 0, len = colorSamples[puyoType].Count; i < len; i++)
+            {
+                Debug.WriteLine(colorSamples[puyoType][i]);
+            }
+            Debug.Flush();
+#endif
         }
     }
 }
