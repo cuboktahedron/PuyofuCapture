@@ -115,16 +115,16 @@ namespace Cubokta.Puyo.Common
 
             set
             {
-                if (value < 0 || value > Environment.OJAMA_ROW_MAX)
+                if (value < 0 || value > FieldConst.OJAMA_ROW_MAX)
                 {
-                    throw new ArgumentException("OjamaRow must be between 0 and " + Environment.OJAMA_ROW_MAX);
+                    throw new ArgumentException("OjamaRow must be between 0 and " + FieldConst.OJAMA_ROW_MAX);
                 }
 
                 ojamaRow = value;
             }
         }
 
-        private BitArray ojamaBit = new BitArray(CaptureField.X_MAX);
+        private BitArray ojamaBit = new BitArray(FieldConst.FIELD_X);
         public BitArray OjamaBit
         {
             get
@@ -140,7 +140,7 @@ namespace Cubokta.Puyo.Common
 
         public int OjamaAt(int pos)
         {
-            if (pos < 0 || pos >= CaptureField.X_MAX)
+            if (pos < 0 || pos >= FieldConst.FIELD_X)
             {
                 throw new ArgumentException("pos '" + pos + "' is out of field.");
             }

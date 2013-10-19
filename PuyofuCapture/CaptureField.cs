@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Cubokta.Puyo.Common;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cubokta.Puyo.Common
+namespace Cubokta.Puyo
 {
     public class CaptureField
     {
-        public const int X_MAX = 6;
-        public const int Y_MAX = 12;
+        public const int X_MAX = FieldConst.FIELD_X;
+        public const int Y_MAX = FieldConst.FIELD_Y;
         public const int UNIT = 32;
 
         private PuyoType[,] Types { get; set; }

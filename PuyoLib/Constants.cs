@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Cubokta.Puyo.Common
 {
-    public class Environment {
+    public class FieldConst {
         public const int OJAMA_ROW_MAX = 5;
+        public const int FIELD_X = 6;
+        public const int FIELD_Y = 12;
     }
 
     public enum PuyoType {
