@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Cubokta
+namespace Cubokta.Puyo.Common
 {
     [TestClass]
     public class ColorPairPuyoTest

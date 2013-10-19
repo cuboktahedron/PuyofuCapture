@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cubokta
+namespace Cubokta.Puyo.Common
 {
     public class Environment {
         public const int OJAMA_ROW_MAX = 5;

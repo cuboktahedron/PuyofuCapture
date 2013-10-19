@@ -1,32 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CaptureTest
+namespace Cubokta.Common
 {
-    class BitmapPlusA
+    public class RapidBitmapAccessor
     {
-        /// <summary>
-        /// オリジナルのBitmapオブジェクト
-        /// </summary>
+        /// <summary>オリジナルのBitmapオブジェクト</summary>
         private Bitmap _bmp = null;
 
-        /// <summary>
-        /// Bitmapに直接アクセスするためのオブジェクト
-        /// </summary>
+        /// <summary>Bitmapに直接アクセスするためのオブジェクト</summary>
         private BitmapData _img = null;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="original"></param>
-        public BitmapPlusA(Bitmap original)
+        /// <param name="original">オリジナルのBitmapオブジェクト</param>
+        public RapidBitmapAccessor(Bitmap original)
         {
-            // オリジナルのBitmapオブジェクトを保存
             _bmp = original;
         }
 
@@ -67,14 +57,16 @@ namespace CaptureTest
                 // Bitmap処理の高速化を開始していない場合はBitmap標準のGetPixel
                 return _bmp.GetPixel(x, y);
             }
-
-            // Bitmap処理の高速化を開始している場合はBitmapメモリへの直接アクセス
-            IntPtr adr = _img.Scan0;
-            int pos = x * 3 + _img.Stride * y;
-            byte b = System.Runtime.InteropServices.Marshal.ReadByte(adr, pos + 0);
-            byte g = System.Runtime.InteropServices.Marshal.ReadByte(adr, pos + 1);
-            byte r = System.Runtime.InteropServices.Marshal.ReadByte(adr, pos + 2);
-            return Color.FromArgb(r, g, b);
+            unsafe
+            {
+                // Bitmap処理の高速化を開始している場合はBitmapメモリへの直接アクセス
+                byte* adr = (byte*)_img.Scan0;
+                int pos = x * 3 + _img.Stride * y;
+                byte b = adr[pos + 0];
+                byte g = adr[pos + 1];
+                byte r = adr[pos + 2];
+                return Color.FromArgb(r, g, b);
+            }
         }
 
         /// <summary>
@@ -91,13 +83,15 @@ namespace CaptureTest
                 _bmp.SetPixel(x, y, col);
                 return;
             }
-
-            // Bitmap処理の高速化を開始している場合はBitmapメモリへの直接アクセス
-            IntPtr adr = _img.Scan0;
-            int pos = x * 3 + _img.Stride * y;
-            System.Runtime.InteropServices.Marshal.WriteByte(adr, pos + 0, col.B);
-            System.Runtime.InteropServices.Marshal.WriteByte(adr, pos + 1, col.G);
-            System.Runtime.InteropServices.Marshal.WriteByte(adr, pos + 2, col.R);
+            unsafe
+            {
+                // Bitmap処理の高速化を開始している場合はBitmapメモリへの直接アクセス
+                byte* adr = (byte*)_img.Scan0;
+                int pos = x * 3 + _img.Stride * y;
+                adr[pos + 0] = col.B;
+                adr[pos + 1] = col.G;
+                adr[pos + 2] = col.R;
+            }
         }
     }
 }

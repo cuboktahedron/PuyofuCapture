@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cubokta
+namespace Cubokta.Puyo.Common
 {
     [DataContract]
     public class Record

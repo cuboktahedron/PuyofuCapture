@@ -6,7 +6,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace Cubokta
+namespace Cubokta.Puyo.Common
 {
     /// <summary>
     /// キャプチャ範囲指定用フォーム

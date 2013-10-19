@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Collections;
 
-namespace Cubokta
+namespace Cubokta.Puyo.Common
 {
     [TestClass]
     public class FCodeEncoderTest

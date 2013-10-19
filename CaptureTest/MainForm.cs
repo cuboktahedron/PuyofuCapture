@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
 using System.Drawing;
-using CaptureTest;
 using Cubokta;
 using System.Collections.Generic;
+using Cubokta.Common;
+using Cubokta.Puyo.Common;
 
-namespace WindowsFormsApplication1
+namespace Cubokta.Puyo
 {
     public partial class Form1 : Form
     {
@@ -60,83 +61,6 @@ namespace WindowsFormsApplication1
         private NumericUpDown stepIdTxt;
         private Button stopBtn;
         private Splitter splitter1;
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            // 画像のサイズを指定し、Bitmapオブジェクトのインスタンスを作成
-            Bitmap bm = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            // Bitmap bm = new Bitmap(500, 300);   // 幅500ピクセル × 高さ300ピクセルの場合
-
-            // Graphicsオブジェクトのインスタンスを作成
-            Graphics gr = Graphics.FromImage(bm);
-
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
-
-            // 画面全体をコピー
-            gr.CopyFromScreen(new Point(0, 0), new Point(0, 0), bm.Size);
-
-            sw.Stop();
-            //結果を表示する
-            // (240×120で、約25ms)
-            // (480×240で、約30ms)
-            // (1280×1024で、約50ms)
-            Console.WriteLine(sw.Elapsed);
-
-            //// PNGで保存
-            //bm.Save("C:\\samplePNG.png", System.Drawing.Imaging.ImageFormat.Png);
-            // BMPで保存
-            bm.Save("D:\\sampleBMP.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
-            //// JPGで保存
-            //bm.Save("C:\\sampleJPG.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
-            //// TIFFで保存
-            //bm.Save("C:\\sampleTIFF.tiff", System.Drawing.Imaging.ImageFormat.Tiff);
-
-            gr.Dispose();
-
-            // Bitmap#GetPixel版
-            const int TIMES = 300000;
-            sw.Restart();
-            for (int i = 0; i < TIMES; i++)
-            {
-                Color c = bm.GetPixel(100, 100);
-            }
-            sw.Stop();
-
-            //結果を表示する(30000callで約60ms)
-            Console.WriteLine("methodA:" + sw.Elapsed);
-
-            // System.Runtime.InteropServices.Marshalを使用する方法
-            BitmapPlusA ba = new BitmapPlusA(bm);
-            ba.BeginAccess();
-            sw.Restart();
-            for (int i = 0; i < TIMES; i++)
-            {
-                Color c = ba.GetPixel(100, 100);
-            }
-            ba.EndAccess();
-            sw.Stop();
-
-            //結果を表示する(30000callで約60ms)
-            Console.WriteLine("methodB:" + sw.Elapsed);
-
-            // アンセーフコード(unsafe)を使用する方法
-            // System.Runtime.InteropServices.Marshalを使用する方法
-            RapidBitmapAccessor bb = new RapidBitmapAccessor(bm);
-            bb.BeginAccess();
-            sw.Restart();
-            for (int i = 0; i < TIMES; i++)
-            {
-                Color c = bb.GetPixel(100, 100);
-            }
-            bb.EndAccess();
-            sw.Stop();
-
-            //結果を表示する(30000callで約60ms)
-            Console.WriteLine("methodC:" + sw.Elapsed);
-
-            //            MessageBox.Show("Dドライブ直下に出力しました");
-        }
 
         private void InitializeComponent()
         {

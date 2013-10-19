@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Cubokta;
 
-namespace PuyofuCaptureTest
+namespace Cubokta.Puyo.Common
 {
     [TestClass]
     public class PuyoTypeUtilTest

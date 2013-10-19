@@ -6,8 +6,8 @@
     <ProjectGuid>{DA5F8A62-53E6-4EE4-AADB-86EFADBBFE49}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cubokta</RootNamespace>
-    <AssemblyName>PuyofuCaptureTest</AssemblyName>
+    <RootNamespace>Cubokta.Puyo.Common</RootNamespace>
+    <AssemblyName>PuyoLibTest</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -56,9 +56,13 @@
     <Compile Include="FCodeEncoderTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PuyofuCapture\PuyofuCapture.csproj">
+    <ProjectReference Include="..\CommonLib\CommonLib.csproj">
+      <Project>{370be3eb-83db-43c4-8140-def10abe68ca}</Project>
+      <Name>CommonLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PuyofuCapture\PuyoLib.csproj">
       <Project>{88d0af84-d8ca-4be1-9d7d-1ef86cc8ca2e}</Project>
-      <Name>PuyofuCapture</Name>
+      <Name>PuyoLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
