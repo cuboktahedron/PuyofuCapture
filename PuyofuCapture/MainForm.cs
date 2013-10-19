@@ -338,9 +338,9 @@ namespace Cubokta.Puyo
         }
 
         private Rectangle captureRect;
-        private Bitmap captureBm;
+        private Bitmap captureBmp;
         private Rectangle nextRect;
-        private Bitmap nextBm;
+        private Bitmap nextBmp;
 
         private void CaptureForm_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -358,18 +358,18 @@ namespace Cubokta.Puyo
             startBtn.Enabled = true;
             captureTimer.Start();
 
-            if (captureBm != null)
+            if (captureBmp != null)
             {
-                captureBm.Dispose();
+                captureBmp.Dispose();
             }
-            captureBm = new Bitmap(captureRect.Width, captureRect.Height);
+            captureBmp = new Bitmap(captureRect.Width, captureRect.Height);
 
-            if (nextBm != null)
+            if (nextBmp != null)
             {
-                nextBm.Dispose();
+                nextBmp.Dispose();
             }
-            captureBm = new Bitmap(captureRect.Width, captureRect.Height);
-            nextBm = new Bitmap(nextRect.Width, nextRect.Height);
+            captureBmp = new Bitmap(captureRect.Width, captureRect.Height);
+            nextBmp = new Bitmap(nextRect.Width, nextRect.Height);
         }
 
         private void captureTimer_Tick(object sender, EventArgs e)
@@ -388,19 +388,26 @@ namespace Cubokta.Puyo
             {
                 return;
             }
-            Graphics g = e.Graphics;
-            using (Graphics gg = Graphics.FromImage(captureBm))
-            using (Bitmap bmp = new Bitmap(fieldImg.Width, fieldImg.Height))
-            using (Graphics ggg = Graphics.FromImage(bmp))
+
+            Graphics fieldImageG = e.Graphics;
+            using (Graphics captureBmpG = Graphics.FromImage(captureBmp))
+            using (Bitmap forAnalyzeBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
+            using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
             {
-                gg.CopyFromScreen(new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBm.Size);
+                // フィールドのキャプチャ範囲を取り込む
+                captureBmpG.CopyFromScreen(new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBmp.Size);
+
+                // 取り込んだ画像を画面に出力
                 Rectangle dest = new Rectangle(0, 0, 192, 384);
                 Rectangle src = new Rectangle(0, 0, captureRect.Width, captureRect.Height);
-                ggg.DrawImage(captureBm, dest, src, GraphicsUnit.Pixel);
-                g.DrawImage(bmp, dest, dest, GraphicsUnit.Pixel);
+                forAnalyzeG.DrawImage(captureBmp, dest, src, GraphicsUnit.Pixel);
 
-                CaptureField field = a(bmp);
-                DrawDebugRect(g, field);
+                // 解析用のBMPにも画面と同じ内容を出力
+                fieldImageG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
+
+                // フィールドの状態を解析し、結果を描画
+                CaptureField field = a(forAnalyzeBmp);
+                DrawDebugRect(fieldImageG, field);
             }
         }
 
@@ -478,14 +485,14 @@ namespace Cubokta.Puyo
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (captureBm != null)
+            if (captureBmp != null)
             {
-                captureBm.Dispose();
+                captureBmp.Dispose();
             }
 
-            if (nextBm != null)
+            if (nextBmp != null)
             {
-                nextBm.Dispose();
+                nextBmp.Dispose();
             }
         }
 
@@ -500,10 +507,10 @@ namespace Cubokta.Puyo
 
                 if (e.Button == MouseButtons.Left)
                 {
-                    using (Bitmap bmp = new Bitmap(fieldImg.Width, fieldImg.Height))
+                    using (Bitmap fieldBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
                     {
-                        fieldImg.DrawToBitmap(bmp, new Rectangle(0, 0, fieldImg.Width, fieldImg.Height));
-                        RapidBitmapAccessor ba = new RapidBitmapAccessor(bmp);
+                        fieldImg.DrawToBitmap(fieldBmp, new Rectangle(0, 0, fieldImg.Width, fieldImg.Height));
+                        RapidBitmapAccessor ba = new RapidBitmapAccessor(fieldBmp);
 
                         ba.BeginAccess();
                         Color c = ba.GetPixel(e.X, e.Y);
@@ -552,22 +559,28 @@ namespace Cubokta.Puyo
                 {
                     return;
                 }
-                Graphics g = e.Graphics;
-                using (Graphics gg = Graphics.FromImage(nextBm))
-                using (Bitmap bmp = new Bitmap(nextImg.Width, nextImg.Height))
-                using (Graphics ggg = Graphics.FromImage(bmp))
+
+                Graphics nextG = e.Graphics;
+                using (Graphics nextBmpG = Graphics.FromImage(nextBmp))
+                using (Bitmap forAnalyzeBmp = new Bitmap(nextImg.Width, nextImg.Height))
+                using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
                 {
-                    gg.CopyFromScreen(new Point(nextRect.Left, nextRect.Top), new Point(0, 0), nextBm.Size);
+                    // ネクストのキャプチャ範囲を取り込む
+                    nextBmpG.CopyFromScreen(new Point(nextRect.Left, nextRect.Top), new Point(0, 0), nextBmp.Size);
                     Rectangle dest = new Rectangle(0, 0, 32, 64);
                     Rectangle src = new Rectangle(0, 0, nextRect.Width, nextRect.Height);
-                    ggg.DrawImage(nextBm, dest, src, GraphicsUnit.Pixel);
-                    g.DrawImage(bmp, dest, dest, GraphicsUnit.Pixel);
 
-                    CaptureField field = b(bmp);
-                    DrawDebugNextRect(g, field);
+                    // 取り込んだ画像を画面に出力
+                    forAnalyzeG.DrawImage(nextBmp, dest, src, GraphicsUnit.Pixel);
+
+                    // 解析用のBMPにも画面と同じ内容を出力
+                    nextG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
+
+                    // ツモ情報を解析し、結果を描画
+                    CaptureField field = b(forAnalyzeBmp);
+                    DrawDebugNextRect(nextG, field);
 
                     ColorPairPuyo next = field.GetNext(0);
-//                    Console.WriteLine(next.Pivot + " " + next.Satellite);
 
                     if (!isRecording || steps.Count() >= 16)
                     {
