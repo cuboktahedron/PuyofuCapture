@@ -10,12 +10,14 @@ using System.Collections.Generic;
 using Cubokta.Common;
 using Cubokta.Puyo.Common;
 using System.Diagnostics;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace Cubokta.Puyo
 {
     public partial class MainForm : Form
     {
-        // エントリ・ポイント（1）
+        // エントリ・ポイント
         [STAThread]
         static void Main()
         {
@@ -23,23 +25,53 @@ namespace Cubokta.Puyo
             Application.Run(new MainForm());
         }
 
+        private PictureBox sampleAkaImg;
+        private PictureBox sampleMidoriImg;
+        private PictureBox sampleAoImg;
+        private PictureBox sampleKiImg;
+        private PictureBox sampleMurasakiImg;
+
         private PuyoTypeDetector detector = new PuyoTypeDetector();
         public MainForm()
         {
             InitializeComponent();
             statusLabel.Text = "";
 
-            Func<Color, String> f = (c) =>
-            {
-                return "" + string.Format("{0:x2}{1:x2}{2:x2}", c.R, c.G, c.B);
-            };
+            updateSamples();
+        }
 
-            colorInfoLbl.Text =
-                "赤:：" + f(detector.BaseColors[PuyoType.AKA]) + "\n" + 
-                "緑:：" + f(detector.BaseColors[PuyoType.MIDORI]) + "\n" + 
-                "青:：" + f(detector.BaseColors[PuyoType.AO]) + "\n" + 
-                "黄:：" + f(detector.BaseColors[PuyoType.KI]) + "\n" + 
-                "紫:：" + f(detector.BaseColors[PuyoType.MURASAKI]);
+        private IDictionary<PuyoType, PictureBox> sampleImgs;
+
+        private void updateSamples()
+        {
+            sampleImgs = new Dictionary<PuyoType, PictureBox>();
+            sampleImgs[PuyoType.AKA] = sampleAkaImg;
+            sampleImgs[PuyoType.MIDORI] = sampleMidoriImg;
+            sampleImgs[PuyoType.AO] = sampleAoImg;
+            sampleImgs[PuyoType.KI] = sampleKiImg;
+            sampleImgs[PuyoType.MURASAKI] = sampleMurasakiImg;
+
+            updateSample(PuyoType.AKA);
+            updateSample(PuyoType.MIDORI);
+            updateSample(PuyoType.AO);
+            updateSample(PuyoType.KI);
+            updateSample(PuyoType.MURASAKI);
+        }
+
+        private void updateSample(PuyoType puyoType)
+        {
+            string filePath = Path.Combine("img", puyoType.ToString() + ".bmp");
+            if (!File.Exists(filePath)) {
+                return;
+            }
+
+            Bitmap sampleBmp = (Bitmap)Bitmap.FromFile(filePath);
+            RapidBitmapAccessor ba = new RapidBitmapAccessor(sampleBmp);
+            ba.BeginAccess();
+            detector.UpdateSample(puyoType, ba);
+            ba.EndAccess();
+
+            sampleImgs[puyoType].Image = sampleBmp;
         }
 
         private Button spoitBtn;
@@ -89,9 +121,19 @@ namespace Cubokta.Puyo
             this.stepDataTxt = new System.Windows.Forms.TextBox();
             this.stepIdTxt = new System.Windows.Forms.NumericUpDown();
             this.stopBtn = new System.Windows.Forms.Button();
+            this.sampleAkaImg = new System.Windows.Forms.PictureBox();
+            this.sampleMidoriImg = new System.Windows.Forms.PictureBox();
+            this.sampleAoImg = new System.Windows.Forms.PictureBox();
+            this.sampleKiImg = new System.Windows.Forms.PictureBox();
+            this.sampleMurasakiImg = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleAkaImg)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleMidoriImg)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleAoImg)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleKiImg)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleMurasakiImg)).BeginInit();
             this.SuspendLayout();
             // 
             // spoitBtn
@@ -129,7 +171,7 @@ namespace Cubokta.Puyo
             // 
             // captureTimer
             // 
-            this.captureTimer.Interval = 1000;
+            this.captureTimer.Interval = 50;
             this.captureTimer.Tick += new System.EventHandler(this.captureTimer_Tick);
             // 
             // statusLabel
@@ -146,9 +188,9 @@ namespace Cubokta.Puyo
             this.colorInfoLbl.AutoSize = true;
             this.colorInfoLbl.Location = new System.Drawing.Point(562, 33);
             this.colorInfoLbl.Name = "colorInfoLbl";
-            this.colorInfoLbl.Size = new System.Drawing.Size(41, 12);
+            this.colorInfoLbl.Size = new System.Drawing.Size(67, 12);
             this.colorInfoLbl.TabIndex = 5;
-            this.colorInfoLbl.Text = "色情報";
+            this.colorInfoLbl.Text = "サンプル画像";
             // 
             // FieldRadio1P
             // 
@@ -286,9 +328,54 @@ namespace Cubokta.Puyo
             this.stopBtn.UseVisualStyleBackColor = true;
             this.stopBtn.Click += new System.EventHandler(this.stopBtn_Click);
             // 
+            // sampleAkaImg
+            // 
+            this.sampleAkaImg.Location = new System.Drawing.Point(564, 48);
+            this.sampleAkaImg.Name = "sampleAkaImg";
+            this.sampleAkaImg.Size = new System.Drawing.Size(32, 32);
+            this.sampleAkaImg.TabIndex = 21;
+            this.sampleAkaImg.TabStop = false;
+            // 
+            // sampleMidoriImg
+            // 
+            this.sampleMidoriImg.Location = new System.Drawing.Point(595, 48);
+            this.sampleMidoriImg.Name = "sampleMidoriImg";
+            this.sampleMidoriImg.Size = new System.Drawing.Size(32, 32);
+            this.sampleMidoriImg.TabIndex = 22;
+            this.sampleMidoriImg.TabStop = false;
+            // 
+            // sampleAoImg
+            // 
+            this.sampleAoImg.Location = new System.Drawing.Point(626, 48);
+            this.sampleAoImg.Name = "sampleAoImg";
+            this.sampleAoImg.Size = new System.Drawing.Size(32, 32);
+            this.sampleAoImg.TabIndex = 23;
+            this.sampleAoImg.TabStop = false;
+            // 
+            // sampleKiImg
+            // 
+            this.sampleKiImg.Location = new System.Drawing.Point(657, 48);
+            this.sampleKiImg.Name = "sampleKiImg";
+            this.sampleKiImg.Size = new System.Drawing.Size(32, 32);
+            this.sampleKiImg.TabIndex = 24;
+            this.sampleKiImg.TabStop = false;
+            // 
+            // sampleMurasakiImg
+            // 
+            this.sampleMurasakiImg.Location = new System.Drawing.Point(688, 48);
+            this.sampleMurasakiImg.Name = "sampleMurasakiImg";
+            this.sampleMurasakiImg.Size = new System.Drawing.Size(32, 32);
+            this.sampleMurasakiImg.TabIndex = 25;
+            this.sampleMurasakiImg.TabStop = false;
+            // 
             // MainForm
             // 
             this.ClientSize = new System.Drawing.Size(793, 482);
+            this.Controls.Add(this.sampleMurasakiImg);
+            this.Controls.Add(this.sampleKiImg);
+            this.Controls.Add(this.sampleAoImg);
+            this.Controls.Add(this.sampleMidoriImg);
+            this.Controls.Add(this.sampleAkaImg);
             this.Controls.Add(this.stopBtn);
             this.Controls.Add(this.stepIdTxt);
             this.Controls.Add(this.stepDataTxt);
@@ -315,6 +402,11 @@ namespace Cubokta.Puyo
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleAkaImg)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleMidoriImg)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleAoImg)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleKiImg)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleMurasakiImg)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -399,7 +491,7 @@ namespace Cubokta.Puyo
                     // フィールドのキャプチャ範囲を取り込む
                     captureBmpG.CopyFromScreen(new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBmp.Size);
 
-                    // 取り込んだ画像を画面に出力
+                    // 取り込んだ画像を画面に出力 // TODO: コメント反対？
                     Rectangle dest = new Rectangle(0, 0, 192, 384);
                     Rectangle src = new Rectangle(0, 0, captureRect.Width, captureRect.Height);
                     forAnalyzeG.DrawImage(captureBmp, dest, src, GraphicsUnit.Pixel);
@@ -528,17 +620,33 @@ namespace Cubokta.Puyo
                 int y = pointOnFieldImg.Y - (pointOnFieldImg.Y % CaptureField.UNIT);
                 Rectangle pixelingCellRect = new Rectangle(x, y, CaptureField.UNIT, CaptureField.UNIT);
 
-                using (Bitmap fieldBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
+                using (Graphics captureBmpG = Graphics.FromImage(captureBmp))
+                using (Bitmap forAnalyzeBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
+                using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
                 {
-                    fieldImg.DrawToBitmap(fieldBmp, new Rectangle(0, 0, fieldImg.Width, fieldImg.Height));
-                    using (Bitmap cellBmp = fieldBmp.Clone(new Rectangle(0, 0, CaptureField.UNIT, CaptureField.UNIT), fieldBmp.PixelFormat))
-                    {
-                        // 選択したサンプルを設定
-                        RapidBitmapAccessor ba = new RapidBitmapAccessor(cellBmp);
-                        ba.BeginAccess();
-                        detector.UpdateSample((PuyoType)pixelingTargetIndex, ba);
-                        ba.EndAccess();
-                    }
+                    // フィールドのキャプチャ範囲を取り込む
+                    captureBmpG.CopyFromScreen(new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBmp.Size);
+
+                    // 取り込んだ画像を画面に出力
+                    Rectangle dest = new Rectangle(0, 0, 192, 384);
+                    Rectangle src = new Rectangle(0, 0, captureRect.Width, captureRect.Height);
+                    forAnalyzeG.DrawImage(captureBmp, dest, src, GraphicsUnit.Pixel);
+
+                    // 解析用のBMPにも画面と同じ内容を出力
+                    Bitmap cellBmp = forAnalyzeBmp.Clone(pixelingCellRect, forAnalyzeBmp.PixelFormat);
+                    PuyoType puyoType = (PuyoType)pixelingTargetIndex;
+
+                    // 選択したサンプルを設定
+                    RapidBitmapAccessor ba = new RapidBitmapAccessor(cellBmp);
+                    ba.BeginAccess();
+                    detector.UpdateSample(puyoType, ba);
+                    ba.EndAccess();
+
+                    // サンプルした画像を保存
+                    sampleImgs[puyoType].Image.Dispose();
+                    sampleImgs[puyoType].Image = cellBmp;
+                    Directory.CreateDirectory("img");
+                    cellBmp.Save("img/" + (PuyoType)pixelingTargetIndex + ".bmp",  ImageFormat.Bmp);
                 }
             }
 
@@ -552,18 +660,6 @@ namespace Cubokta.Puyo
             {
                 statusLabel.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
             }
-
-            Func<Color, String> f = (c) =>
-            {
-                return "" + string.Format("{0:x2}{1:x2}{2:x2}", c.R, c.G, c.B);
-            };
-
-            colorInfoLbl.Text =
-                "赤:：" + f(detector.BaseColors[PuyoType.AKA]) + "\n" +
-                "緑:：" + f(detector.BaseColors[PuyoType.MIDORI]) + "\n" +
-                "青:：" + f(detector.BaseColors[PuyoType.AO]) + "\n" +
-                "黄:：" + f(detector.BaseColors[PuyoType.KI]) + "\n" +
-                "紫:：" + f(detector.BaseColors[PuyoType.MURASAKI]);
         }
 
 
