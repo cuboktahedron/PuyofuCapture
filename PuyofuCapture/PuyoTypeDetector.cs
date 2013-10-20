@@ -21,18 +21,18 @@ namespace Cubokta.Puyo
 
 
         /// <summary>色識別用サンプルデータ</summary>
-        private IDictionary<PuyoType, List<int>> colorSamples = new Dictionary<PuyoType, List<int>>();
+        private IDictionary<PuyoType, int[,,]> colorSamples = new Dictionary<PuyoType, int[,,]>();
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public PuyoTypeDetector()
         {
-            colorSamples[PuyoType.AKA] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
-            colorSamples[PuyoType.MIDORI] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
-            colorSamples[PuyoType.AO] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
-            colorSamples[PuyoType.KI] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
-            colorSamples[PuyoType.MURASAKI] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
+            colorSamples[PuyoType.AKA] = new int[COLOR_DIVISION_NUM, COLOR_DIVISION_NUM, COLOR_DIVISION_NUM];
+            colorSamples[PuyoType.MIDORI] = new int[COLOR_DIVISION_NUM, COLOR_DIVISION_NUM, COLOR_DIVISION_NUM];
+            colorSamples[PuyoType.AO] = new int[COLOR_DIVISION_NUM, COLOR_DIVISION_NUM, COLOR_DIVISION_NUM];
+            colorSamples[PuyoType.KI] = new int[COLOR_DIVISION_NUM, COLOR_DIVISION_NUM, COLOR_DIVISION_NUM];
+            colorSamples[PuyoType.MURASAKI] = new int[COLOR_DIVISION_NUM, COLOR_DIVISION_NUM, COLOR_DIVISION_NUM];
         }
 
         // TODO: いずれ消す
@@ -70,54 +70,126 @@ namespace Cubokta.Puyo
                 { PuyoType.MURASAKI, 0 },
             };
 
-            rect = new Rectangle()
-            {
-                X = rect.X + CaptureField.UNIT / 4,
-                Y = rect.Y + CaptureField.UNIT / 4,
-                Width = rect.Width / 2,
-                Height = rect.Height / 2,
-            };
+            int[,,] pattern = DetectPattern(ba, rect);
+            return GetPuyoType(pattern);
 
-            for (int y = rect.Top; y < rect.Top + rect.Height; y++)
+            //rect = new Rectangle()
+            //{
+            //    X = rect.X + CaptureField.UNIT / 4,
+            //    Y = rect.Y + CaptureField.UNIT / 4,
+            //    Width = rect.Width / 2,
+            //    Height = rect.Height / 2,
+            //};
+
+            //for (int y = rect.Top; y < rect.Top + rect.Height; y++)
+            //{
+            //    for (int x = rect.Left; x < rect.Left + rect.Width; x++)
+            //    {
+            //        Color c = ba.GetPixel(x, y);
+            //        r = (int)c.R;
+            //        g = (int)c.G;
+            //        b = (int)c.B;
+            //        Color bc = Color.FromArgb(r, g, b);
+            //        int diffValueOfRed = DetectColorDiff(bc, baseColors[PuyoType.AKA]);
+            //        int diffValueOfGreen = DetectColorDiff(bc, baseColors[PuyoType.MIDORI]);
+            //        int diffValueOfBlue = DetectColorDiff(bc, baseColors[PuyoType.AO]);
+            //        int diffValueOfYellow = DetectColorDiff(bc, baseColors[PuyoType.KI]);
+            //        int diffValueOfPurple = DetectColorDiff(bc, baseColors[PuyoType.MURASAKI]);
+
+            //        int[] diffs = new int[]
+            //        {
+            //            diffValueOfRed,
+            //            diffValueOfGreen,
+            //            diffValueOfBlue,
+            //            diffValueOfYellow,
+            //            diffValueOfPurple,
+            //        };
+
+            //        PuyoType type = GetPuyoType(diffs);
+            //        if (type != PuyoType.NONE)
+            //        {
+            //            typeCounts[type]++;
+            //        }
+            //    }
+            //}
+
+            //if (typeCounts.Max(pair => pair.Value) < 32)
+            //{
+            //    return PuyoType.NONE;
+            //}
+            //PuyoType p = (from n in typeCounts
+            //              where n.Value == (typeCounts.Max(pair => pair.Value))
+            //              select n.Key).First();
+            //return p;
+        }
+
+        /// <summary>同じぷよタイプであると見なす類似値の閾値</summary>
+        const int SIMILARITY_THRESHOLD = int.MaxValue;
+        private PuyoType GetPuyoType(int[,,] pattern)
+        {
+            PuyoType similarType = PuyoType.NONE;
+            int minSimilarityValue = int.MaxValue;
+            for (int typeIndex = (int)PuyoType.AKA; typeIndex <= (int)PuyoType.MURASAKI; typeIndex++)
             {
-                for (int x = rect.Left; x < rect.Left + rect.Width; x++)
+                PuyoType type = (PuyoType)typeIndex;
+                int similarityValue = GetSimilarityValue(type, pattern);
+                Debug.Write(type + ":" + similarityValue + " ");
+                if (minSimilarityValue > similarityValue) {
+                    minSimilarityValue = similarityValue;
+                    similarType = type;
+                }
+            }
+            Debug.WriteLine("【" + similarType + ":" + minSimilarityValue + "】");
+
+            if (minSimilarityValue >= SIMILARITY_THRESHOLD)
+            {
+                return PuyoType.NONE;
+            }
+            else
+            {
+                return similarType;
+            }
+        }
+
+        private int GetSimilarityValue(PuyoType puyoType, int[,,] pattern)
+        {
+            // サンプルと実測値との距離を計算
+            // 各色分布の差を2乗した総和値を距離とする。（TODO: 重みづけをして近い色なら距離が短くなるようなこともした方がよいかも）
+            int similarityValue = 0;
+            int[,,] sample = colorSamples[puyoType];
+            for (int ri = 0; ri < COLOR_DIVISION_NUM; ri++)
+            {
+                for (int gi = 0; gi < COLOR_DIVISION_NUM; gi++)
                 {
-                    Color c = ba.GetPixel(x, y);
-                    r = (int)c.R;
-                    g = (int)c.G;
-                    b = (int)c.B;
-                    Color bc = Color.FromArgb(r, g, b);
-                    int diffValueOfRed = DetectColorDiff(bc, baseColors[PuyoType.AKA]);
-                    int diffValueOfGreen = DetectColorDiff(bc, baseColors[PuyoType.MIDORI]);
-                    int diffValueOfBlue = DetectColorDiff(bc, baseColors[PuyoType.AO]);
-                    int diffValueOfYellow = DetectColorDiff(bc, baseColors[PuyoType.KI]);
-                    int diffValueOfPurple = DetectColorDiff(bc, baseColors[PuyoType.MURASAKI]);
-
-                    int[] diffs = new int[]
+                    for (int bi = 0; bi < COLOR_DIVISION_NUM; bi++)
                     {
-                        diffValueOfRed,
-                        diffValueOfGreen,
-                        diffValueOfBlue,
-                        diffValueOfYellow,
-                        diffValueOfPurple,
-                    };
-
-                    PuyoType type = GetPuyoType(diffs);
-                    if (type != PuyoType.NONE)
-                    {
-                        typeCounts[type]++;
+                        int diff = sample[ri, gi, bi] - pattern[ri, gi, bi];
+                        similarityValue += (diff * diff);
                     }
                 }
             }
 
-            if (typeCounts.Max(pair => pair.Value) < 32)
+            return similarityValue;
+        }
+
+        private int[,,] DetectPattern(RapidBitmapAccessor ba, Rectangle rect)
+        {
+            int[,,] patterns = new int[COLOR_DIVISION_NUM, COLOR_DIVISION_NUM, COLOR_DIVISION_NUM];
+            for (int x = rect.X; x < rect.X + rect.Width; x++)
             {
-                return PuyoType.NONE;
+                for (int y = rect.Y; y < CaptureField.UNIT + rect.Height; y++)
+                {
+                    // RGBから色番号を決定
+                    Color c = ba.GetPixel(x, y);
+                    int ri = c.R / (256 / COLOR_DIVISION_NUM);
+                    int gi = c.G / (256 / COLOR_DIVISION_NUM);
+                    int bi = c.B / (256 / COLOR_DIVISION_NUM);
+
+                    patterns[ri, gi, bi]++;
+                }
             }
-            PuyoType p = (from n in typeCounts
-                          where n.Value == (typeCounts.Max(pair => pair.Value))
-                          select n.Key).First();
-            return p;
+
+            return patterns;
         }
 
         private const int COLOR_THRESHOLD = 32 * 32 * 3;
@@ -170,30 +242,28 @@ namespace Cubokta.Puyo
         /// <remarks>サンプルデータ画像のサイズは1セルのサイズとする。</remarks>
         public void UpdateSample(PuyoType puyoType, RapidBitmapAccessor ba)
         {
-            colorSamples[puyoType] = new List<int>(new int[256 / COLOR_DIVISION_NUM * 3]);
-            for (int x = 0; x < CaptureField.UNIT; x++)
+            colorSamples[puyoType] = DetectPattern(ba, new Rectangle()
             {
-                for (int y = 0; y < CaptureField.UNIT; y++)
-                {
-                    // RGBから色番号を決定
-                    Color c = ba.GetPixel(x, y);
-                    int colorNo = c.R / (256 / COLOR_DIVISION_NUM);
-                    colorNo += COLOR_DIVISION_NUM;
-
-                    colorNo += (c.G / (256 / COLOR_DIVISION_NUM));
-                    colorNo += COLOR_DIVISION_NUM;
-
-                    colorNo += c.B / (256 / COLOR_DIVISION_NUM);
-
-                    colorSamples[puyoType][colorNo]++;
-                }
-            }
+                X = 0,
+                Y = 0,
+                Width = CaptureField.UNIT,
+                Height = CaptureField.UNIT
+            });
 
 #if DEBUG
             Debug.WriteLine("サンプルデータセット(ぷよ種別 = " + puyoType + ")");
-            for (int i = 0, len = colorSamples[puyoType].Count; i < len; i++)
+            for (int ri = 0; ri < COLOR_DIVISION_NUM; ri++)
             {
-                Debug.WriteLine(colorSamples[puyoType][i]);
+                for (int gi = 0; gi < COLOR_DIVISION_NUM; gi++)
+                {
+                    for (int bi = 0; bi < COLOR_DIVISION_NUM; bi++)
+                    {
+                        int r = ri * (256 / COLOR_DIVISION_NUM);
+                        int g = gi * (256 / COLOR_DIVISION_NUM);
+                        int b = bi * (256 / COLOR_DIVISION_NUM);
+                        Debug.WriteLine(colorSamples[puyoType][ri, gi, bi] + ": RGB(" + r + ", " + g + ", " + b + ")");
+                    }
+                }
             }
             Debug.Flush();
 #endif

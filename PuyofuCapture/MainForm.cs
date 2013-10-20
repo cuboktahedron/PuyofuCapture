@@ -19,6 +19,7 @@ namespace Cubokta.Puyo
         [STAThread]
         static void Main()
         {
+            System.IO.File.Delete("debug.log");
             Application.Run(new MainForm());
         }
 
@@ -128,7 +129,7 @@ namespace Cubokta.Puyo
             // 
             // captureTimer
             // 
-            this.captureTimer.Interval = 50;
+            this.captureTimer.Interval = 1000;
             this.captureTimer.Tick += new System.EventHandler(this.captureTimer_Tick);
             // 
             // statusLabel
@@ -485,7 +486,6 @@ namespace Cubokta.Puyo
         {
             CaptureField field = new CaptureField();
             RapidBitmapAccessor ba = new RapidBitmapAccessor(bmp);
-            PuyoTypeDetector detector = new PuyoTypeDetector();
             ba.BeginAccess();
             for (int y = 0; y < CaptureField.Y_MAX; y++)
             {
@@ -645,7 +645,6 @@ namespace Cubokta.Puyo
         {
             CaptureField field = new CaptureField();
             RapidBitmapAccessor ba = new RapidBitmapAccessor(bmp);
-            PuyoTypeDetector detector = new PuyoTypeDetector();
             ba.BeginAccess();
             ColorPairPuyo pp = new ColorPairPuyo();
             for (int y = 0; y < 2; y++)
