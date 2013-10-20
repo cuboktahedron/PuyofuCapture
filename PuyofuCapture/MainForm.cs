@@ -30,6 +30,9 @@ namespace Cubokta.Puyo
         private PictureBox sampleAoImg;
         private PictureBox sampleKiImg;
         private PictureBox sampleMurasakiImg;
+        private TrackBar similarityValueBar;
+        private Label label1;
+        private Label similarityValueLbl;
 
         private PuyoTypeDetector detector = new PuyoTypeDetector();
         public MainForm()
@@ -38,6 +41,8 @@ namespace Cubokta.Puyo
             statusLabel.Text = "";
 
             updateSamples();
+            detector.SimilarityThreshold = 30000;
+            similarityValueLbl.Text = similarityValueBar.Value.ToString();
         }
 
         private IDictionary<PuyoType, PictureBox> sampleImgs;
@@ -126,6 +131,9 @@ namespace Cubokta.Puyo
             this.sampleAoImg = new System.Windows.Forms.PictureBox();
             this.sampleKiImg = new System.Windows.Forms.PictureBox();
             this.sampleMurasakiImg = new System.Windows.Forms.PictureBox();
+            this.similarityValueBar = new System.Windows.Forms.TrackBar();
+            this.label1 = new System.Windows.Forms.Label();
+            this.similarityValueLbl = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).BeginInit();
@@ -134,12 +142,13 @@ namespace Cubokta.Puyo
             ((System.ComponentModel.ISupportInitialize)(this.sampleAoImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleKiImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleMurasakiImg)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.similarityValueBar)).BeginInit();
             this.SuspendLayout();
             // 
             // spoitBtn
             // 
             this.spoitBtn.Enabled = false;
-            this.spoitBtn.Location = new System.Drawing.Point(63, 33);
+            this.spoitBtn.Location = new System.Drawing.Point(24, 32);
             this.spoitBtn.Name = "spoitBtn";
             this.spoitBtn.Size = new System.Drawing.Size(175, 63);
             this.spoitBtn.TabIndex = 1;
@@ -149,7 +158,7 @@ namespace Cubokta.Puyo
             // 
             // captureBtn
             // 
-            this.captureBtn.Location = new System.Drawing.Point(63, 127);
+            this.captureBtn.Location = new System.Drawing.Point(24, 126);
             this.captureBtn.Name = "captureBtn";
             this.captureBtn.Size = new System.Drawing.Size(175, 70);
             this.captureBtn.TabIndex = 2;
@@ -159,7 +168,7 @@ namespace Cubokta.Puyo
             // 
             // fieldImg
             // 
-            this.fieldImg.Location = new System.Drawing.Point(263, 33);
+            this.fieldImg.Location = new System.Drawing.Point(224, 32);
             this.fieldImg.Name = "fieldImg";
             this.fieldImg.Size = new System.Drawing.Size(192, 384);
             this.fieldImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -177,7 +186,7 @@ namespace Cubokta.Puyo
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(61, 446);
+            this.statusLabel.Location = new System.Drawing.Point(22, 445);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(41, 12);
             this.statusLabel.TabIndex = 4;
@@ -186,7 +195,7 @@ namespace Cubokta.Puyo
             // colorInfoLbl
             // 
             this.colorInfoLbl.AutoSize = true;
-            this.colorInfoLbl.Location = new System.Drawing.Point(562, 33);
+            this.colorInfoLbl.Location = new System.Drawing.Point(523, 32);
             this.colorInfoLbl.Name = "colorInfoLbl";
             this.colorInfoLbl.Size = new System.Drawing.Size(67, 12);
             this.colorInfoLbl.TabIndex = 5;
@@ -196,7 +205,7 @@ namespace Cubokta.Puyo
             // 
             this.FieldRadio1P.AutoSize = true;
             this.FieldRadio1P.Checked = true;
-            this.FieldRadio1P.Location = new System.Drawing.Point(70, 209);
+            this.FieldRadio1P.Location = new System.Drawing.Point(31, 208);
             this.FieldRadio1P.Name = "FieldRadio1P";
             this.FieldRadio1P.Size = new System.Drawing.Size(36, 16);
             this.FieldRadio1P.TabIndex = 6;
@@ -208,7 +217,7 @@ namespace Cubokta.Puyo
             // 
             this.FieldRadio2P.AccessibleName = "";
             this.FieldRadio2P.AutoSize = true;
-            this.FieldRadio2P.Location = new System.Drawing.Point(112, 209);
+            this.FieldRadio2P.Location = new System.Drawing.Point(73, 208);
             this.FieldRadio2P.Name = "FieldRadio2P";
             this.FieldRadio2P.Size = new System.Drawing.Size(36, 16);
             this.FieldRadio2P.TabIndex = 6;
@@ -217,7 +226,7 @@ namespace Cubokta.Puyo
             // 
             // nextImg
             // 
-            this.nextImg.Location = new System.Drawing.Point(477, 46);
+            this.nextImg.Location = new System.Drawing.Point(438, 45);
             this.nextImg.Name = "nextImg";
             this.nextImg.Size = new System.Drawing.Size(32, 64);
             this.nextImg.TabIndex = 7;
@@ -227,7 +236,7 @@ namespace Cubokta.Puyo
             // playDateLbl
             // 
             this.playDateLbl.AutoSize = true;
-            this.playDateLbl.Location = new System.Drawing.Point(490, 209);
+            this.playDateLbl.Location = new System.Drawing.Point(451, 234);
             this.playDateLbl.Name = "playDateLbl";
             this.playDateLbl.Size = new System.Drawing.Size(29, 12);
             this.playDateLbl.TabIndex = 8;
@@ -236,7 +245,7 @@ namespace Cubokta.Puyo
             // playerNameLbl
             // 
             this.playerNameLbl.AutoSize = true;
-            this.playerNameLbl.Location = new System.Drawing.Point(490, 236);
+            this.playerNameLbl.Location = new System.Drawing.Point(451, 261);
             this.playerNameLbl.Name = "playerNameLbl";
             this.playerNameLbl.Size = new System.Drawing.Size(54, 12);
             this.playerNameLbl.TabIndex = 9;
@@ -245,7 +254,7 @@ namespace Cubokta.Puyo
             // stepIdLbl
             // 
             this.stepIdLbl.AutoSize = true;
-            this.stepIdLbl.Location = new System.Drawing.Point(490, 175);
+            this.stepIdLbl.Location = new System.Drawing.Point(451, 200);
             this.stepIdLbl.Name = "stepIdLbl";
             this.stepIdLbl.Size = new System.Drawing.Size(14, 12);
             this.stepIdLbl.TabIndex = 10;
@@ -254,14 +263,14 @@ namespace Cubokta.Puyo
             // playDate
             // 
             this.playDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.playDate.Location = new System.Drawing.Point(564, 204);
+            this.playDate.Location = new System.Drawing.Point(525, 229);
             this.playDate.Name = "playDate";
             this.playDate.Size = new System.Drawing.Size(200, 19);
             this.playDate.TabIndex = 11;
             // 
             // playerNameTxt
             // 
-            this.playerNameTxt.Location = new System.Drawing.Point(564, 236);
+            this.playerNameTxt.Location = new System.Drawing.Point(525, 261);
             this.playerNameTxt.Name = "playerNameTxt";
             this.playerNameTxt.Size = new System.Drawing.Size(200, 19);
             this.playerNameTxt.TabIndex = 13;
@@ -277,7 +286,7 @@ namespace Cubokta.Puyo
             // startBtn
             // 
             this.startBtn.Enabled = false;
-            this.startBtn.Location = new System.Drawing.Point(63, 269);
+            this.startBtn.Location = new System.Drawing.Point(24, 268);
             this.startBtn.Name = "startBtn";
             this.startBtn.Size = new System.Drawing.Size(175, 70);
             this.startBtn.TabIndex = 15;
@@ -288,7 +297,7 @@ namespace Cubokta.Puyo
             // recordLbl
             // 
             this.recordLbl.AutoSize = true;
-            this.recordLbl.Location = new System.Drawing.Point(490, 269);
+            this.recordLbl.Location = new System.Drawing.Point(451, 294);
             this.recordLbl.Name = "recordLbl";
             this.recordLbl.Size = new System.Drawing.Size(41, 12);
             this.recordLbl.TabIndex = 16;
@@ -296,7 +305,7 @@ namespace Cubokta.Puyo
             // 
             // recordTxt
             // 
-            this.recordTxt.Location = new System.Drawing.Point(564, 269);
+            this.recordTxt.Location = new System.Drawing.Point(525, 294);
             this.recordTxt.Name = "recordTxt";
             this.recordTxt.ReadOnly = true;
             this.recordTxt.Size = new System.Drawing.Size(200, 19);
@@ -304,7 +313,7 @@ namespace Cubokta.Puyo
             // 
             // stepDataTxt
             // 
-            this.stepDataTxt.Location = new System.Drawing.Point(498, 325);
+            this.stepDataTxt.Location = new System.Drawing.Point(459, 324);
             this.stepDataTxt.Multiline = true;
             this.stepDataTxt.Name = "stepDataTxt";
             this.stepDataTxt.Size = new System.Drawing.Size(266, 92);
@@ -312,7 +321,7 @@ namespace Cubokta.Puyo
             // 
             // stepIdTxt
             // 
-            this.stepIdTxt.Location = new System.Drawing.Point(564, 173);
+            this.stepIdTxt.Location = new System.Drawing.Point(525, 198);
             this.stepIdTxt.Name = "stepIdTxt";
             this.stepIdTxt.Size = new System.Drawing.Size(120, 19);
             this.stepIdTxt.TabIndex = 19;
@@ -320,7 +329,7 @@ namespace Cubokta.Puyo
             // stopBtn
             // 
             this.stopBtn.Enabled = false;
-            this.stopBtn.Location = new System.Drawing.Point(63, 347);
+            this.stopBtn.Location = new System.Drawing.Point(24, 346);
             this.stopBtn.Name = "stopBtn";
             this.stopBtn.Size = new System.Drawing.Size(175, 70);
             this.stopBtn.TabIndex = 20;
@@ -330,7 +339,7 @@ namespace Cubokta.Puyo
             // 
             // sampleAkaImg
             // 
-            this.sampleAkaImg.Location = new System.Drawing.Point(564, 48);
+            this.sampleAkaImg.Location = new System.Drawing.Point(525, 47);
             this.sampleAkaImg.Name = "sampleAkaImg";
             this.sampleAkaImg.Size = new System.Drawing.Size(32, 32);
             this.sampleAkaImg.TabIndex = 21;
@@ -338,7 +347,7 @@ namespace Cubokta.Puyo
             // 
             // sampleMidoriImg
             // 
-            this.sampleMidoriImg.Location = new System.Drawing.Point(595, 48);
+            this.sampleMidoriImg.Location = new System.Drawing.Point(556, 47);
             this.sampleMidoriImg.Name = "sampleMidoriImg";
             this.sampleMidoriImg.Size = new System.Drawing.Size(32, 32);
             this.sampleMidoriImg.TabIndex = 22;
@@ -346,7 +355,7 @@ namespace Cubokta.Puyo
             // 
             // sampleAoImg
             // 
-            this.sampleAoImg.Location = new System.Drawing.Point(626, 48);
+            this.sampleAoImg.Location = new System.Drawing.Point(587, 47);
             this.sampleAoImg.Name = "sampleAoImg";
             this.sampleAoImg.Size = new System.Drawing.Size(32, 32);
             this.sampleAoImg.TabIndex = 23;
@@ -354,7 +363,7 @@ namespace Cubokta.Puyo
             // 
             // sampleKiImg
             // 
-            this.sampleKiImg.Location = new System.Drawing.Point(657, 48);
+            this.sampleKiImg.Location = new System.Drawing.Point(618, 47);
             this.sampleKiImg.Name = "sampleKiImg";
             this.sampleKiImg.Size = new System.Drawing.Size(32, 32);
             this.sampleKiImg.TabIndex = 24;
@@ -362,15 +371,50 @@ namespace Cubokta.Puyo
             // 
             // sampleMurasakiImg
             // 
-            this.sampleMurasakiImg.Location = new System.Drawing.Point(688, 48);
+            this.sampleMurasakiImg.Location = new System.Drawing.Point(649, 47);
             this.sampleMurasakiImg.Name = "sampleMurasakiImg";
             this.sampleMurasakiImg.Size = new System.Drawing.Size(32, 32);
             this.sampleMurasakiImg.TabIndex = 25;
             this.sampleMurasakiImg.TabStop = false;
             // 
+            // similarityValueBar
+            // 
+            this.similarityValueBar.LargeChange = 10000;
+            this.similarityValueBar.Location = new System.Drawing.Point(550, 113);
+            this.similarityValueBar.Maximum = 95000;
+            this.similarityValueBar.Minimum = 5000;
+            this.similarityValueBar.Name = "similarityValueBar";
+            this.similarityValueBar.Size = new System.Drawing.Size(147, 45);
+            this.similarityValueBar.SmallChange = 1000;
+            this.similarityValueBar.TabIndex = 26;
+            this.similarityValueBar.TickFrequency = 10000;
+            this.similarityValueBar.Value = 30000;
+            this.similarityValueBar.Scroll += new System.EventHandler(this.similarityValueBar_Scroll);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(515, 113);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(29, 12);
+            this.label1.TabIndex = 28;
+            this.label1.Text = "閾値";
+            // 
+            // similarityValueLbl
+            // 
+            this.similarityValueLbl.AutoSize = true;
+            this.similarityValueLbl.Location = new System.Drawing.Point(515, 126);
+            this.similarityValueLbl.Name = "similarityValueLbl";
+            this.similarityValueLbl.Size = new System.Drawing.Size(35, 12);
+            this.similarityValueLbl.TabIndex = 29;
+            this.similarityValueLbl.Text = "30000";
+            // 
             // MainForm
             // 
-            this.ClientSize = new System.Drawing.Size(793, 482);
+            this.ClientSize = new System.Drawing.Size(804, 482);
+            this.Controls.Add(this.similarityValueLbl);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.similarityValueBar);
             this.Controls.Add(this.sampleMurasakiImg);
             this.Controls.Add(this.sampleKiImg);
             this.Controls.Add(this.sampleAoImg);
@@ -407,6 +451,7 @@ namespace Cubokta.Puyo
             ((System.ComponentModel.ISupportInitialize)(this.sampleAoImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleKiImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleMurasakiImg)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.similarityValueBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -832,6 +877,12 @@ namespace Cubokta.Puyo
             }
 
             pointOnFieldImg = e.Location;
+        }
+
+        private void similarityValueBar_Scroll(object sender, EventArgs e)
+        {
+            detector.SimilarityThreshold = similarityValueBar.Value;
+            similarityValueLbl.Text = similarityValueBar.Value.ToString();
         }
     }
 }

@@ -41,7 +41,9 @@ namespace Cubokta.Puyo
         }
 
         /// <summary>同じぷよタイプであると見なす類似値の閾値</summary>
-        const int SIMILARITY_THRESHOLD = int.MaxValue;
+        public int SimilarityThreshold { get; set; }
+
+        /// <summary>同じぷよタイプであると見なす類似値の閾値</summary>
         private PuyoType GetPuyoType(int[,,] pattern)
         {
             PuyoType similarType = PuyoType.NONE;
@@ -56,14 +58,15 @@ namespace Cubokta.Puyo
                     similarType = type;
                 }
             }
-            Debug.WriteLine("【" + similarType + ":" + minSimilarityValue + "】");
 
-            if (minSimilarityValue >= SIMILARITY_THRESHOLD)
+            if (minSimilarityValue >= SimilarityThreshold)
             {
+                Debug.WriteLine("【" + PuyoType.NONE + ":" + minSimilarityValue + "】"); 
                 return PuyoType.NONE;
             }
             else
             {
+                Debug.WriteLine("【" + similarType + ":" + minSimilarityValue + "】"); 
                 return similarType;
             }
         }
