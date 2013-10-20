@@ -688,7 +688,10 @@ namespace Cubokta.Puyo
                     ba.EndAccess();
 
                     // サンプルした画像を保存
-                    sampleImgs[puyoType].Image.Dispose();
+                    if (sampleImgs[puyoType].Image != null)
+                    {
+                        sampleImgs[puyoType].Image.Dispose();
+                    }
                     sampleImgs[puyoType].Image = cellBmp;
                     Directory.CreateDirectory("img");
                     cellBmp.Save("img/" + (PuyoType)pixelingTargetIndex + ".bmp",  ImageFormat.Bmp);
