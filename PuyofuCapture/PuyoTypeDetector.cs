@@ -52,7 +52,7 @@ namespace Cubokta.Puyo
             {
                 PuyoType type = (PuyoType)typeIndex;
                 int similarityValue = GetSimilarityValue(type, pattern);
-                Debug.Write(type + ":" + similarityValue + " ");
+//                Debug.Write(type + ":" + similarityValue + " ");
                 if (minSimilarityValue > similarityValue) {
                     minSimilarityValue = similarityValue;
                     similarType = type;
@@ -61,12 +61,12 @@ namespace Cubokta.Puyo
 
             if (minSimilarityValue >= SimilarityThreshold)
             {
-                Debug.WriteLine("【" + PuyoType.NONE + ":" + minSimilarityValue + "】"); 
+//                Debug.WriteLine("【" + PuyoType.NONE + ":" + minSimilarityValue + "】"); 
                 return PuyoType.NONE;
             }
             else
             {
-                Debug.WriteLine("【" + similarType + ":" + minSimilarityValue + "】"); 
+//                Debug.WriteLine("【" + similarType + ":" + minSimilarityValue + "】"); 
                 return similarType;
             }
         }

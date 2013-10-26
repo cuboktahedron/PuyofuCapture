@@ -1,6 +1,7 @@
 ﻿using Cubokta.Puyo.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -63,6 +64,97 @@ namespace Cubokta.Puyo
                 Width = UNIT,
                 Height = UNIT,
             };
+        }
+
+        public ColorPairPuyo GetStepFromDiff(CaptureField f2, ColorPairPuyo pp)
+        {
+            CaptureField f1 = this;
+            bool foundPivot = false;
+            bool foundSatellite = false;
+            ColorPairPuyo p2 = new ColorPairPuyo();
+            Point pivotPt = new Point(-1, -1);
+            Point satellitePt = new Point(-1, -1);
+            for (int y = 0; y < Y_MAX; y++)
+            {
+                for (int x = 0; x < X_MAX; x++)
+                {
+                    PuyoType pt1 = f1.GetPuyoType(x, y);
+                    PuyoType pt2 = f2.GetPuyoType(x, y);
+
+                    if (pt1 != pt2)
+                    {
+                        if (!foundPivot && pp.Pivot == pt2)
+                        {
+                            p2.Pos = x;
+                            p2.Pivot = pt2;
+                            foundPivot = true;
+                            pivotPt.X = x;
+                            pivotPt.Y = y;
+                        }
+                        else if (pp.Satellite == pt2)
+                        {
+                            p2.Satellite = f2.GetPuyoType(x, y);
+                            foundSatellite = true;
+                            satellitePt.X = x;
+                            satellitePt.Y = y;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+
+                        if (foundPivot && foundSatellite)
+                        {
+                            if (pivotPt.X == satellitePt.X && pivotPt.Y < satellitePt.Y)
+                            {
+                                p2.Dir = Direction.UP;
+                            }
+                            else if (pivotPt.X == satellitePt.X)
+                            {
+                                p2.Dir = Direction.DOWN;
+                            }
+                            else if (pivotPt.X < satellitePt.X)
+                            {
+                                p2.Dir = Direction.RIGHT;
+                            }
+                            else
+                            {
+                                p2.Dir = Direction.LEFT;
+                            }
+
+                            p2.Pos++;
+                            return p2;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static readonly IDictionary<PuyoType, string> TYPE2KANJI = new Dictionary<PuyoType, string>()
+        {
+            { PuyoType.NONE, "□" },
+            { PuyoType.AKA, "赤" },
+            { PuyoType.MIDORI, "緑" },
+            { PuyoType.AO, "青" },
+            { PuyoType.KI, "黄" },
+            { PuyoType.MURASAKI, "紫" },
+        };
+
+        public override String ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int y = 0; y < Y_MAX; y++)
+            {
+                for (int x = 0; x < X_MAX; x++)
+                {
+                    sb.Append(TYPE2KANJI[Types[y, x]]);
+                }
+
+                sb.Append("\n");
+            }
+            return sb.ToString();
         }
     }
 }

@@ -518,6 +518,8 @@ namespace Cubokta.Puyo
         }
 
         private bool IsCapturing { get; set; }
+        private CaptureField prevField = new CaptureField();
+        private CaptureField curField = new CaptureField();
 
         private void fieldImg_Paint(object sender, PaintEventArgs e)
         {
@@ -547,8 +549,8 @@ namespace Cubokta.Puyo
                     if (!isPixeling)
                     {
                         // フィールドの状態を解析し、結果を描画
-                        CaptureField field = a(forAnalyzeBmp);
-                        DrawDebugRect(fieldImgG, field);
+                        curField = a(forAnalyzeBmp);
+                        DrawDebugRect(fieldImgG, curField);
                     }
                     else
                     {
@@ -710,7 +712,7 @@ namespace Cubokta.Puyo
             }
         }
 
-
+        private ColorPairPuyo curNext;
         private ColorPairPuyo prevNext;
         bool readyForNextStepRecord = false;
         bool isFirstTsumo = true;
@@ -757,24 +759,39 @@ namespace Cubokta.Puyo
                     {
                         if (!readyForNextStepRecord)
                         {
-                            Console.WriteLine(next.Pivot + " " + next.Satellite);
-                            prevNext = next;
+                            Debug.WriteLine(next.Pivot + " " + next.Satellite);
+                            curNext = next;
                         }
+
                         readyForNextStepRecord = true;
                     }
                     else if (next.Pivot == PuyoType.NONE && next.Satellite == PuyoType.NONE)
                     {
-                        if (!isFirstTsumo && readyForNextStepRecord)
+                        if (readyForNextStepRecord)
                         {
-                            // TODO: ここで、どこにおいたかを判定する。
+                            if (prevNext != null)
+                            {
+                                Debug.WriteLine("前回：\n" + prevField);
+                                Debug.WriteLine("今回：\n" + curField);
+                                ColorPairPuyo prevStep = prevField.GetStepFromDiff(curField, prevNext);
+                                Debug.Flush();
+                                if (prevStep != null)
+                                {
+                                    Debug.WriteLine(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
+                                    steps.Add(prevStep);
+                                }
+                                else
+                                {
+                                    statusLabel.Text = "キャプチャ失敗！！";
+                                }
+                            }
 
-                            steps.Add(prevNext);
+                            prevField = curField;
+                            prevNext = curNext;
                             readyForNextStepRecord = false;
                             FCodeEncoder encoder = new FCodeEncoder();
                             stepDataTxt.Text = encoder.Encode(steps);
                         }
-
-                        isFirstTsumo = false;
                     }
                 }
             }
@@ -858,11 +875,16 @@ namespace Cubokta.Puyo
             stepIdTxt.UpButton();
             stepDataTxt.Text = "";
             prevNext = null;
+            curNext = null;
             isRecording = true;
             stopBtn.Enabled = true;
+            prevField = new CaptureField();
+            curField = new CaptureField();
 
             readyForNextStepRecord = false;
             isFirstTsumo = true;
+        
+            statusLabel.Text = "";
         }
 
         private void stopBtn_Click(object sender, EventArgs e)
