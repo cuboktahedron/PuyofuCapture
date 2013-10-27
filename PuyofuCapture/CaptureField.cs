@@ -142,6 +142,43 @@ namespace Cubokta.Puyo
             { PuyoType.MURASAKI, "紫" },
         };
 
+        public void Drop(ColorPairPuyo pp)
+        {
+            int pos = pp.Pos - 1;
+            if (pp.Dir == Direction.UP)
+            {
+                DropOne(pp.Pivot, pos);
+                DropOne(pp.Satellite, pos);
+            }
+            else if (pp.Dir == Direction.DOWN)
+            {
+                DropOne(pp.Satellite, pos);
+                DropOne(pp.Pivot, pos);
+            }
+            else if (pp.Dir == Direction.LEFT)
+            {
+                DropOne(pp.Pivot, pos);
+                DropOne(pp.Satellite, pos - 1);
+            }
+            else
+            {
+                DropOne(pp.Pivot, pos);
+                DropOne(pp.Satellite, pos + 1);
+            }
+        }
+
+        private void DropOne(PuyoType type, int pos)
+        {
+            for (int y = 0; y < Y_MAX; y++)
+            {
+                if (GetPuyoType(pos, y) == PuyoType.NONE)
+                {
+                    SetPuyoType(pos, y, type);
+                    return;
+                }
+            }
+        }
+
         public override String ToString()
         {
             StringBuilder sb = new StringBuilder();

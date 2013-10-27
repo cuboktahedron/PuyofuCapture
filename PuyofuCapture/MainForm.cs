@@ -715,8 +715,8 @@ namespace Cubokta.Puyo
         private ColorPairPuyo curNext;
         private ColorPairPuyo prevNext;
         bool readyForNextStepRecord = false;
-        bool isFirstTsumo = true;
         bool isRecording = false;
+        int captureFailCount = 0;
         private void nextImg_Paint(object sender, PaintEventArgs e)
         {
             try
@@ -771,26 +771,40 @@ namespace Cubokta.Puyo
                         {
                             if (prevNext != null)
                             {
-                                Debug.WriteLine("前回：\n" + prevField);
-                                Debug.WriteLine("今回：\n" + curField);
                                 ColorPairPuyo prevStep = prevField.GetStepFromDiff(curField, prevNext);
-                                Debug.Flush();
                                 if (prevStep != null)
                                 {
+                                    Debug.WriteLine("前回：\n" + prevField);
+                                    Debug.WriteLine("今回：\n" + curField);
+                                    Debug.Flush();
                                     Debug.WriteLine(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
                                     steps.Add(prevStep);
+
+                                    prevField.Drop(prevStep);
+                                    prevNext = curNext;
+                                    readyForNextStepRecord = false;
+                                    FCodeEncoder encoder = new FCodeEncoder();
+                                    stepDataTxt.Text = encoder.Encode(steps);
+                                    captureFailCount = 0;
                                 }
                                 else
                                 {
-                                    statusLabel.Text = "キャプチャ失敗！！";
+                                    captureFailCount++;
+
+                                    // 計1秒以上譜が特定できなければ失敗とする
+                                    if (captureFailCount > 5)
+                                    {
+                                        statusLabel.Text = "キャプチャ失敗！！";
+                                    }
                                 }
                             }
-
-                            prevField = curField;
-                            prevNext = curNext;
-                            readyForNextStepRecord = false;
-                            FCodeEncoder encoder = new FCodeEncoder();
-                            stepDataTxt.Text = encoder.Encode(steps);
+                            else
+                            {
+                                prevNext = curNext;
+                                readyForNextStepRecord = false;
+                                FCodeEncoder encoder = new FCodeEncoder();
+                                stepDataTxt.Text = encoder.Encode(steps);
+                            }
                         }
                     }
                 }
@@ -882,8 +896,7 @@ namespace Cubokta.Puyo
             curField = new CaptureField();
 
             readyForNextStepRecord = false;
-            isFirstTsumo = true;
-        
+            captureFailCount = 0;        
             statusLabel.Text = "";
         }
 
