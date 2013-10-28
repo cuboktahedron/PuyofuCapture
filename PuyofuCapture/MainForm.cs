@@ -33,6 +33,7 @@ namespace Cubokta.Puyo
         private TrackBar similarityValueBar;
         private Label label1;
         private Label similarityValueLbl;
+        private PictureBox sampleNoneImg;
 
         private PuyoTypeDetector detector = new PuyoTypeDetector();
         public MainForm()
@@ -50,12 +51,14 @@ namespace Cubokta.Puyo
         private void updateSamples()
         {
             sampleImgs = new Dictionary<PuyoType, PictureBox>();
+            sampleImgs[PuyoType.NONE] = sampleNoneImg;
             sampleImgs[PuyoType.AKA] = sampleAkaImg;
             sampleImgs[PuyoType.MIDORI] = sampleMidoriImg;
             sampleImgs[PuyoType.AO] = sampleAoImg;
             sampleImgs[PuyoType.KI] = sampleKiImg;
             sampleImgs[PuyoType.MURASAKI] = sampleMurasakiImg;
 
+            updateSample(PuyoType.NONE);
             updateSample(PuyoType.AKA);
             updateSample(PuyoType.MIDORI);
             updateSample(PuyoType.AO);
@@ -134,6 +137,7 @@ namespace Cubokta.Puyo
             this.similarityValueBar = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             this.similarityValueLbl = new System.Windows.Forms.Label();
+            this.sampleNoneImg = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).BeginInit();
@@ -143,6 +147,7 @@ namespace Cubokta.Puyo
             ((System.ComponentModel.ISupportInitialize)(this.sampleKiImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleMurasakiImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.similarityValueBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleNoneImg)).BeginInit();
             this.SuspendLayout();
             // 
             // spoitBtn
@@ -339,7 +344,7 @@ namespace Cubokta.Puyo
             // 
             // sampleAkaImg
             // 
-            this.sampleAkaImg.Location = new System.Drawing.Point(525, 47);
+            this.sampleAkaImg.Location = new System.Drawing.Point(549, 47);
             this.sampleAkaImg.Name = "sampleAkaImg";
             this.sampleAkaImg.Size = new System.Drawing.Size(32, 32);
             this.sampleAkaImg.TabIndex = 21;
@@ -347,7 +352,7 @@ namespace Cubokta.Puyo
             // 
             // sampleMidoriImg
             // 
-            this.sampleMidoriImg.Location = new System.Drawing.Point(556, 47);
+            this.sampleMidoriImg.Location = new System.Drawing.Point(580, 47);
             this.sampleMidoriImg.Name = "sampleMidoriImg";
             this.sampleMidoriImg.Size = new System.Drawing.Size(32, 32);
             this.sampleMidoriImg.TabIndex = 22;
@@ -355,7 +360,7 @@ namespace Cubokta.Puyo
             // 
             // sampleAoImg
             // 
-            this.sampleAoImg.Location = new System.Drawing.Point(587, 47);
+            this.sampleAoImg.Location = new System.Drawing.Point(611, 47);
             this.sampleAoImg.Name = "sampleAoImg";
             this.sampleAoImg.Size = new System.Drawing.Size(32, 32);
             this.sampleAoImg.TabIndex = 23;
@@ -363,7 +368,7 @@ namespace Cubokta.Puyo
             // 
             // sampleKiImg
             // 
-            this.sampleKiImg.Location = new System.Drawing.Point(618, 47);
+            this.sampleKiImg.Location = new System.Drawing.Point(642, 47);
             this.sampleKiImg.Name = "sampleKiImg";
             this.sampleKiImg.Size = new System.Drawing.Size(32, 32);
             this.sampleKiImg.TabIndex = 24;
@@ -371,7 +376,7 @@ namespace Cubokta.Puyo
             // 
             // sampleMurasakiImg
             // 
-            this.sampleMurasakiImg.Location = new System.Drawing.Point(649, 47);
+            this.sampleMurasakiImg.Location = new System.Drawing.Point(673, 47);
             this.sampleMurasakiImg.Name = "sampleMurasakiImg";
             this.sampleMurasakiImg.Size = new System.Drawing.Size(32, 32);
             this.sampleMurasakiImg.TabIndex = 25;
@@ -409,9 +414,18 @@ namespace Cubokta.Puyo
             this.similarityValueLbl.TabIndex = 29;
             this.similarityValueLbl.Text = "30000";
             // 
+            // sampleNoneImg
+            // 
+            this.sampleNoneImg.Location = new System.Drawing.Point(518, 47);
+            this.sampleNoneImg.Name = "sampleNoneImg";
+            this.sampleNoneImg.Size = new System.Drawing.Size(32, 32);
+            this.sampleNoneImg.TabIndex = 30;
+            this.sampleNoneImg.TabStop = false;
+            // 
             // MainForm
             // 
             this.ClientSize = new System.Drawing.Size(804, 482);
+            this.Controls.Add(this.sampleNoneImg);
             this.Controls.Add(this.similarityValueLbl);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.similarityValueBar);
@@ -452,6 +466,7 @@ namespace Cubokta.Puyo
             ((System.ComponentModel.ISupportInitialize)(this.sampleKiImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleMurasakiImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.similarityValueBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sampleNoneImg)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -462,7 +477,7 @@ namespace Cubokta.Puyo
         private void spoitBtn_Click(object sender, EventArgs e)
         {
             isPixeling = true;
-            pixelingTargetIndex = (int)PuyoType.AKA;
+            pixelingTargetIndex = (int)PuyoType.NONE;
             statusLabel.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
         }
 
@@ -566,6 +581,7 @@ namespace Cubokta.Puyo
             catch (Exception exp)
             {
                 Debug.WriteLine(exp.ToString());
+                Debug.Flush();
                 throw exp;
             }
         }
@@ -715,6 +731,7 @@ namespace Cubokta.Puyo
         private ColorPairPuyo curNext;
         private ColorPairPuyo prevNext;
         bool readyForNextStepRecord = false;
+        bool readyForNextStepRecord2 = false;
         bool isRecording = false;
         int captureFailCount = 0;
         private void nextImg_Paint(object sender, PaintEventArgs e)
@@ -765,37 +782,29 @@ namespace Cubokta.Puyo
 
                         readyForNextStepRecord = true;
                     }
-                    else if (next.Pivot == PuyoType.NONE && next.Satellite == PuyoType.NONE)
+                    else if (next.Pivot == PuyoType.NONE && next.Satellite == PuyoType.NONE && !readyForNextStepRecord2)
                     {
                         if (readyForNextStepRecord)
                         {
                             if (prevNext != null)
                             {
+                                readyForNextStepRecord2 = true;
                                 ColorPairPuyo prevStep = prevField.GetStepFromDiff(curField, prevNext);
                                 if (prevStep != null)
                                 {
-                                    Debug.WriteLine("前回：\n" + prevField);
-                                    Debug.WriteLine("今回：\n" + curField);
-                                    Debug.Flush();
-                                    Debug.WriteLine(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
+                                    //Debug.WriteLine("前回：\n" + prevField);
+                                    //Debug.WriteLine("今回：\n" + curField);
+                                    //Debug.WriteLine(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
+                                    //Debug.Flush();
                                     steps.Add(prevStep);
 
                                     prevField.Drop(prevStep);
                                     prevNext = curNext;
                                     readyForNextStepRecord = false;
+                                    readyForNextStepRecord2 = false;
                                     FCodeEncoder encoder = new FCodeEncoder();
                                     stepDataTxt.Text = encoder.Encode(steps);
                                     captureFailCount = 0;
-                                }
-                                else
-                                {
-                                    captureFailCount++;
-
-                                    // 計1秒以上譜が特定できなければ失敗とする
-                                    if (captureFailCount > 5)
-                                    {
-                                        statusLabel.Text = "キャプチャ失敗！！";
-                                    }
                                 }
                             }
                             else
@@ -807,11 +816,49 @@ namespace Cubokta.Puyo
                             }
                         }
                     }
+                    else if (readyForNextStepRecord2)
+                    {
+                        Debug.Flush();
+                        ColorPairPuyo prevStep = prevField.GetStepFromDiff(curField, prevNext);
+                        if (prevStep != null)
+                        {
+                            Debug.WriteLine(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
+                            steps.Add(prevStep);
+
+                            prevField.Drop(prevStep);
+                            prevNext = curNext;
+                            readyForNextStepRecord = false;
+                            readyForNextStepRecord2 = false;
+                            FCodeEncoder encoder = new FCodeEncoder();
+                            stepDataTxt.Text = encoder.Encode(steps);
+                            captureFailCount = 0;
+                        }
+                        else
+                        {
+                            Debug.WriteLine("前回：\n" + prevField);
+                            Debug.WriteLine("今回：\n" + curField);
+                            Debug.WriteLine("★");
+                            Debug.Flush();
+
+                            captureFailCount++;
+
+                            // 計1秒以上譜が特定できなければ失敗とする
+                            if (captureFailCount > (1000 / captureTimer.Interval))
+                            {
+                                statusLabel.Text = "キャプチャ失敗！！";
+
+                                isRecording = false;
+                                stopBtn.Enabled = false;
+                                return;
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception exp)
             {
                 Debug.WriteLine(exp.ToString());
+                Debug.Flush();
                 throw exp;
             }
         }
@@ -896,6 +943,7 @@ namespace Cubokta.Puyo
             curField = new CaptureField();
 
             readyForNextStepRecord = false;
+            readyForNextStepRecord2 = false;
             captureFailCount = 0;        
             statusLabel.Text = "";
         }
