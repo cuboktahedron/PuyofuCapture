@@ -12,6 +12,7 @@ using Cubokta.Puyo.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Drawing.Imaging;
+using System.Configuration;
 
 namespace Cubokta.Puyo
 {
@@ -44,6 +45,22 @@ namespace Cubokta.Puyo
             updateSamples();
             detector.SimilarityThreshold = 30000;
             similarityValueLbl.Text = similarityValueBar.Value.ToString();
+
+            // 前回のキャプチャ範囲があればそれを使用しキャプチャを開始する
+            String cRect = ConfigurationManager.AppSettings["captureRect"];
+            String nRect = ConfigurationManager.AppSettings["nextRect"];
+            if (cRect != "-1,-1,-1,-1" && nRect != "-1,-1,-1,-1")
+            {
+                string[] cRectValues = cRect.Split(',');
+                string[] nRectValues = nRect.Split(',');
+                beginCapturing(
+                    new Rectangle(
+                        int.Parse(cRectValues[0]), int.Parse(cRectValues[1]),
+                        int.Parse(cRectValues[2]), int.Parse(cRectValues[3])),
+                    new Rectangle(
+                        int.Parse(nRectValues[0]), int.Parse(nRectValues[1]),
+                        int.Parse(nRectValues[2]), int.Parse(nRectValues[3])));
+            }
         }
 
         private IDictionary<PuyoType, PictureBox> sampleImgs;
@@ -69,7 +86,8 @@ namespace Cubokta.Puyo
         private void updateSample(PuyoType puyoType)
         {
             string filePath = Path.Combine("img", puyoType.ToString() + ".bmp");
-            if (!File.Exists(filePath)) {
+            if (!File.Exists(filePath))
+            {
                 return;
             }
 
@@ -505,8 +523,16 @@ namespace Cubokta.Puyo
                 return;
             }
 
-            captureRect = f.GetCaptureRect();
-            nextRect = f.GetNextRect();
+            Rectangle cRect = f.GetCaptureRect();
+            Rectangle nRect = f.GetNextRect();
+
+            beginCapturing(cRect, nRect);
+        }
+
+        private void beginCapturing(Rectangle cRect, Rectangle nRect)
+        {
+            captureRect = cRect;
+            nextRect = nRect;
 
             IsCapturing = true;
             spoitBtn.Enabled = true;
@@ -525,6 +551,14 @@ namespace Cubokta.Puyo
             }
             captureBmp = new Bitmap(captureRect.Width, captureRect.Height);
             nextBmp = new Bitmap(nextRect.Width, nextRect.Height);
+
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            config.AppSettings.Settings["captureRect"].Value =
+                    captureRect.X + "," + captureRect.Y + "," + captureRect.Width + "," + captureRect.Height;
+            config.AppSettings.Settings["nextRect"].Value =
+                    nextRect.X + "," + nextRect.Y + "," + nextRect.Width + "," + nextRect.Height;
+            config.Save();
+
         }
 
         private void captureTimer_Tick(object sender, EventArgs e)
@@ -712,7 +746,7 @@ namespace Cubokta.Puyo
                     }
                     sampleImgs[puyoType].Image = cellBmp;
                     Directory.CreateDirectory("img");
-                    cellBmp.Save("img/" + (PuyoType)pixelingTargetIndex + ".bmp",  ImageFormat.Bmp);
+                    cellBmp.Save("img/" + (PuyoType)pixelingTargetIndex + ".bmp", ImageFormat.Bmp);
                 }
             }
 
@@ -944,7 +978,7 @@ namespace Cubokta.Puyo
 
             readyForNextStepRecord = false;
             readyForNextStepRecord2 = false;
-            captureFailCount = 0;        
+            captureFailCount = 0;
             statusLabel.Text = "";
         }
 
