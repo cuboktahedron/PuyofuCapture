@@ -35,6 +35,8 @@ namespace Cubokta.Puyo
         private Label label1;
         private Label similarityValueLbl;
         private PictureBox sampleNoneImg;
+        private TextBox tagsTxt;
+        private Label tagsLbl;
 
         private PuyoTypeDetector detector = new PuyoTypeDetector();
         public MainForm()
@@ -156,6 +158,8 @@ namespace Cubokta.Puyo
             this.label1 = new System.Windows.Forms.Label();
             this.similarityValueLbl = new System.Windows.Forms.Label();
             this.sampleNoneImg = new System.Windows.Forms.PictureBox();
+            this.tagsTxt = new System.Windows.Forms.TextBox();
+            this.tagsLbl = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).BeginInit();
@@ -231,7 +235,7 @@ namespace Cubokta.Puyo
             this.FieldRadio1P.Location = new System.Drawing.Point(31, 208);
             this.FieldRadio1P.Name = "FieldRadio1P";
             this.FieldRadio1P.Size = new System.Drawing.Size(36, 16);
-            this.FieldRadio1P.TabIndex = 6;
+            this.FieldRadio1P.TabIndex = 3;
             this.FieldRadio1P.TabStop = true;
             this.FieldRadio1P.Text = "1P";
             this.FieldRadio1P.UseVisualStyleBackColor = true;
@@ -243,7 +247,7 @@ namespace Cubokta.Puyo
             this.FieldRadio2P.Location = new System.Drawing.Point(73, 208);
             this.FieldRadio2P.Name = "FieldRadio2P";
             this.FieldRadio2P.Size = new System.Drawing.Size(36, 16);
-            this.FieldRadio2P.TabIndex = 6;
+            this.FieldRadio2P.TabIndex = 4;
             this.FieldRadio2P.Text = "2P";
             this.FieldRadio2P.UseVisualStyleBackColor = true;
             // 
@@ -259,7 +263,7 @@ namespace Cubokta.Puyo
             // playDateLbl
             // 
             this.playDateLbl.AutoSize = true;
-            this.playDateLbl.Location = new System.Drawing.Point(451, 234);
+            this.playDateLbl.Location = new System.Drawing.Point(451, 188);
             this.playDateLbl.Name = "playDateLbl";
             this.playDateLbl.Size = new System.Drawing.Size(29, 12);
             this.playDateLbl.TabIndex = 8;
@@ -268,7 +272,7 @@ namespace Cubokta.Puyo
             // playerNameLbl
             // 
             this.playerNameLbl.AutoSize = true;
-            this.playerNameLbl.Location = new System.Drawing.Point(451, 261);
+            this.playerNameLbl.Location = new System.Drawing.Point(451, 215);
             this.playerNameLbl.Name = "playerNameLbl";
             this.playerNameLbl.Size = new System.Drawing.Size(54, 12);
             this.playerNameLbl.TabIndex = 9;
@@ -277,7 +281,7 @@ namespace Cubokta.Puyo
             // stepIdLbl
             // 
             this.stepIdLbl.AutoSize = true;
-            this.stepIdLbl.Location = new System.Drawing.Point(451, 200);
+            this.stepIdLbl.Location = new System.Drawing.Point(451, 154);
             this.stepIdLbl.Name = "stepIdLbl";
             this.stepIdLbl.Size = new System.Drawing.Size(14, 12);
             this.stepIdLbl.TabIndex = 10;
@@ -286,17 +290,17 @@ namespace Cubokta.Puyo
             // playDate
             // 
             this.playDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.playDate.Location = new System.Drawing.Point(525, 229);
+            this.playDate.Location = new System.Drawing.Point(525, 183);
             this.playDate.Name = "playDate";
             this.playDate.Size = new System.Drawing.Size(200, 19);
-            this.playDate.TabIndex = 11;
+            this.playDate.TabIndex = 9;
             // 
             // playerNameTxt
             // 
-            this.playerNameTxt.Location = new System.Drawing.Point(525, 261);
+            this.playerNameTxt.Location = new System.Drawing.Point(525, 212);
             this.playerNameTxt.Name = "playerNameTxt";
             this.playerNameTxt.Size = new System.Drawing.Size(200, 19);
-            this.playerNameTxt.TabIndex = 13;
+            this.playerNameTxt.TabIndex = 10;
             // 
             // splitter1
             // 
@@ -312,7 +316,7 @@ namespace Cubokta.Puyo
             this.startBtn.Location = new System.Drawing.Point(24, 268);
             this.startBtn.Name = "startBtn";
             this.startBtn.Size = new System.Drawing.Size(175, 70);
-            this.startBtn.TabIndex = 15;
+            this.startBtn.TabIndex = 5;
             this.startBtn.Text = "開始";
             this.startBtn.UseVisualStyleBackColor = true;
             this.startBtn.Click += new System.EventHandler(this.startBtn_Click);
@@ -320,7 +324,7 @@ namespace Cubokta.Puyo
             // recordLbl
             // 
             this.recordLbl.AutoSize = true;
-            this.recordLbl.Location = new System.Drawing.Point(451, 294);
+            this.recordLbl.Location = new System.Drawing.Point(451, 273);
             this.recordLbl.Name = "recordLbl";
             this.recordLbl.Size = new System.Drawing.Size(41, 12);
             this.recordLbl.TabIndex = 16;
@@ -328,26 +332,28 @@ namespace Cubokta.Puyo
             // 
             // recordTxt
             // 
-            this.recordTxt.Location = new System.Drawing.Point(525, 294);
+            this.recordTxt.Location = new System.Drawing.Point(525, 270);
             this.recordTxt.Name = "recordTxt";
             this.recordTxt.ReadOnly = true;
             this.recordTxt.Size = new System.Drawing.Size(200, 19);
-            this.recordTxt.TabIndex = 17;
+            this.recordTxt.TabIndex = 12;
             // 
             // stepDataTxt
             // 
-            this.stepDataTxt.Location = new System.Drawing.Point(459, 324);
+            this.stepDataTxt.Location = new System.Drawing.Point(459, 295);
             this.stepDataTxt.Multiline = true;
             this.stepDataTxt.Name = "stepDataTxt";
-            this.stepDataTxt.Size = new System.Drawing.Size(266, 92);
-            this.stepDataTxt.TabIndex = 18;
+            this.stepDataTxt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.stepDataTxt.Size = new System.Drawing.Size(266, 175);
+            this.stepDataTxt.TabIndex = 13;
+            this.stepDataTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.stepDataTxt_KeyDown);
             // 
             // stepIdTxt
             // 
-            this.stepIdTxt.Location = new System.Drawing.Point(525, 198);
+            this.stepIdTxt.Location = new System.Drawing.Point(525, 152);
             this.stepIdTxt.Name = "stepIdTxt";
             this.stepIdTxt.Size = new System.Drawing.Size(120, 19);
-            this.stepIdTxt.TabIndex = 19;
+            this.stepIdTxt.TabIndex = 8;
             // 
             // stopBtn
             // 
@@ -355,7 +361,7 @@ namespace Cubokta.Puyo
             this.stopBtn.Location = new System.Drawing.Point(24, 346);
             this.stopBtn.Name = "stopBtn";
             this.stopBtn.Size = new System.Drawing.Size(175, 70);
-            this.stopBtn.TabIndex = 20;
+            this.stopBtn.TabIndex = 6;
             this.stopBtn.Text = "停止";
             this.stopBtn.UseVisualStyleBackColor = true;
             this.stopBtn.Click += new System.EventHandler(this.stopBtn_Click);
@@ -403,13 +409,13 @@ namespace Cubokta.Puyo
             // similarityValueBar
             // 
             this.similarityValueBar.LargeChange = 10000;
-            this.similarityValueBar.Location = new System.Drawing.Point(550, 113);
+            this.similarityValueBar.Location = new System.Drawing.Point(550, 101);
             this.similarityValueBar.Maximum = 95000;
             this.similarityValueBar.Minimum = 5000;
             this.similarityValueBar.Name = "similarityValueBar";
             this.similarityValueBar.Size = new System.Drawing.Size(147, 45);
             this.similarityValueBar.SmallChange = 1000;
-            this.similarityValueBar.TabIndex = 26;
+            this.similarityValueBar.TabIndex = 7;
             this.similarityValueBar.TickFrequency = 10000;
             this.similarityValueBar.Value = 30000;
             this.similarityValueBar.Scroll += new System.EventHandler(this.similarityValueBar_Scroll);
@@ -417,7 +423,7 @@ namespace Cubokta.Puyo
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(515, 113);
+            this.label1.Location = new System.Drawing.Point(515, 101);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(29, 12);
             this.label1.TabIndex = 28;
@@ -426,7 +432,7 @@ namespace Cubokta.Puyo
             // similarityValueLbl
             // 
             this.similarityValueLbl.AutoSize = true;
-            this.similarityValueLbl.Location = new System.Drawing.Point(515, 126);
+            this.similarityValueLbl.Location = new System.Drawing.Point(515, 118);
             this.similarityValueLbl.Name = "similarityValueLbl";
             this.similarityValueLbl.Size = new System.Drawing.Size(35, 12);
             this.similarityValueLbl.TabIndex = 29;
@@ -440,9 +446,27 @@ namespace Cubokta.Puyo
             this.sampleNoneImg.TabIndex = 30;
             this.sampleNoneImg.TabStop = false;
             // 
+            // tagsTxt
+            // 
+            this.tagsTxt.Location = new System.Drawing.Point(525, 237);
+            this.tagsTxt.Name = "tagsTxt";
+            this.tagsTxt.Size = new System.Drawing.Size(200, 19);
+            this.tagsTxt.TabIndex = 11;
+            // 
+            // tagsLbl
+            // 
+            this.tagsLbl.AutoSize = true;
+            this.tagsLbl.Location = new System.Drawing.Point(451, 240);
+            this.tagsLbl.Name = "tagsLbl";
+            this.tagsLbl.Size = new System.Drawing.Size(46, 12);
+            this.tagsLbl.TabIndex = 32;
+            this.tagsLbl.Text = "追加タグ";
+            // 
             // MainForm
             // 
-            this.ClientSize = new System.Drawing.Size(804, 482);
+            this.ClientSize = new System.Drawing.Size(752, 482);
+            this.Controls.Add(this.tagsLbl);
+            this.Controls.Add(this.tagsTxt);
             this.Controls.Add(this.sampleNoneImg);
             this.Controls.Add(this.similarityValueLbl);
             this.Controls.Add(this.label1);
@@ -803,6 +827,7 @@ namespace Cubokta.Puyo
                     {
                         isRecording = false;
                         stopBtn.Enabled = false;
+                        updateStepData();
                         return;
                     }
 
@@ -837,7 +862,7 @@ namespace Cubokta.Puyo
                                     readyForNextStepRecord = false;
                                     readyForNextStepRecord2 = false;
                                     FCodeEncoder encoder = new FCodeEncoder();
-                                    stepDataTxt.Text = encoder.Encode(steps);
+                                    recordTxt.Text = encoder.Encode(steps);
                                     captureFailCount = 0;
                                 }
                             }
@@ -846,7 +871,7 @@ namespace Cubokta.Puyo
                                 prevNext = curNext;
                                 readyForNextStepRecord = false;
                                 FCodeEncoder encoder = new FCodeEncoder();
-                                stepDataTxt.Text = encoder.Encode(steps);
+                                recordTxt.Text = encoder.Encode(steps);
                             }
                         }
                     }
@@ -864,7 +889,7 @@ namespace Cubokta.Puyo
                             readyForNextStepRecord = false;
                             readyForNextStepRecord2 = false;
                             FCodeEncoder encoder = new FCodeEncoder();
-                            stepDataTxt.Text = encoder.Encode(steps);
+                            recordTxt.Text = encoder.Encode(steps);
                             captureFailCount = 0;
                         }
                         else
@@ -895,6 +920,43 @@ namespace Cubokta.Puyo
                 Debug.Flush();
                 throw exp;
             }
+        }
+
+        private static readonly string RECORD_TEMPLATE = @"  {
+    date: '#date',
+    id: '#id',
+    record: '#record',
+    tags: [#tags],
+  },";
+
+        private void updateStepData()
+        {
+            // タグ文字列を組み立てる
+            List<string> tagList = new List<string>();
+            if (playerNameTxt.Text.Trim() != "")
+            {
+                tagList.Add(playerNameTxt.Text);
+            }
+
+            StringBuilder sb = new StringBuilder();
+            if (tagsTxt.Text.Trim() != "")
+            {
+                IEnumerable<string> tags = tagList.Concat(tagsTxt.Text.Split(' ').AsEnumerable()).AsQueryable();
+                foreach (string tag in tags)
+                {
+                    sb.Append("\r\n      '" + tag + "',");
+                }
+                sb.Append("\r\n    ");
+            }
+
+            // テンプレート変換
+            string text = RECORD_TEMPLATE;
+            text = text.Replace("#date", playDate.Text);
+            text = text.Replace("#id", stepIdTxt.Value.ToString());
+            text = text.Replace("#record", recordTxt.Text);
+            text = text.Replace("#tags", sb.ToString());
+
+            stepDataTxt.Text = text;
         }
 
         private CaptureField b(Bitmap bmp)
@@ -979,6 +1041,7 @@ namespace Cubokta.Puyo
             readyForNextStepRecord = false;
             readyForNextStepRecord2 = false;
             captureFailCount = 0;
+            tagsTxt.Text = "";
             statusLabel.Text = "";
         }
 
@@ -986,6 +1049,7 @@ namespace Cubokta.Puyo
         {
             isRecording = false;
             stopBtn.Enabled = false;
+            updateStepData();
         }
 
         private Point pointOnFieldImg;
@@ -1003,6 +1067,14 @@ namespace Cubokta.Puyo
         {
             detector.SimilarityThreshold = similarityValueBar.Value;
             similarityValueLbl.Text = similarityValueBar.Value.ToString();
+        }
+
+        private void stepDataTxt_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == System.Windows.Forms.Keys.A & e.Control == true)
+            {
+                stepDataTxt.SelectAll();
+            } 
         }
     }
 }
