@@ -76,6 +76,26 @@ namespace Cubokta.Puyo.Common
         {
             throw new NotSupportedException();
         }
+
+        public override bool Equals(object obj)
+        {
+            //objがnullか、型が違うときは、等価でない
+            if (obj == null || this.GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            ColorPairPuyo pp = (ColorPairPuyo)obj;
+            return Pivot == pp.Pivot
+                && Satellite == pp.Satellite
+                && Dir == pp.Dir
+                && Pos == pp.Pos;
+        }
+
+        public override int GetHashCode()
+        {
+            return (int)Pivot + (int)Satellite + (int)Dir + Pos;
+        }
     }
 
     public class OjamaPairPuyo : PairPuyo
@@ -146,6 +166,40 @@ namespace Cubokta.Puyo.Common
             }
 
             return OjamaRow + (OjamaBit[pos] ? 1 : 0);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || this.GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            OjamaPairPuyo ojama = (OjamaPairPuyo)obj;
+            if (OjamaRow != ojama.OjamaRow)
+            {
+                return false;
+            }
+
+            if (ojamaBit.Count != ojama.ojamaBit.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < OjamaBit.Length; i++)
+            {
+                if (ojamaBit[i] != ojama.OjamaBit[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return OjamaRow + OjamaBit.GetHashCode();
         }
     }
 }

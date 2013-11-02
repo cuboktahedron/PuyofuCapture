@@ -52,6 +52,7 @@
     <Compile Include="PairPuyo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PuyoTypeUtil.cs" />
+    <Compile Include="FCodeDecoder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonLib\CommonLib.csproj">
