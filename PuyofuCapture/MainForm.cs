@@ -289,6 +289,7 @@ namespace Cubokta.Puyo
             // 
             // playDate
             // 
+            this.playDate.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.playDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.playDate.Location = new System.Drawing.Point(525, 183);
             this.playDate.Name = "playDate";
@@ -297,6 +298,7 @@ namespace Cubokta.Puyo
             // 
             // playerNameTxt
             // 
+            this.playerNameTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.playerNameTxt.Location = new System.Drawing.Point(525, 212);
             this.playerNameTxt.Name = "playerNameTxt";
             this.playerNameTxt.Size = new System.Drawing.Size(200, 19);
@@ -340,6 +342,7 @@ namespace Cubokta.Puyo
             // 
             // stepDataTxt
             // 
+            this.stepDataTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.stepDataTxt.Location = new System.Drawing.Point(459, 295);
             this.stepDataTxt.Multiline = true;
             this.stepDataTxt.Name = "stepDataTxt";
@@ -350,6 +353,7 @@ namespace Cubokta.Puyo
             // 
             // stepIdTxt
             // 
+            this.stepIdTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.stepIdTxt.Location = new System.Drawing.Point(525, 152);
             this.stepIdTxt.Name = "stepIdTxt";
             this.stepIdTxt.Size = new System.Drawing.Size(120, 19);
@@ -448,6 +452,7 @@ namespace Cubokta.Puyo
             // 
             // tagsTxt
             // 
+            this.tagsTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.tagsTxt.Location = new System.Drawing.Point(525, 237);
             this.tagsTxt.Name = "tagsTxt";
             this.tagsTxt.Size = new System.Drawing.Size(200, 19);
@@ -823,11 +828,14 @@ namespace Cubokta.Puyo
 
                     ColorPairPuyo next = field.GetNext(0);
 
-                    if (!isRecording || steps.Count() >= 16)
+                    if (!isRecording || steps.Count() >= 4)
                     {
                         isRecording = false;
                         stopBtn.Enabled = false;
-                        updateStepData();
+                        if (steps.Count() >= 4)
+                        {
+                            updateStepData();
+                        }
                         return;
                     }
 
@@ -938,16 +946,24 @@ namespace Cubokta.Puyo
                 tagList.Add(playerNameTxt.Text);
             }
 
+            // 追加タグの処理
             StringBuilder sb = new StringBuilder();
             if (tagsTxt.Text.Trim() != "")
             {
-                IEnumerable<string> tags = tagList.Concat(tagsTxt.Text.Split(' ').AsEnumerable()).AsQueryable();
-                foreach (string tag in tags)
-                {
-                    sb.Append("\r\n      '" + tag + "',");
-                }
-                sb.Append("\r\n    ");
+                tagList.AddRange(tagsTxt.Text.Split(' '));
             }
+
+           // 初手3手の処理
+            FCodeDecoder decoder = new FCodeDecoder();
+            List<PairPuyo> steps = decoder.Decode(recordTxt.Text);
+            FirstStepAnalyzer firstStepAnalyzer = new FirstStepAnalyzer();
+            tagList.Add(firstStepAnalyzer.GetPattern(steps, 3));
+
+            foreach (string tag in tagList)
+            {
+                sb.Append("\r\n      '" + tag + "',");
+            }
+            sb.Append("\r\n    ");
 
             // テンプレート変換
             string text = RECORD_TEMPLATE;
@@ -1041,7 +1057,6 @@ namespace Cubokta.Puyo
             readyForNextStepRecord = false;
             readyForNextStepRecord2 = false;
             captureFailCount = 0;
-            tagsTxt.Text = "";
             statusLabel.Text = "";
         }
 

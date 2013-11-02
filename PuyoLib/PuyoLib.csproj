@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="FCodeEncoder.cs" />
+    <Compile Include="FirstStepAnalyzer.cs" />
     <Compile Include="PairPuyo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PuyoTypeUtil.cs" />

@@ -55,6 +55,7 @@
     <Compile Include="PairPuyoTest.cs" />
     <Compile Include="FCodeEncoderTest.cs" />
     <Compile Include="FCodeDecodeTest.cs" />
+    <Compile Include="FirstStepAnalyzerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonLib\CommonLib.csproj">
