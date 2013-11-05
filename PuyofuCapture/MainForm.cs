@@ -355,6 +355,11 @@ namespace Cubokta.Puyo
             // 
             this.stepIdTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.stepIdTxt.Location = new System.Drawing.Point(525, 152);
+            this.stepIdTxt.Maximum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            0});
             this.stepIdTxt.Name = "stepIdTxt";
             this.stepIdTxt.Size = new System.Drawing.Size(120, 19);
             this.stepIdTxt.TabIndex = 8;
@@ -828,11 +833,11 @@ namespace Cubokta.Puyo
 
                     ColorPairPuyo next = field.GetNext(0);
 
-                    if (!isRecording || steps.Count() >= 4)
+                    if (!isRecording || steps.Count() >= 16)
                     {
                         isRecording = false;
                         stopBtn.Enabled = false;
-                        if (steps.Count() >= 4)
+                        if (steps.Count() >= 16)
                         {
                             updateStepData();
                         }
