@@ -10,8 +10,6 @@ namespace Cubokta.Puyo.Common
     {
         public string GetPattern(List<PairPuyo> steps, int stepNum)
         {
-            // TODO: ここはリファクタリングする
-
             string pattern = "";
             IDictionary<PuyoType, char> mapping = new Dictionary<PuyoType, char>();
             char mapChar = 'A';
@@ -19,67 +17,61 @@ namespace Cubokta.Puyo.Common
             for (int i = 0; i < stepNum; i++)
             {
                 ColorPairPuyo cpp = (ColorPairPuyo)steps[i];
-                char dummy;
+                List<PuyoType> priorList = new List<PuyoType>();
+                List<PuyoType> posteriorList = new List<PuyoType>();
+
+                List<PuyoType> list;
                 if (candidates.Count == 0)
                 {
-                    List<PuyoType> priorList = new List<PuyoType>();
-                    if (!mapping.TryGetValue(cpp.Pivot, out dummy))
-                    {
-                        priorList.Add(cpp.Pivot);
-                    }
-
-                    if (!mapping.TryGetValue(cpp.Satellite, out dummy) && cpp.Pivot != cpp.Satellite)
-                    {
-                        priorList.Add(cpp.Satellite);
-                    }
-                    candidates.Add(priorList);
+                    list = new List<PuyoType>();
                 }
                 else
                 {
-                    List<PuyoType> priorList = new List<PuyoType>();
-                    List<PuyoType> posteriorList = new List<PuyoType>();
-
-                    List<PuyoType> list = candidates[0];
-                    if (!mapping.TryGetValue(cpp.Pivot, out dummy))
-                    {
-                        if (list.Contains(cpp.Pivot))
-                        {
-                            list.Remove(cpp.Pivot);
-                            priorList.Add(cpp.Pivot);
-                        }
-                        else
-                        {
-                            list.Remove(cpp.Pivot);
-                            posteriorList.Add(cpp.Pivot);
-                        }
-                    }
-
-                    if (!mapping.TryGetValue(cpp.Satellite, out dummy) && cpp.Pivot != cpp.Satellite)
-                    {
-                        if (list.Contains(cpp.Satellite))
-                        {
-                            list.Remove(cpp.Satellite);
-                            priorList.Add(cpp.Satellite);
-                        }
-                        else
-                        {
-                            list.Remove(cpp.Satellite);
-                            posteriorList.Add(cpp.Satellite);
-                        }
-                    }
-
-                    candidates.Insert(0, priorList);
-                    candidates.Add(posteriorList);
+                    list = candidates[0];
                 }
+
+                char dummy;
+                if (!mapping.TryGetValue(cpp.Pivot, out dummy))
+                {
+                    if (list.Contains(cpp.Pivot))
+                    {
+                        list.Remove(cpp.Pivot);
+                        priorList.Add(cpp.Pivot);
+                    }
+                    else
+                    {
+                        list.Remove(cpp.Pivot);
+                        posteriorList.Add(cpp.Pivot);
+                    }
+                }
+
+                if (!mapping.TryGetValue(cpp.Satellite, out dummy) && cpp.Pivot != cpp.Satellite)
+                {
+                    if (list.Contains(cpp.Satellite))
+                    {
+                        list.Remove(cpp.Satellite);
+                        priorList.Add(cpp.Satellite);
+                    }
+                    else
+                    {
+                        list.Remove(cpp.Satellite);
+                        posteriorList.Add(cpp.Satellite);
+                    }
+                }
+
+                candidates.Insert(0, priorList);
+                candidates.Add(posteriorList);
 
                 foreach (List<PuyoType> candidate in candidates)
                 {
                     if (candidate.Count >= 2)
                     {
+                        // マッピングが未確定のため、以降は処理しない
                         break;
                     }
                     else if (candidate.Count == 1)
                     {
+                        // マッピングが確定
                         mapping[candidate[0]] = mapChar;
                         mapChar++;
                     }
