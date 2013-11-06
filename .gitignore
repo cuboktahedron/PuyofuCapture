@@ -2,3 +2,5 @@ TestResults
 *.suo
 obj
 bin
+packages
+packages.config
