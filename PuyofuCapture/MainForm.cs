@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Configuration;
+using log4net;
 
 namespace Cubokta.Puyo
 {
@@ -22,6 +23,12 @@ namespace Cubokta.Puyo
         [STAThread]
         static void Main()
         {
+            ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            logger.Debug("debug");
+            logger.Info("info");
+            logger.Warn("warn");
+            logger.Error("error");
+            logger.Fatal("fatal");
             System.IO.File.Delete("debug.log");
             Application.Run(new MainForm());
         }

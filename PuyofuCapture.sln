@@ -9,6 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuyoLib", "PuyoLib\PuyoLib.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuyoLibTest", "PuyoLibTest\PuyoLibTest.csproj", "{DA5F8A62-53E6-4EE4-AADB-86EFADBBFE49}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{E5247A8A-45FC-4E8B-B149-D94C23047B10}"
+	ProjectSection(SolutionItems) = preProject
+		Libraries\log4net.dll = Libraries\log4net.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
