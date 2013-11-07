@@ -1,5 +1,6 @@
 ﻿using Cubokta.Common;
 using Cubokta.Puyo.Common;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +13,9 @@ namespace Cubokta.Puyo
 {
     class PuyoTypeDetector
     {
+        private static readonly ILog LOGGER =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>色識別用にRGBの各要素を分類する際に必要となるビット数</summary>
         /// <remarks>3、4、5、6のいずれかを指定する。</remarks>
         private const int COLOR_ELEMENT_BIT = 3;
@@ -52,7 +56,7 @@ namespace Cubokta.Puyo
             {
                 PuyoType type = (PuyoType)typeIndex;
                 int similarityValue = GetSimilarityValue(type, pattern);
-//                Debug.Write(type + ":" + similarityValue + " ");
+//                LOGGER.Debug(type + ":" + similarityValue + " ");
                 if (minSimilarityValue > similarityValue) {
                     minSimilarityValue = similarityValue;
                     similarType = type;
@@ -61,12 +65,12 @@ namespace Cubokta.Puyo
 
             if (minSimilarityValue >= SimilarityThreshold)
             {
-//                Debug.WriteLine("【" + PuyoType.NONE + ":" + minSimilarityValue + "】"); 
+//                LOGGER.Debug("【" + PuyoType.NONE + ":" + minSimilarityValue + "】"); 
                 return PuyoType.NONE;
             }
             else
             {
-//                Debug.WriteLine("【" + similarType + ":" + minSimilarityValue + "】"); 
+//                LOGGER.Debug("【" + similarType + ":" + minSimilarityValue + "】"); 
                 return similarType;
             }
         }
@@ -168,24 +172,6 @@ namespace Cubokta.Puyo
                 Width = CaptureField.UNIT,
                 Height = CaptureField.UNIT
             });
-
-#if DEBUG
-            Debug.WriteLine("サンプルデータセット(ぷよ種別 = " + puyoType + ")");
-            for (int ri = 0; ri < COLOR_DIVISION_NUM; ri++)
-            {
-                for (int gi = 0; gi < COLOR_DIVISION_NUM; gi++)
-                {
-                    for (int bi = 0; bi < COLOR_DIVISION_NUM; bi++)
-                    {
-                        int r = ri * (256 / COLOR_DIVISION_NUM);
-                        int g = gi * (256 / COLOR_DIVISION_NUM);
-                        int b = bi * (256 / COLOR_DIVISION_NUM);
-                        Debug.WriteLine(colorSamples[puyoType][ri, gi, bi] + ": RGB(" + r + ", " + g + ", " + b + ")");
-                    }
-                }
-            }
-            Debug.Flush();
-#endif
         }
     }
 }

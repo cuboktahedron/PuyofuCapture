@@ -19,17 +19,13 @@ namespace Cubokta.Puyo
 {
     public partial class MainForm : Form
     {
+        private static readonly ILog LOGGER =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         // エントリ・ポイント
         [STAThread]
         static void Main()
         {
-            ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-            logger.Debug("debug");
-            logger.Info("info");
-            logger.Warn("warn");
-            logger.Error("error");
-            logger.Fatal("fatal");
-            System.IO.File.Delete("debug.log");
             Application.Run(new MainForm());
         }
 
@@ -655,8 +651,7 @@ namespace Cubokta.Puyo
             }
             catch (Exception exp)
             {
-                Debug.WriteLine(exp.ToString());
-                Debug.Flush();
+                LOGGER.Error("フィールドの描画処理中にエラーが発生", exp);
                 throw exp;
             }
         }
@@ -740,8 +735,6 @@ namespace Cubokta.Puyo
             {
                 nextBmp.Dispose();
             }
-
-            Debug.Flush();
         }
 
         private void fieldImg_MouseClick(object sender, MouseEventArgs e)
@@ -855,7 +848,7 @@ namespace Cubokta.Puyo
                     {
                         if (!readyForNextStepRecord)
                         {
-                            Debug.WriteLine(next.Pivot + " " + next.Satellite);
+                            LOGGER.Debug(next.Pivot + " " + next.Satellite);
                             curNext = next;
                         }
 
@@ -871,10 +864,9 @@ namespace Cubokta.Puyo
                                 ColorPairPuyo prevStep = prevField.GetStepFromDiff(curField, prevNext);
                                 if (prevStep != null)
                                 {
-                                    //Debug.WriteLine("前回：\n" + prevField);
-                                    //Debug.WriteLine("今回：\n" + curField);
-                                    //Debug.WriteLine(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
-                                    //Debug.Flush();
+                                    //LOGGER.Debug("前回：\n" + prevField);
+                                    //LOGGER.Debug("今回：\n" + curField);
+                                    //LOGGER.Debug(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
                                     steps.Add(prevStep);
 
                                     prevField.Drop(prevStep);
@@ -897,11 +889,10 @@ namespace Cubokta.Puyo
                     }
                     else if (readyForNextStepRecord2)
                     {
-                        Debug.Flush();
                         ColorPairPuyo prevStep = prevField.GetStepFromDiff(curField, prevNext);
                         if (prevStep != null)
                         {
-                            Debug.WriteLine(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
+                            LOGGER.Debug(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
                             steps.Add(prevStep);
 
                             prevField.Drop(prevStep);
@@ -914,10 +905,8 @@ namespace Cubokta.Puyo
                         }
                         else
                         {
-                            Debug.WriteLine("前回：\n" + prevField);
-                            Debug.WriteLine("今回：\n" + curField);
-                            Debug.WriteLine("★");
-                            Debug.Flush();
+                            LOGGER.Debug("前回：\n" + prevField);
+                            LOGGER.Debug("今回：\n" + curField);
 
                             captureFailCount++;
 
@@ -936,8 +925,7 @@ namespace Cubokta.Puyo
             }
             catch (Exception exp)
             {
-                Debug.WriteLine(exp.ToString());
-                Debug.Flush();
+                LOGGER.Error("ネクストの描画処理中にエラーが発生", exp);
                 throw exp;
             }
         }
