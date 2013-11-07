@@ -721,6 +721,8 @@ namespace Cubokta.Puyo
             }
 
             ba.EndAccess();
+
+            field.Correct();
             return field;
         }
 
@@ -848,7 +850,7 @@ namespace Cubokta.Puyo
                     {
                         if (!readyForNextStepRecord)
                         {
-                            LOGGER.Debug(next.Pivot + " " + next.Satellite);
+                            LOGGER.Debug("ネクスト:" + next.Pivot + " " + next.Satellite);
                             curNext = next;
                         }
 
@@ -864,9 +866,7 @@ namespace Cubokta.Puyo
                                 ColorPairPuyo prevStep = prevField.GetStepFromDiff(curField, prevNext);
                                 if (prevStep != null)
                                 {
-                                    //LOGGER.Debug("前回：\n" + prevField);
-                                    //LOGGER.Debug("今回：\n" + curField);
-                                    //LOGGER.Debug(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
+                                    LOGGER.Debug(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
                                     steps.Add(prevStep);
 
                                     prevField.Drop(prevStep);
@@ -880,6 +880,8 @@ namespace Cubokta.Puyo
                             }
                             else
                             {
+                                //LOGGER.Debug("前回：\n" + prevField);
+                                //LOGGER.Debug("今回：\n" + curField);
                                 prevNext = curNext;
                                 readyForNextStepRecord = false;
                                 FCodeEncoder encoder = new FCodeEncoder();

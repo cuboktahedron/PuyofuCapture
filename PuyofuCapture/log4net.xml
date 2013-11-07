@@ -10,7 +10,7 @@
       <param name="RollingStyle" value="date" />
       <param name="StaticLogFileName" value="true" />
 
-      <param name="AppendToFile" value="true" />
+      <param name="AppendToFile" value="false" />
 
       <filter type="log4net.Filter.LevelRangeFilter">
         <!-- <param name="LevelMax" value="FATAL" /> -->

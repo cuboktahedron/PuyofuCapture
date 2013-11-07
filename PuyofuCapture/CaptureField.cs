@@ -76,8 +76,7 @@ namespace Cubokta.Puyo
             Point satellitePt = new Point(-1, -1);
             for (int x = 0; x < X_MAX; x++)
             {
-                int top = getTopOfPuyo(x);
-                for (int y = top; y < top + 2 && y < Y_MAX; y++)
+                for (int y = 0; y < Y_MAX; y++)
                 {
                     PuyoType pt1 = f1.GetPuyoType(x, y);
                     PuyoType pt2 = f2.GetPuyoType(x, y);
@@ -133,20 +132,6 @@ namespace Cubokta.Puyo
             return null;
         }
 
-        private int getTopOfPuyo(int x)
-        {
-            for (int y = 0; y < Y_MAX; y++)
-            {
-                if (GetPuyoType(x, y) == PuyoType.NONE)
-                {
-                    return y;
-                }
-            }
-
-            return Y_MAX;
-
-        }
-
         private static readonly IDictionary<PuyoType, string> TYPE2KANJI = new Dictionary<PuyoType, string>()
         {
             { PuyoType.NONE, "□" },
@@ -190,6 +175,21 @@ namespace Cubokta.Puyo
                 {
                     SetPuyoType(pos, y, type);
                     return;
+                }
+            }
+        }
+
+        public void Correct()
+        {
+            // 浮いているぷよは除外する
+            for (int y = 1; y < Y_MAX; y++)
+            {
+                for (int x = 0; x < X_MAX; x++)
+                {
+                    if (GetPuyoType(x, y - 1) == PuyoType.NONE)
+                    {
+                        SetPuyoType(x, y, PuyoType.NONE);
+                    }
                 }
             }
         }
