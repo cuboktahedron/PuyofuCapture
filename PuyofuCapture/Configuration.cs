@@ -21,7 +21,6 @@ namespace Cubokta.Puyo
             SimilarityThreshold = int.Parse(ConfigurationManager.AppSettings["SimilarityThreshold"]);
             CaptureRect = StringToRectangle(ConfigurationManager.AppSettings["CaptureRect"]);
             NextRect = StringToRectangle(ConfigurationManager.AppSettings["NextRect"]);
-
         }
 
         public void Save()

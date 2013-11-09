@@ -21,6 +21,7 @@ namespace Cubokta.Puyo
     {
         private static readonly ILog LOGGER =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private Label fpsLbl;
 
         private PuyofuConfiguration config;
 
@@ -174,6 +175,7 @@ namespace Cubokta.Puyo
             this.MMFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MMFileEndMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MMConfigurationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fpsLbl = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).BeginInit();
@@ -228,7 +230,7 @@ namespace Cubokta.Puyo
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(22, 445);
+            this.statusLabel.Location = new System.Drawing.Point(22, 429);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(41, 12);
             this.statusLabel.TabIndex = 4;
@@ -520,9 +522,18 @@ namespace Cubokta.Puyo
             this.MMConfigurationMenuItem.Text = "設定";
             this.MMConfigurationMenuItem.Click += new System.EventHandler(this.MMConfigurationMenuItem_Click);
             // 
-            // ConfigurationForm
+            // fpsLbl
+            // 
+            this.fpsLbl.AutoSize = true;
+            this.fpsLbl.Location = new System.Drawing.Point(22, 458);
+            this.fpsLbl.Name = "fpsLbl";
+            this.fpsLbl.Size = new System.Drawing.Size(0, 12);
+            this.fpsLbl.TabIndex = 34;
+            // 
+            // MainForm
             // 
             this.ClientSize = new System.Drawing.Size(752, 482);
+            this.Controls.Add(this.fpsLbl);
             this.Controls.Add(this.tagsLbl);
             this.Controls.Add(this.tagsTxt);
             this.Controls.Add(this.sampleNoneImg);
@@ -556,7 +567,7 @@ namespace Cubokta.Puyo
             this.Controls.Add(this.spoitBtn);
             this.Controls.Add(this.mainMenu);
             this.MainMenuStrip = this.mainMenu;
-            this.Name = "ConfigurationForm";
+            this.Name = "MainForm";
             this.Text = "PuyofuCapture";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).EndInit();
@@ -635,9 +646,12 @@ namespace Cubokta.Puyo
             nextBmp = new Bitmap(config.NextRect.Width, config.NextRect.Height);
         }
 
+        FpsCalculator fpsCalculator = new FpsCalculator();
         private void captureTimer_Tick(object sender, EventArgs e)
         {
             Refresh();
+            fpsCalculator.Refresh();
+            fpsLbl.Text = "fps:" + fpsCalculator.GetFpsInt();
         }
 
         private bool IsCapturing { get; set; }
