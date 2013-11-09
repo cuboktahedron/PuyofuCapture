@@ -70,5 +70,29 @@ namespace Cubokta.Puyo.Common
             });
             Assert.AreEqual("AABBAA", analyzer.GetPattern(steps));
         }
+
+        [TestMethod]
+        public void GetPattern3()
+        {
+            List<PairPuyo> steps = new List<PairPuyo>();
+
+            steps.Add(new ColorPairPuyo()
+            {
+                Pivot = PuyoType.KI,
+                Satellite = PuyoType.MIDORI,
+            });
+            steps.Add(new ColorPairPuyo()
+            {
+                Pivot = PuyoType.KI,
+                Satellite = PuyoType.MIDORI,
+            });
+            steps.Add(new ColorPairPuyo()
+            {
+                Pivot = PuyoType.AKA,
+                Satellite = PuyoType.AKA,
+            });
+            Assert.AreEqual("ABABCC", analyzer.GetPattern(steps));
+        }
+
     }
 }

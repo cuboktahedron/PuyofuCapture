@@ -62,6 +62,7 @@ namespace Cubokta.Puyo.Common
                 candidates.Insert(0, priorList);
                 candidates.Add(posteriorList);
 
+                List<List<PuyoType>> removeTargets = new List<List<PuyoType>>();
                 foreach (List<PuyoType> candidate in candidates)
                 {
                     if (candidate.Count >= 2)
@@ -74,10 +75,11 @@ namespace Cubokta.Puyo.Common
                         // マッピングが確定
                         mapping[candidate[0]] = mapChar;
                         mapChar++;
+                        removeTargets.Add(candidate);
                     }
                 }
 
-                candidates.RemoveAll((candidate) => candidate.Count <= 1);
+                candidates.RemoveAll((candidate) => candidate.Count == 0 || removeTargets.Contains(candidate));
             }
 
             // ここでも未確定の情報が残っていれば、出現順に文字を割り振る
