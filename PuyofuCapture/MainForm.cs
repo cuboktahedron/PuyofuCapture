@@ -22,6 +22,8 @@ namespace Cubokta.Puyo
         private static readonly ILog LOGGER =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private PuyofuConfiguration config;
+
         // エントリ・ポイント
         [STAThread]
         static void Main()
@@ -40,6 +42,10 @@ namespace Cubokta.Puyo
         private PictureBox sampleNoneImg;
         private TextBox tagsTxt;
         private Label tagsLbl;
+        private MenuStrip mainMenu;
+        private ToolStripMenuItem MMConfigurationMenuItem;
+        private ToolStripMenuItem MMFileMenuItem;
+        private ToolStripMenuItem MMFileEndMenuItem;
 
         private PuyoTypeDetector detector = new PuyoTypeDetector();
         public MainForm()
@@ -47,24 +53,25 @@ namespace Cubokta.Puyo
             InitializeComponent();
             statusLabel.Text = "";
 
+            config = new PuyofuConfiguration();
+            config.Init();
+
             updateSamples();
-            detector.SimilarityThreshold = 30000;
+            detector.SimilarityThreshold = config.SimilarityThreshold;
+            similarityValueBar.Value = config.SimilarityThreshold;
             similarityValueLbl.Text = similarityValueBar.Value.ToString();
 
             // 前回のキャプチャ範囲があればそれを使用しキャプチャを開始する
-            String cRect = ConfigurationManager.AppSettings["captureRect"];
-            String nRect = ConfigurationManager.AppSettings["nextRect"];
-            if (cRect != "-1,-1,-1,-1" && nRect != "-1,-1,-1,-1")
+            if (config.CaptureRect.Top > 0
+                && config.CaptureRect.Left > 0
+                && config.CaptureRect.Width > 0
+                && config.CaptureRect.Height > 0
+                && config.NextRect.Top > 0
+                && config.NextRect.Left > 0
+                && config.NextRect.Width > 0
+                && config.NextRect.Height > 0)
             {
-                string[] cRectValues = cRect.Split(',');
-                string[] nRectValues = nRect.Split(',');
-                beginCapturing(
-                    new Rectangle(
-                        int.Parse(cRectValues[0]), int.Parse(cRectValues[1]),
-                        int.Parse(cRectValues[2]), int.Parse(cRectValues[3])),
-                    new Rectangle(
-                        int.Parse(nRectValues[0]), int.Parse(nRectValues[1]),
-                        int.Parse(nRectValues[2]), int.Parse(nRectValues[3])));
+                beginCapturing();
             }
         }
 
@@ -163,6 +170,10 @@ namespace Cubokta.Puyo
             this.sampleNoneImg = new System.Windows.Forms.PictureBox();
             this.tagsTxt = new System.Windows.Forms.TextBox();
             this.tagsLbl = new System.Windows.Forms.Label();
+            this.mainMenu = new System.Windows.Forms.MenuStrip();
+            this.MMFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MMFileEndMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MMConfigurationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).BeginInit();
@@ -173,6 +184,7 @@ namespace Cubokta.Puyo
             ((System.ComponentModel.ISupportInitialize)(this.sampleMurasakiImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.similarityValueBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleNoneImg)).BeginInit();
+            this.mainMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // spoitBtn
@@ -309,9 +321,9 @@ namespace Cubokta.Puyo
             // 
             // splitter1
             // 
-            this.splitter1.Location = new System.Drawing.Point(0, 0);
+            this.splitter1.Location = new System.Drawing.Point(0, 26);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 482);
+            this.splitter1.Size = new System.Drawing.Size(3, 456);
             this.splitter1.TabIndex = 14;
             this.splitter1.TabStop = false;
             // 
@@ -475,7 +487,40 @@ namespace Cubokta.Puyo
             this.tagsLbl.TabIndex = 32;
             this.tagsLbl.Text = "追加タグ";
             // 
-            // MainForm
+            // mainMenu
+            // 
+            this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MMFileMenuItem,
+            this.MMConfigurationMenuItem});
+            this.mainMenu.Location = new System.Drawing.Point(0, 0);
+            this.mainMenu.Name = "mainMenu";
+            this.mainMenu.Size = new System.Drawing.Size(752, 26);
+            this.mainMenu.TabIndex = 33;
+            this.mainMenu.Text = "menuStrip1";
+            // 
+            // MMFileMenuItem
+            // 
+            this.MMFileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MMFileEndMenuItem});
+            this.MMFileMenuItem.Name = "MMFileMenuItem";
+            this.MMFileMenuItem.Size = new System.Drawing.Size(85, 22);
+            this.MMFileMenuItem.Text = "ファイル(&F)";
+            // 
+            // MMFileEndMenuItem
+            // 
+            this.MMFileEndMenuItem.Name = "MMFileEndMenuItem";
+            this.MMFileEndMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.MMFileEndMenuItem.Text = "終了(&X)";
+            this.MMFileEndMenuItem.Click += new System.EventHandler(this.MMFileEndMenuItem_Click);
+            // 
+            // MMConfigurationMenuItem
+            // 
+            this.MMConfigurationMenuItem.Name = "MMConfigurationMenuItem";
+            this.MMConfigurationMenuItem.Size = new System.Drawing.Size(44, 22);
+            this.MMConfigurationMenuItem.Text = "設定";
+            this.MMConfigurationMenuItem.Click += new System.EventHandler(this.MMConfigurationMenuItem_Click);
+            // 
+            // ConfigurationForm
             // 
             this.ClientSize = new System.Drawing.Size(752, 482);
             this.Controls.Add(this.tagsLbl);
@@ -509,7 +554,9 @@ namespace Cubokta.Puyo
             this.Controls.Add(this.fieldImg);
             this.Controls.Add(this.captureBtn);
             this.Controls.Add(this.spoitBtn);
-            this.Name = "MainForm";
+            this.Controls.Add(this.mainMenu);
+            this.MainMenuStrip = this.mainMenu;
+            this.Name = "ConfigurationForm";
             this.Text = "PuyofuCapture";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).EndInit();
@@ -522,6 +569,8 @@ namespace Cubokta.Puyo
             ((System.ComponentModel.ISupportInitialize)(this.sampleMurasakiImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.similarityValueBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleNoneImg)).EndInit();
+            this.mainMenu.ResumeLayout(false);
+            this.mainMenu.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -547,9 +596,7 @@ namespace Cubokta.Puyo
             captureForm.Show();
         }
 
-        private Rectangle captureRect;
         private Bitmap captureBmp;
-        private Rectangle nextRect;
         private Bitmap nextBmp;
 
         private void CaptureForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -560,17 +607,15 @@ namespace Cubokta.Puyo
                 return;
             }
 
-            Rectangle cRect = f.GetCaptureRect();
-            Rectangle nRect = f.GetNextRect();
+            config.CaptureRect = f.GetCaptureRect();
+            config.NextRect = f.GetNextRect();
+            config.Save();
 
-            beginCapturing(cRect, nRect);
+            beginCapturing();
         }
 
-        private void beginCapturing(Rectangle cRect, Rectangle nRect)
+        private void beginCapturing()
         {
-            captureRect = cRect;
-            nextRect = nRect;
-
             IsCapturing = true;
             spoitBtn.Enabled = true;
             startBtn.Enabled = true;
@@ -580,22 +625,14 @@ namespace Cubokta.Puyo
             {
                 captureBmp.Dispose();
             }
-            captureBmp = new Bitmap(captureRect.Width, captureRect.Height);
+            captureBmp = new Bitmap(config.CaptureRect.Width, config.CaptureRect.Height);
 
             if (nextBmp != null)
             {
                 nextBmp.Dispose();
             }
-            captureBmp = new Bitmap(captureRect.Width, captureRect.Height);
-            nextBmp = new Bitmap(nextRect.Width, nextRect.Height);
-
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            config.AppSettings.Settings["captureRect"].Value =
-                    captureRect.X + "," + captureRect.Y + "," + captureRect.Width + "," + captureRect.Height;
-            config.AppSettings.Settings["nextRect"].Value =
-                    nextRect.X + "," + nextRect.Y + "," + nextRect.Width + "," + nextRect.Height;
-            config.Save();
-
+            captureBmp = new Bitmap(config.CaptureRect.Width, config.CaptureRect.Height);
+            nextBmp = new Bitmap(config.NextRect.Width, config.NextRect.Height);
         }
 
         private void captureTimer_Tick(object sender, EventArgs e)
@@ -622,11 +659,12 @@ namespace Cubokta.Puyo
                 using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
                 {
                     // フィールドのキャプチャ範囲を取り込む
-                    captureBmpG.CopyFromScreen(new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBmp.Size);
+                    captureBmpG.CopyFromScreen(
+                        new Point(config.CaptureRect.Left, config.CaptureRect.Top), new Point(0, 0), captureBmp.Size);
 
                     // 取り込んだ画像を画面に出力 // TODO: コメント反対？
                     Rectangle dest = new Rectangle(0, 0, 192, 384);
-                    Rectangle src = new Rectangle(0, 0, captureRect.Width, captureRect.Height);
+                    Rectangle src = new Rectangle(0, 0, config.CaptureRect.Width, config.CaptureRect.Height);
                     forAnalyzeG.DrawImage(captureBmp, dest, src, GraphicsUnit.Pixel);
 
                     // 解析用のBMPにも画面と同じ内容を出力
@@ -636,7 +674,10 @@ namespace Cubokta.Puyo
                     {
                         // フィールドの状態を解析し、結果を描画
                         curField = a(forAnalyzeBmp);
-                        DrawDebugRect(fieldImgG, curField);
+                        if (config.DebugRectEnabled)
+                        {
+                            DrawDebugRect(fieldImgG, curField);
+                        }
                     }
                     else
                     {
@@ -758,11 +799,12 @@ namespace Cubokta.Puyo
                 using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
                 {
                     // フィールドのキャプチャ範囲を取り込む
-                    captureBmpG.CopyFromScreen(new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBmp.Size);
+                    captureBmpG.CopyFromScreen(
+                        new Point(config.CaptureRect.Left, config.CaptureRect.Top), new Point(0, 0), captureBmp.Size);
 
                     // 取り込んだ画像を画面に出力
                     Rectangle dest = new Rectangle(0, 0, 192, 384);
-                    Rectangle src = new Rectangle(0, 0, captureRect.Width, captureRect.Height);
+                    Rectangle src = new Rectangle(0, 0, config.CaptureRect.Width, config.CaptureRect.Height);
                     forAnalyzeG.DrawImage(captureBmp, dest, src, GraphicsUnit.Pixel);
 
                     // 解析用のBMPにも画面と同じ内容を出力
@@ -819,9 +861,9 @@ namespace Cubokta.Puyo
                 using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
                 {
                     // ネクストのキャプチャ範囲を取り込む
-                    nextBmpG.CopyFromScreen(new Point(nextRect.Left, nextRect.Top), new Point(0, 0), nextBmp.Size);
+                    nextBmpG.CopyFromScreen(new Point(config.NextRect.Left, config.NextRect.Top), new Point(0, 0), nextBmp.Size);
                     Rectangle dest = new Rectangle(0, 0, 32, 64);
-                    Rectangle src = new Rectangle(0, 0, nextRect.Width, nextRect.Height);
+                    Rectangle src = new Rectangle(0, 0, config.NextRect.Width, config.NextRect.Height);
 
                     // 取り込んだ画像を画面に出力
                     forAnalyzeG.DrawImage(nextBmp, dest, src, GraphicsUnit.Pixel);
@@ -831,7 +873,10 @@ namespace Cubokta.Puyo
 
                     // ツモ情報を解析し、結果を描画
                     CaptureField field = b(forAnalyzeBmp);
-                    DrawDebugNextRect(nextG, field);
+                    if (config.DebugRectEnabled)
+                    {
+                        DrawDebugNextRect(nextG, field);
+                    }
 
                     ColorPairPuyo next = field.GetNext(0);
 
@@ -1084,6 +1129,8 @@ namespace Cubokta.Puyo
         {
             detector.SimilarityThreshold = similarityValueBar.Value;
             similarityValueLbl.Text = similarityValueBar.Value.ToString();
+            config.SimilarityThreshold = similarityValueBar.Value;
+            config.Save();
         }
 
         private void stepDataTxt_KeyDown(object sender, KeyEventArgs e)
@@ -1091,7 +1138,18 @@ namespace Cubokta.Puyo
             if (e.KeyCode == System.Windows.Forms.Keys.A & e.Control == true)
             {
                 stepDataTxt.SelectAll();
-            } 
+            }
+        }
+
+        private void MMFileEndMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void MMConfigurationMenuItem_Click(object sender, EventArgs e)
+        {
+            ConfigurationForm form = new ConfigurationForm(config);
+            DialogResult result = form.ShowDialog(this);
         }
     }
 }
