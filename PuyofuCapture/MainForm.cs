@@ -868,6 +868,7 @@ namespace Cubokta.Puyo
         bool readyForNextStepRecord2 = false;
         bool isRecording = false;
         int captureFailCount = 0;
+        private IDictionary<ColorPairPuyo, int> currents = new Dictionary<ColorPairPuyo, int>();
         private void nextImg_Paint(object sender, PaintEventArgs e)
         {
             try
@@ -886,6 +887,7 @@ namespace Cubokta.Puyo
                     nextBmpG.CopyFromScreen(new Point(config.NextRect.Left, config.NextRect.Top), new Point(0, 0), nextBmp.Size);
                     Rectangle dest = new Rectangle(0, 0, 32, 64);
                     Rectangle src = new Rectangle(0, 0, config.NextRect.Width, config.NextRect.Height);
+
 
                     // 取り込んだ画像を画面に出力
                     forAnalyzeG.DrawImage(nextBmp, dest, src, GraphicsUnit.Pixel);
@@ -915,18 +917,33 @@ namespace Cubokta.Puyo
 
                     if (next.Pivot != PuyoType.NONE && next.Satellite != PuyoType.NONE)
                     {
-                        if (!readyForNextStepRecord)
+                        if (!currents.ContainsKey(next))
                         {
-                            LOGGER.Debug("ネクスト:" + next.Pivot + " " + next.Satellite);
-                            curNext = next;
+                            currents[next] = 0;
                         }
-
+                        currents[next]++;
                         readyForNextStepRecord = true;
                     }
                     else if (next.Pivot == PuyoType.NONE && next.Satellite == PuyoType.NONE && !readyForNextStepRecord2)
                     {
                         if (readyForNextStepRecord)
                         {
+                            if (curNext == null)
+                            {
+                                curNext = (from n in currents
+                                           where n.Value == (from nn in currents select nn.Value).Max()
+                                           select n.Key).ElementAt(0);
+                                LOGGER.Debug("ネクスト:" + curNext.Pivot + " " + curNext.Satellite);
+                                if (currents.Count > 1)
+                                {
+                                    LOGGER.Debug("ネクスト候補が2つありました。");
+                                    foreach (KeyValuePair<ColorPairPuyo, int> pair in currents)
+                                    {
+                                        LOGGER.Debug(pair.Key.Pivot + " " + pair.Key.Satellite + " :" + pair.Value);
+                                    }
+                                }
+                            }
+
                             if (prevNext != null)
                             {
                                 readyForNextStepRecord2 = true;
@@ -940,6 +957,8 @@ namespace Cubokta.Puyo
                                     prevNext = curNext;
                                     readyForNextStepRecord = false;
                                     readyForNextStepRecord2 = false;
+                                    currents = new Dictionary<ColorPairPuyo, int>();
+                                    curNext = null;
                                     FCodeEncoder encoder = new FCodeEncoder();
                                     recordTxt.Text = encoder.Encode(steps);
                                     captureFailCount = 0;
@@ -951,6 +970,8 @@ namespace Cubokta.Puyo
                                 //LOGGER.Debug("今回：\n" + curField);
                                 prevNext = curNext;
                                 readyForNextStepRecord = false;
+                                currents = new Dictionary<ColorPairPuyo, int>();
+                                curNext = null;
                                 FCodeEncoder encoder = new FCodeEncoder();
                                 recordTxt.Text = encoder.Encode(steps);
                             }
@@ -968,6 +989,8 @@ namespace Cubokta.Puyo
                             prevNext = curNext;
                             readyForNextStepRecord = false;
                             readyForNextStepRecord2 = false;
+                            currents = new Dictionary<ColorPairPuyo, int>();
+                            curNext = null;
                             FCodeEncoder encoder = new FCodeEncoder();
                             recordTxt.Text = encoder.Encode(steps);
                             captureFailCount = 0;
@@ -1118,6 +1141,7 @@ namespace Cubokta.Puyo
             stepDataTxt.Text = "";
             prevNext = null;
             curNext = null;
+            currents = new Dictionary<ColorPairPuyo, int>();
             isRecording = true;
             stopBtn.Enabled = true;
             prevField = new CaptureField();
