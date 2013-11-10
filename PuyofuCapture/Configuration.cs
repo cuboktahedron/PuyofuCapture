@@ -14,6 +14,9 @@ namespace Cubokta.Puyo
         public int SimilarityThreshold { get; set; }
         public Rectangle CaptureRect { get; set; }
         public Rectangle NextRect { get; set; }
+        public int RecordId { get; set; }
+        public string RecordDate { get; set; }
+        public string PlayerName { get; set; }
 
         public void Init()
         {
@@ -21,6 +24,9 @@ namespace Cubokta.Puyo
             SimilarityThreshold = int.Parse(ConfigurationManager.AppSettings["SimilarityThreshold"]);
             CaptureRect = StringToRectangle(ConfigurationManager.AppSettings["CaptureRect"]);
             NextRect = StringToRectangle(ConfigurationManager.AppSettings["NextRect"]);
+            RecordId = int.Parse(ConfigurationManager.AppSettings["RecordId"]);
+            RecordDate = ConfigurationManager.AppSettings["RecordDate"];
+            PlayerName = ConfigurationManager.AppSettings["PlayerName"];
         }
 
         public void Save()
@@ -30,6 +36,9 @@ namespace Cubokta.Puyo
             appConfig.AppSettings.Settings["SimilarityThreshold"].Value = SimilarityThreshold.ToString();
             appConfig.AppSettings.Settings["CaptureRect"].Value = RectToSaveString(CaptureRect);
             appConfig.AppSettings.Settings["NextRect"].Value = RectToSaveString(NextRect);
+            appConfig.AppSettings.Settings["RecordId"].Value = RecordId.ToString();
+            appConfig.AppSettings.Settings["RecordDate"].Value = RecordDate;
+            appConfig.AppSettings.Settings["PlayerName"].Value = PlayerName;
             appConfig.Save();
         }
 

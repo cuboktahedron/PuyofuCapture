@@ -61,6 +61,9 @@ namespace Cubokta.Puyo
             detector.SimilarityThreshold = config.SimilarityThreshold;
             similarityValueBar.Value = config.SimilarityThreshold;
             similarityValueLbl.Text = similarityValueBar.Value.ToString();
+            stepIdTxt.Text = config.RecordId.ToString();
+            playDate.Text = config.RecordDate;
+            playerNameTxt.Text = config.PlayerName;
 
             // 前回のキャプチャ範囲があればそれを使用しキャプチャを開始する
             if (config.CaptureRect.Top > 0
@@ -792,6 +795,11 @@ namespace Cubokta.Puyo
             {
                 nextBmp.Dispose();
             }
+
+            config.RecordId = (int)stepIdTxt.Value;
+            config.RecordDate = playDate.Text;
+            config.PlayerName = playerNameTxt.Text;
+            config.Save();
         }
 
         private void fieldImg_MouseClick(object sender, MouseEventArgs e)
