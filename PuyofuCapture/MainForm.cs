@@ -862,13 +862,7 @@ namespace Cubokta.Puyo
             }
         }
 
-        private ColorPairPuyo curNext;
-        private ColorPairPuyo prevNext;
-        bool readyForNextStepRecord = false;
-        bool readyForNextStepRecord2 = false;
-        bool isRecording = false;
-        int captureFailCount = 0;
-        private IDictionary<ColorPairPuyo, int> currents = new Dictionary<ColorPairPuyo, int>();
+        PuyofuRecorder recorder = new PuyofuRecorder();
         private void nextImg_Paint(object sender, PaintEventArgs e)
         {
             try
@@ -903,115 +897,21 @@ namespace Cubokta.Puyo
                     }
 
                     ColorPairPuyo next = field.GetNext(0);
-
-                    if (!isRecording || steps.Count() >= 16)
+                    RecordResult result = recorder.DoNext(curField, next);
+                    switch (result)
                     {
-                        isRecording = false;
-                        stopBtn.Enabled = false;
-                        if (steps.Count() >= 16)
-                        {
+                        case RecordResult.RECORD_SUCCESS:
                             updateStepData();
-                        }
-                        return;
-                    }
-
-                    if (next.Pivot != PuyoType.NONE && next.Satellite != PuyoType.NONE)
-                    {
-                        if (!currents.ContainsKey(next))
-                        {
-                            currents[next] = 0;
-                        }
-                        currents[next]++;
-                        readyForNextStepRecord = true;
-                    }
-                    else if (next.Pivot == PuyoType.NONE && next.Satellite == PuyoType.NONE && !readyForNextStepRecord2)
-                    {
-                        if (readyForNextStepRecord)
-                        {
-                            if (curNext == null)
-                            {
-                                curNext = (from n in currents
-                                           where n.Value == (from nn in currents select nn.Value).Max()
-                                           select n.Key).ElementAt(0);
-                                LOGGER.Debug("ネクスト:" + curNext.Pivot + " " + curNext.Satellite);
-                                if (currents.Count > 1)
-                                {
-                                    LOGGER.Debug("ネクスト候補が2つありました。");
-                                    foreach (KeyValuePair<ColorPairPuyo, int> pair in currents)
-                                    {
-                                        LOGGER.Debug(pair.Key.Pivot + " " + pair.Key.Satellite + " :" + pair.Value);
-                                    }
-                                }
-                            }
-
-                            if (prevNext != null)
-                            {
-                                readyForNextStepRecord2 = true;
-                                ColorPairPuyo prevStep = prevField.GetStepFromDiff(curField, prevNext);
-                                if (prevStep != null)
-                                {
-                                    LOGGER.Debug(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
-                                    steps.Add(prevStep);
-
-                                    prevField.Drop(prevStep);
-                                    prevNext = curNext;
-                                    readyForNextStepRecord = false;
-                                    readyForNextStepRecord2 = false;
-                                    currents = new Dictionary<ColorPairPuyo, int>();
-                                    curNext = null;
-                                    FCodeEncoder encoder = new FCodeEncoder();
-                                    recordTxt.Text = encoder.Encode(steps);
-                                    captureFailCount = 0;
-                                }
-                            }
-                            else
-                            {
-                                //LOGGER.Debug("前回：\n" + prevField);
-                                //LOGGER.Debug("今回：\n" + curField);
-                                prevNext = curNext;
-                                readyForNextStepRecord = false;
-                                currents = new Dictionary<ColorPairPuyo, int>();
-                                curNext = null;
-                                FCodeEncoder encoder = new FCodeEncoder();
-                                recordTxt.Text = encoder.Encode(steps);
-                            }
-                        }
-                    }
-                    else if (readyForNextStepRecord2)
-                    {
-                        ColorPairPuyo prevStep = prevField.GetStepFromDiff(curField, prevNext);
-                        if (prevStep != null)
-                        {
-                            LOGGER.Debug(prevStep.Pivot + " " + prevStep.Satellite + " " + prevStep.Dir + " " + prevStep.Pos);
-                            steps.Add(prevStep);
-
-                            prevField.Drop(prevStep);
-                            prevNext = curNext;
-                            readyForNextStepRecord = false;
-                            readyForNextStepRecord2 = false;
-                            currents = new Dictionary<ColorPairPuyo, int>();
-                            curNext = null;
-                            FCodeEncoder encoder = new FCodeEncoder();
-                            recordTxt.Text = encoder.Encode(steps);
-                            captureFailCount = 0;
-                        }
-                        else
-                        {
-                            LOGGER.Debug("前回：\n" + prevField);
-                            LOGGER.Debug("今回：\n" + curField);
-
-                            captureFailCount++;
-
-                            // 計1秒以上譜が特定できなければ失敗とする
-                            if (captureFailCount > (1000 / captureTimer.Interval))
-                            {
-                                statusLabel.Text = "キャプチャ失敗！！";
-
-                                isRecording = false;
-                                stopBtn.Enabled = false;
-                                return;
-                            }
-                        }
+                            break;
+                        case RecordResult.RECORD_FAILURE:
+                            statusLabel.Text = "キャプチャ失敗！！";
+                            stopBtn.Enabled = false;
+                            break;
+                        case RecordResult.RECORD_FORWARD:
+                            recordTxt.Text = recorder.GetRecord();
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
@@ -1045,7 +945,7 @@ namespace Cubokta.Puyo
                 tagList.AddRange(tagsTxt.Text.Split(' '));
             }
 
-           // 初手3手の処理
+            // 初手3手の処理
             FCodeDecoder decoder = new FCodeDecoder();
             List<PairPuyo> steps = decoder.Decode(recordTxt.Text);
             FirstStepAnalyzer firstStepAnalyzer = new FirstStepAnalyzer();
@@ -1139,23 +1039,18 @@ namespace Cubokta.Puyo
             steps = new List<PairPuyo>();
             stepIdTxt.UpButton();
             stepDataTxt.Text = "";
-            prevNext = null;
-            curNext = null;
-            currents = new Dictionary<ColorPairPuyo, int>();
-            isRecording = true;
             stopBtn.Enabled = true;
             prevField = new CaptureField();
             curField = new CaptureField();
 
-            readyForNextStepRecord = false;
-            readyForNextStepRecord2 = false;
-            captureFailCount = 0;
             statusLabel.Text = "";
+
+            recorder = new PuyofuRecorder();
+            recorder.BeginRecord(captureTimer.Interval);
         }
 
         private void stopBtn_Click(object sender, EventArgs e)
         {
-            isRecording = false;
             stopBtn.Enabled = false;
             updateStepData();
         }
