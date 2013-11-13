@@ -136,7 +136,7 @@ namespace Cubokta.Puyo
         private TextBox recordTxt;
         private TextBox stepDataTxt;
         private NumericUpDown stepIdTxt;
-        private Button stopBtn;
+        private Button cancelBtn;
         private Splitter splitter1;
 
         private void InitializeComponent()
@@ -162,7 +162,7 @@ namespace Cubokta.Puyo
             this.recordTxt = new System.Windows.Forms.TextBox();
             this.stepDataTxt = new System.Windows.Forms.TextBox();
             this.stepIdTxt = new System.Windows.Forms.NumericUpDown();
-            this.stopBtn = new System.Windows.Forms.Button();
+            this.cancelBtn = new System.Windows.Forms.Button();
             this.sampleAkaImg = new System.Windows.Forms.PictureBox();
             this.sampleMidoriImg = new System.Windows.Forms.PictureBox();
             this.sampleAoImg = new System.Windows.Forms.PictureBox();
@@ -384,16 +384,16 @@ namespace Cubokta.Puyo
             this.stepIdTxt.Size = new System.Drawing.Size(120, 19);
             this.stepIdTxt.TabIndex = 8;
             // 
-            // stopBtn
+            // cancelBtn
             // 
-            this.stopBtn.Enabled = false;
-            this.stopBtn.Location = new System.Drawing.Point(24, 346);
-            this.stopBtn.Name = "stopBtn";
-            this.stopBtn.Size = new System.Drawing.Size(175, 70);
-            this.stopBtn.TabIndex = 6;
-            this.stopBtn.Text = "停止";
-            this.stopBtn.UseVisualStyleBackColor = true;
-            this.stopBtn.Click += new System.EventHandler(this.stopBtn_Click);
+            this.cancelBtn.Enabled = false;
+            this.cancelBtn.Location = new System.Drawing.Point(24, 346);
+            this.cancelBtn.Name = "cancelBtn";
+            this.cancelBtn.Size = new System.Drawing.Size(175, 70);
+            this.cancelBtn.TabIndex = 6;
+            this.cancelBtn.Text = "やりおなす";
+            this.cancelBtn.UseVisualStyleBackColor = true;
+            this.cancelBtn.Click += new System.EventHandler(this.cancelBtn_Click);
             // 
             // sampleAkaImg
             // 
@@ -548,7 +548,7 @@ namespace Cubokta.Puyo
             this.Controls.Add(this.sampleAoImg);
             this.Controls.Add(this.sampleMidoriImg);
             this.Controls.Add(this.sampleAkaImg);
-            this.Controls.Add(this.stopBtn);
+            this.Controls.Add(this.cancelBtn);
             this.Controls.Add(this.stepIdTxt);
             this.Controls.Add(this.stepDataTxt);
             this.Controls.Add(this.recordTxt);
@@ -902,10 +902,10 @@ namespace Cubokta.Puyo
                     {
                         case RecordResult.RECORD_SUCCESS:
                             updateStepData();
+                            cancelBtn.Enabled = false;
                             break;
                         case RecordResult.RECORD_FAILURE:
                             statusLabel.Text = "キャプチャ失敗！！";
-                            stopBtn.Enabled = false;
                             updateStepData();
                             break;
                         case RecordResult.RECORD_FORWARD:
@@ -1049,7 +1049,7 @@ namespace Cubokta.Puyo
             steps = new List<PairPuyo>();
             stepIdTxt.UpButton();
             stepDataTxt.Text = "";
-            stopBtn.Enabled = true;
+            cancelBtn.Enabled = true;
             prevField = new CaptureField();
             curField = new CaptureField();
 
@@ -1059,10 +1059,12 @@ namespace Cubokta.Puyo
             recorder.BeginRecord(captureTimer.Interval);
         }
 
-        private void stopBtn_Click(object sender, EventArgs e)
+        private void cancelBtn_Click(object sender, EventArgs e)
         {
-            stopBtn.Enabled = false;
-            updateStepData();
+            cancelBtn.Enabled = false;
+            stepIdTxt.DownButton();
+            statusLabel.Text = "";
+            recorder = new PuyofuRecorder();
         }
 
         private Point pointOnFieldImg;
