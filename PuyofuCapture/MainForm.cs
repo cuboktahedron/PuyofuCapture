@@ -946,7 +946,7 @@ namespace Cubokta.Puyo
             StringBuilder sb = new StringBuilder();
             if (tagsTxt.Text.Trim() != "")
             {
-                tagList.AddRange(tagsTxt.Text.Split(' '));
+                tagList.AddRange(tagsTxt.Text.Split(new char[] {' ', '　'}, StringSplitOptions.RemoveEmptyEntries));
             }
 
             // 初手3手の処理
