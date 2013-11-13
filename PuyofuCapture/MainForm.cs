@@ -906,6 +906,7 @@ namespace Cubokta.Puyo
                         case RecordResult.RECORD_FAILURE:
                             statusLabel.Text = "キャプチャ失敗！！";
                             stopBtn.Enabled = false;
+                            updateStepData();
                             break;
                         case RecordResult.RECORD_FORWARD:
                             recordTxt.Text = recorder.GetRecord();
@@ -946,10 +947,16 @@ namespace Cubokta.Puyo
             }
 
             // 初手3手の処理
-            FCodeDecoder decoder = new FCodeDecoder();
-            List<PairPuyo> steps = decoder.Decode(recordTxt.Text);
+            List<PairPuyo> steps = recorder.GetSteps();
             FirstStepAnalyzer firstStepAnalyzer = new FirstStepAnalyzer();
-            tagList.Add(firstStepAnalyzer.GetPattern(steps, 3));
+            if (steps.Count < 3)
+            {
+                tagList.Add(firstStepAnalyzer.GetPattern(steps));
+            }
+            else
+            {
+                tagList.Add(firstStepAnalyzer.GetPattern(steps, 3));
+            }
 
             foreach (string tag in tagList)
             {

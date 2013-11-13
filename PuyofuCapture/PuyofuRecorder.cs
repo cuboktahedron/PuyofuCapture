@@ -155,5 +155,10 @@ namespace Cubokta.Puyo
         {
             return encoder.Encode(steps);
         }
+
+        internal List<PairPuyo> GetSteps()
+        {
+            return new List<PairPuyo>(steps);
+        }
     }
 }
