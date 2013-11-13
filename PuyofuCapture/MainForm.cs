@@ -911,6 +911,9 @@ namespace Cubokta.Puyo
                         case RecordResult.RECORD_FORWARD:
                             recordTxt.Text = recorder.GetRecord();
                             break;
+                        case RecordResult.RECORD_ENDED:
+                            updateStepData();
+                            break;
                         default:
                             break;
                     }
