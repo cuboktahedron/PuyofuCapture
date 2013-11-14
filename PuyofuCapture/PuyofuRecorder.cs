@@ -30,7 +30,7 @@ namespace Cubokta.Puyo
         private bool isReadyForNextStepRecord;
         private bool isReadyForNextStepRecord2;
         private bool isRecording;
-        private bool isRecordEnded;
+        public bool IsRecordEnded { get; set; }
         private int captureFailCount;
         private IDictionary<ColorPairPuyo, int> currents = new Dictionary<ColorPairPuyo, int>();
         private CaptureField prevField = new CaptureField();
@@ -44,7 +44,7 @@ namespace Cubokta.Puyo
 
         public RecordResult DoNext(CaptureField curField, ColorPairPuyo next)
         {
-            if (isRecordEnded)
+            if (IsRecordEnded)
             {
                 return RecordResult.RECORD_ENDED;
             }
@@ -57,7 +57,7 @@ namespace Cubokta.Puyo
             if (steps.Count() >= 16)
             {
                 isRecording = false;
-                isRecordEnded = true;
+                IsRecordEnded = true;
                 return RecordResult.RECORD_SUCCESS;
             }
 
@@ -128,7 +128,7 @@ namespace Cubokta.Puyo
                         if (captureFailCount > (1000 / captureInterval))
                         {
                             isRecording = false;
-                            isRecordEnded = true;
+                            IsRecordEnded = true;
                             return RecordResult.RECORD_FAILURE;
                         }
                     }

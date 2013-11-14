@@ -24,6 +24,7 @@ namespace Cubokta.Puyo
         private Label fpsLbl;
 
         private PuyofuConfiguration config;
+        private StreamWriter recordFileWriter;
 
         // エントリ・ポイント
         [STAThread]
@@ -800,6 +801,11 @@ namespace Cubokta.Puyo
             config.RecordDate = playDate.Text;
             config.PlayerName = playerNameTxt.Text;
             config.Save();
+
+            if (recordFileWriter != null)
+            {
+                recordFileWriter.Close();
+            }
         }
 
         private void fieldImg_MouseClick(object sender, MouseEventArgs e)
@@ -931,7 +937,8 @@ namespace Cubokta.Puyo
     id: '#id',
     record: '#record',
     tags: [#tags],
-  },";
+  },
+";
 
         private void updateStepData()
         {
@@ -1046,6 +1053,19 @@ namespace Cubokta.Puyo
 
         private void startBtn_Click(object sender, EventArgs e)
         {
+            if (recordFileWriter == null)
+            {
+                recordFileWriter = new StreamWriter("record.js", false, Encoding.UTF8);
+            }
+            else
+            {
+                if (recorder.IsRecordEnded)
+                {
+                    recordFileWriter.WriteLine(stepDataTxt.Text);
+                    recordFileWriter.Flush();
+                }
+            }
+
             steps = new List<PairPuyo>();
             stepIdTxt.UpButton();
             stepDataTxt.Text = "";
