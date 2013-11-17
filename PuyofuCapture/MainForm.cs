@@ -21,10 +21,6 @@ namespace Cubokta.Puyo
     {
         private static readonly ILog LOGGER =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private Label fpsLbl;
-
-        private PuyofuConfiguration config;
-        private StreamWriter recordFileWriter;
 
         // エントリ・ポイント
         [STAThread]
@@ -32,7 +28,16 @@ namespace Cubokta.Puyo
         {
             Application.Run(new MainForm());
         }
-
+        
+        private Label fpsLbl;
+        private PuyofuConfiguration config;
+        private PictureBox fieldImg2;
+        private PictureBox nextImg2;
+        private TextBox playerNameTxt2;
+        private TextBox tagsTxt2;
+        private TextBox recordTxt2;
+        private RadioButton fieldRadioBoth;
+        private StreamWriter recordFileWriter;
         private PictureBox sampleAkaImg;
         private PictureBox sampleMidoriImg;
         private PictureBox sampleAoImg;
@@ -42,7 +47,7 @@ namespace Cubokta.Puyo
         private Label label1;
         private Label similarityValueLbl;
         private PictureBox sampleNoneImg;
-        private TextBox tagsTxt;
+        private TextBox tagsTxt1;
         private Label tagsLbl;
         private MenuStrip mainMenu;
         private ToolStripMenuItem MMConfigurationMenuItem;
@@ -50,10 +55,21 @@ namespace Cubokta.Puyo
         private ToolStripMenuItem MMFileEndMenuItem;
 
         private PuyoTypeDetector detector = new PuyoTypeDetector();
+        private CaptureRects captureRects;
+        private TextBox[] playerNameTxts;
+        private TextBox[] tagsTxts;
+        private TextBox[] recordTxts;
+
         public MainForm()
         {
             InitializeComponent();
+
+            playerNameTxts = new TextBox[] { playerNameTxt1, playerNameTxt2 };
+            tagsTxts = new TextBox[] { tagsTxt1, tagsTxt2 };
+            recordTxts = new TextBox[] { recordTxt1, recordTxt2 };
+
             statusLabel.Text = "";
+            fpsLbl.Text = "";
 
             config = new PuyofuConfiguration();
             config.Init();
@@ -64,19 +80,34 @@ namespace Cubokta.Puyo
             similarityValueLbl.Text = similarityValueBar.Value.ToString();
             stepIdTxt.Text = config.RecordId.ToString();
             playDate.Text = config.RecordDate;
-            playerNameTxt.Text = config.PlayerName;
+            playerNameTxt1.Text = config.PlayerName1;
+            playerNameTxt2.Text = config.PlayerName2;
+            CheckFieldRadio(config.TargetField);
 
-            // 前回のキャプチャ範囲があればそれを使用しキャプチャを開始する
             if (config.CaptureRect.Top > 0
                 && config.CaptureRect.Left > 0
                 && config.CaptureRect.Width > 0
-                && config.CaptureRect.Height > 0
-                && config.NextRect.Top > 0
-                && config.NextRect.Left > 0
-                && config.NextRect.Width > 0
-                && config.NextRect.Height > 0)
+                && config.CaptureRect.Height > 0)
             {
-                beginCapturing();
+                captureRects = new CaptureRects();
+                captureRects.CalculateRects(config.CaptureRect);
+                BeginCapturing();
+            }
+        }
+
+        private void CheckFieldRadio(string targetFieldValue)
+        {
+            if (targetFieldValue == "1")
+            {
+                fieldRadio1P.Checked = true;
+            }
+            else if (targetFieldValue == "2")
+            {
+                fieldRadio2P.Checked = true;
+            }
+            else
+            {
+                fieldRadioBoth.Checked = true;
             }
         }
 
@@ -119,48 +150,48 @@ namespace Cubokta.Puyo
 
         private Button spoitBtn;
         private Button captureBtn;
-        private PictureBox fieldImg;
+        private PictureBox fieldImg1;
         private System.Windows.Forms.Timer captureTimer;
         private System.ComponentModel.IContainer components;
         private Label statusLabel;
         private Label colorInfoLbl;
-        private RadioButton FieldRadio1P;
-        private RadioButton FieldRadio2P;
-        private PictureBox nextImg;
+        private RadioButton fieldRadio1P;
+        private RadioButton fieldRadio2P;
+        private PictureBox nextImg1;
         private Label playDateLbl;
         private Label playerNameLbl;
         private Label stepIdLbl;
         private DateTimePicker playDate;
-        private TextBox playerNameTxt;
+        private TextBox playerNameTxt1;
         private Button startBtn;
         private Label recordLbl;
-        private TextBox recordTxt;
+        private TextBox recordTxt1;
         private TextBox stepDataTxt;
         private NumericUpDown stepIdTxt;
         private Button cancelBtn;
-        private Splitter splitter1;
+        private Splitter splitter;
 
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
             this.spoitBtn = new System.Windows.Forms.Button();
             this.captureBtn = new System.Windows.Forms.Button();
-            this.fieldImg = new System.Windows.Forms.PictureBox();
+            this.fieldImg1 = new System.Windows.Forms.PictureBox();
             this.captureTimer = new System.Windows.Forms.Timer(this.components);
             this.statusLabel = new System.Windows.Forms.Label();
             this.colorInfoLbl = new System.Windows.Forms.Label();
-            this.FieldRadio1P = new System.Windows.Forms.RadioButton();
-            this.FieldRadio2P = new System.Windows.Forms.RadioButton();
-            this.nextImg = new System.Windows.Forms.PictureBox();
+            this.fieldRadio1P = new System.Windows.Forms.RadioButton();
+            this.fieldRadio2P = new System.Windows.Forms.RadioButton();
+            this.nextImg1 = new System.Windows.Forms.PictureBox();
             this.playDateLbl = new System.Windows.Forms.Label();
             this.playerNameLbl = new System.Windows.Forms.Label();
             this.stepIdLbl = new System.Windows.Forms.Label();
             this.playDate = new System.Windows.Forms.DateTimePicker();
-            this.playerNameTxt = new System.Windows.Forms.TextBox();
-            this.splitter1 = new System.Windows.Forms.Splitter();
+            this.playerNameTxt1 = new System.Windows.Forms.TextBox();
+            this.splitter = new System.Windows.Forms.Splitter();
             this.startBtn = new System.Windows.Forms.Button();
             this.recordLbl = new System.Windows.Forms.Label();
-            this.recordTxt = new System.Windows.Forms.TextBox();
+            this.recordTxt1 = new System.Windows.Forms.TextBox();
             this.stepDataTxt = new System.Windows.Forms.TextBox();
             this.stepIdTxt = new System.Windows.Forms.NumericUpDown();
             this.cancelBtn = new System.Windows.Forms.Button();
@@ -173,15 +204,21 @@ namespace Cubokta.Puyo
             this.label1 = new System.Windows.Forms.Label();
             this.similarityValueLbl = new System.Windows.Forms.Label();
             this.sampleNoneImg = new System.Windows.Forms.PictureBox();
-            this.tagsTxt = new System.Windows.Forms.TextBox();
+            this.tagsTxt1 = new System.Windows.Forms.TextBox();
             this.tagsLbl = new System.Windows.Forms.Label();
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.MMFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MMFileEndMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MMConfigurationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fpsLbl = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nextImg)).BeginInit();
+            this.fieldImg2 = new System.Windows.Forms.PictureBox();
+            this.nextImg2 = new System.Windows.Forms.PictureBox();
+            this.playerNameTxt2 = new System.Windows.Forms.TextBox();
+            this.tagsTxt2 = new System.Windows.Forms.TextBox();
+            this.recordTxt2 = new System.Windows.Forms.TextBox();
+            this.fieldRadioBoth = new System.Windows.Forms.RadioButton();
+            ((System.ComponentModel.ISupportInitialize)(this.fieldImg1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nextImg1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleAkaImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleMidoriImg)).BeginInit();
@@ -191,6 +228,8 @@ namespace Cubokta.Puyo
             ((System.ComponentModel.ISupportInitialize)(this.similarityValueBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleNoneImg)).BeginInit();
             this.mainMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fieldImg2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nextImg2)).BeginInit();
             this.SuspendLayout();
             // 
             // spoitBtn
@@ -198,7 +237,7 @@ namespace Cubokta.Puyo
             this.spoitBtn.Enabled = false;
             this.spoitBtn.Location = new System.Drawing.Point(24, 32);
             this.spoitBtn.Name = "spoitBtn";
-            this.spoitBtn.Size = new System.Drawing.Size(175, 63);
+            this.spoitBtn.Size = new System.Drawing.Size(110, 63);
             this.spoitBtn.TabIndex = 1;
             this.spoitBtn.Text = "スポイト";
             this.spoitBtn.UseVisualStyleBackColor = true;
@@ -208,23 +247,23 @@ namespace Cubokta.Puyo
             // 
             this.captureBtn.Location = new System.Drawing.Point(24, 126);
             this.captureBtn.Name = "captureBtn";
-            this.captureBtn.Size = new System.Drawing.Size(175, 70);
+            this.captureBtn.Size = new System.Drawing.Size(110, 70);
             this.captureBtn.TabIndex = 2;
             this.captureBtn.Text = "キャプチャスクリーン";
             this.captureBtn.UseVisualStyleBackColor = true;
             this.captureBtn.Click += new System.EventHandler(this.captureBtn_Click);
             // 
-            // fieldImg
+            // fieldImg1
             // 
-            this.fieldImg.Location = new System.Drawing.Point(224, 32);
-            this.fieldImg.Name = "fieldImg";
-            this.fieldImg.Size = new System.Drawing.Size(192, 384);
-            this.fieldImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.fieldImg.TabIndex = 3;
-            this.fieldImg.TabStop = false;
-            this.fieldImg.Paint += new System.Windows.Forms.PaintEventHandler(this.fieldImg_Paint);
-            this.fieldImg.MouseClick += new System.Windows.Forms.MouseEventHandler(this.fieldImg_MouseClick);
-            this.fieldImg.MouseMove += new System.Windows.Forms.MouseEventHandler(this.fieldImg_MouseMove);
+            this.fieldImg1.Location = new System.Drawing.Point(140, 32);
+            this.fieldImg1.Name = "fieldImg1";
+            this.fieldImg1.Size = new System.Drawing.Size(192, 384);
+            this.fieldImg1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.fieldImg1.TabIndex = 3;
+            this.fieldImg1.TabStop = false;
+            this.fieldImg1.Paint += new System.Windows.Forms.PaintEventHandler(this.fieldImg_Paint);
+            this.fieldImg1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.fieldImg_MouseClick);
+            this.fieldImg1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.fieldImg_MouseMove);
             // 
             // captureTimer
             // 
@@ -234,7 +273,7 @@ namespace Cubokta.Puyo
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(22, 429);
+            this.statusLabel.Location = new System.Drawing.Point(22, 510);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(41, 12);
             this.statusLabel.TabIndex = 4;
@@ -243,48 +282,48 @@ namespace Cubokta.Puyo
             // colorInfoLbl
             // 
             this.colorInfoLbl.AutoSize = true;
-            this.colorInfoLbl.Location = new System.Drawing.Point(523, 32);
+            this.colorInfoLbl.Location = new System.Drawing.Point(606, 32);
             this.colorInfoLbl.Name = "colorInfoLbl";
             this.colorInfoLbl.Size = new System.Drawing.Size(67, 12);
             this.colorInfoLbl.TabIndex = 5;
             this.colorInfoLbl.Text = "サンプル画像";
             // 
-            // FieldRadio1P
+            // fieldRadio1P
             // 
-            this.FieldRadio1P.AutoSize = true;
-            this.FieldRadio1P.Checked = true;
-            this.FieldRadio1P.Location = new System.Drawing.Point(31, 208);
-            this.FieldRadio1P.Name = "FieldRadio1P";
-            this.FieldRadio1P.Size = new System.Drawing.Size(36, 16);
-            this.FieldRadio1P.TabIndex = 3;
-            this.FieldRadio1P.TabStop = true;
-            this.FieldRadio1P.Text = "1P";
-            this.FieldRadio1P.UseVisualStyleBackColor = true;
+            this.fieldRadio1P.AutoSize = true;
+            this.fieldRadio1P.Checked = true;
+            this.fieldRadio1P.Location = new System.Drawing.Point(31, 208);
+            this.fieldRadio1P.Name = "fieldRadio1P";
+            this.fieldRadio1P.Size = new System.Drawing.Size(36, 16);
+            this.fieldRadio1P.TabIndex = 3;
+            this.fieldRadio1P.TabStop = true;
+            this.fieldRadio1P.Text = "1P";
+            this.fieldRadio1P.UseVisualStyleBackColor = true;
             // 
-            // FieldRadio2P
+            // fieldRadio2P
             // 
-            this.FieldRadio2P.AccessibleName = "";
-            this.FieldRadio2P.AutoSize = true;
-            this.FieldRadio2P.Location = new System.Drawing.Point(73, 208);
-            this.FieldRadio2P.Name = "FieldRadio2P";
-            this.FieldRadio2P.Size = new System.Drawing.Size(36, 16);
-            this.FieldRadio2P.TabIndex = 4;
-            this.FieldRadio2P.Text = "2P";
-            this.FieldRadio2P.UseVisualStyleBackColor = true;
+            this.fieldRadio2P.AccessibleName = "";
+            this.fieldRadio2P.AutoSize = true;
+            this.fieldRadio2P.Location = new System.Drawing.Point(73, 208);
+            this.fieldRadio2P.Name = "fieldRadio2P";
+            this.fieldRadio2P.Size = new System.Drawing.Size(36, 16);
+            this.fieldRadio2P.TabIndex = 4;
+            this.fieldRadio2P.Text = "2P";
+            this.fieldRadio2P.UseVisualStyleBackColor = true;
             // 
-            // nextImg
+            // nextImg1
             // 
-            this.nextImg.Location = new System.Drawing.Point(438, 45);
-            this.nextImg.Name = "nextImg";
-            this.nextImg.Size = new System.Drawing.Size(32, 64);
-            this.nextImg.TabIndex = 7;
-            this.nextImg.TabStop = false;
-            this.nextImg.Paint += new System.Windows.Forms.PaintEventHandler(this.nextImg_Paint);
+            this.nextImg1.Location = new System.Drawing.Point(336, 47);
+            this.nextImg1.Name = "nextImg1";
+            this.nextImg1.Size = new System.Drawing.Size(32, 64);
+            this.nextImg1.TabIndex = 7;
+            this.nextImg1.TabStop = false;
+            this.nextImg1.Paint += new System.Windows.Forms.PaintEventHandler(this.nextImg_Paint);
             // 
             // playDateLbl
             // 
             this.playDateLbl.AutoSize = true;
-            this.playDateLbl.Location = new System.Drawing.Point(451, 188);
+            this.playDateLbl.Location = new System.Drawing.Point(606, 184);
             this.playDateLbl.Name = "playDateLbl";
             this.playDateLbl.Size = new System.Drawing.Size(29, 12);
             this.playDateLbl.TabIndex = 8;
@@ -293,7 +332,7 @@ namespace Cubokta.Puyo
             // playerNameLbl
             // 
             this.playerNameLbl.AutoSize = true;
-            this.playerNameLbl.Location = new System.Drawing.Point(451, 215);
+            this.playerNameLbl.Location = new System.Drawing.Point(80, 435);
             this.playerNameLbl.Name = "playerNameLbl";
             this.playerNameLbl.Size = new System.Drawing.Size(54, 12);
             this.playerNameLbl.TabIndex = 9;
@@ -302,7 +341,7 @@ namespace Cubokta.Puyo
             // stepIdLbl
             // 
             this.stepIdLbl.AutoSize = true;
-            this.stepIdLbl.Location = new System.Drawing.Point(451, 154);
+            this.stepIdLbl.Location = new System.Drawing.Point(619, 155);
             this.stepIdLbl.Name = "stepIdLbl";
             this.stepIdLbl.Size = new System.Drawing.Size(14, 12);
             this.stepIdLbl.TabIndex = 10;
@@ -312,34 +351,34 @@ namespace Cubokta.Puyo
             // 
             this.playDate.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.playDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.playDate.Location = new System.Drawing.Point(525, 183);
+            this.playDate.Location = new System.Drawing.Point(641, 179);
             this.playDate.Name = "playDate";
             this.playDate.Size = new System.Drawing.Size(200, 19);
-            this.playDate.TabIndex = 9;
+            this.playDate.TabIndex = 10;
             // 
-            // playerNameTxt
+            // playerNameTxt1
             // 
-            this.playerNameTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.playerNameTxt.Location = new System.Drawing.Point(525, 212);
-            this.playerNameTxt.Name = "playerNameTxt";
-            this.playerNameTxt.Size = new System.Drawing.Size(200, 19);
-            this.playerNameTxt.TabIndex = 10;
+            this.playerNameTxt1.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.playerNameTxt1.Location = new System.Drawing.Point(140, 432);
+            this.playerNameTxt1.Name = "playerNameTxt1";
+            this.playerNameTxt1.Size = new System.Drawing.Size(192, 19);
+            this.playerNameTxt1.TabIndex = 11;
             // 
-            // splitter1
+            // splitter
             // 
-            this.splitter1.Location = new System.Drawing.Point(0, 26);
-            this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 456);
-            this.splitter1.TabIndex = 14;
-            this.splitter1.TabStop = false;
+            this.splitter.Location = new System.Drawing.Point(0, 26);
+            this.splitter.Name = "splitter";
+            this.splitter.Size = new System.Drawing.Size(3, 505);
+            this.splitter.TabIndex = 14;
+            this.splitter.TabStop = false;
             // 
             // startBtn
             // 
             this.startBtn.Enabled = false;
             this.startBtn.Location = new System.Drawing.Point(24, 268);
             this.startBtn.Name = "startBtn";
-            this.startBtn.Size = new System.Drawing.Size(175, 70);
-            this.startBtn.TabIndex = 5;
+            this.startBtn.Size = new System.Drawing.Size(110, 70);
+            this.startBtn.TabIndex = 6;
             this.startBtn.Text = "開始";
             this.startBtn.UseVisualStyleBackColor = true;
             this.startBtn.Click += new System.EventHandler(this.startBtn_Click);
@@ -347,35 +386,34 @@ namespace Cubokta.Puyo
             // recordLbl
             // 
             this.recordLbl.AutoSize = true;
-            this.recordLbl.Location = new System.Drawing.Point(451, 273);
+            this.recordLbl.Location = new System.Drawing.Point(93, 483);
             this.recordLbl.Name = "recordLbl";
             this.recordLbl.Size = new System.Drawing.Size(41, 12);
             this.recordLbl.TabIndex = 16;
             this.recordLbl.Text = "レコード";
             // 
-            // recordTxt
+            // recordTxt1
             // 
-            this.recordTxt.Location = new System.Drawing.Point(525, 270);
-            this.recordTxt.Name = "recordTxt";
-            this.recordTxt.ReadOnly = true;
-            this.recordTxt.Size = new System.Drawing.Size(200, 19);
-            this.recordTxt.TabIndex = 12;
+            this.recordTxt1.Location = new System.Drawing.Point(140, 480);
+            this.recordTxt1.Name = "recordTxt1";
+            this.recordTxt1.Size = new System.Drawing.Size(192, 19);
+            this.recordTxt1.TabIndex = 13;
             // 
             // stepDataTxt
             // 
             this.stepDataTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.stepDataTxt.Location = new System.Drawing.Point(459, 295);
+            this.stepDataTxt.Location = new System.Drawing.Point(601, 219);
             this.stepDataTxt.Multiline = true;
             this.stepDataTxt.Name = "stepDataTxt";
             this.stepDataTxt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.stepDataTxt.Size = new System.Drawing.Size(266, 175);
-            this.stepDataTxt.TabIndex = 13;
+            this.stepDataTxt.Size = new System.Drawing.Size(266, 280);
+            this.stepDataTxt.TabIndex = 17;
             this.stepDataTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.stepDataTxt_KeyDown);
             // 
             // stepIdTxt
             // 
             this.stepIdTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.stepIdTxt.Location = new System.Drawing.Point(525, 152);
+            this.stepIdTxt.Location = new System.Drawing.Point(641, 153);
             this.stepIdTxt.Maximum = new decimal(new int[] {
             999999999,
             0,
@@ -383,22 +421,22 @@ namespace Cubokta.Puyo
             0});
             this.stepIdTxt.Name = "stepIdTxt";
             this.stepIdTxt.Size = new System.Drawing.Size(120, 19);
-            this.stepIdTxt.TabIndex = 8;
+            this.stepIdTxt.TabIndex = 9;
             // 
             // cancelBtn
             // 
             this.cancelBtn.Enabled = false;
             this.cancelBtn.Location = new System.Drawing.Point(24, 346);
             this.cancelBtn.Name = "cancelBtn";
-            this.cancelBtn.Size = new System.Drawing.Size(175, 70);
-            this.cancelBtn.TabIndex = 6;
+            this.cancelBtn.Size = new System.Drawing.Size(110, 70);
+            this.cancelBtn.TabIndex = 7;
             this.cancelBtn.Text = "やりおなす";
             this.cancelBtn.UseVisualStyleBackColor = true;
             this.cancelBtn.Click += new System.EventHandler(this.cancelBtn_Click);
             // 
             // sampleAkaImg
             // 
-            this.sampleAkaImg.Location = new System.Drawing.Point(549, 47);
+            this.sampleAkaImg.Location = new System.Drawing.Point(632, 47);
             this.sampleAkaImg.Name = "sampleAkaImg";
             this.sampleAkaImg.Size = new System.Drawing.Size(32, 32);
             this.sampleAkaImg.TabIndex = 21;
@@ -406,7 +444,7 @@ namespace Cubokta.Puyo
             // 
             // sampleMidoriImg
             // 
-            this.sampleMidoriImg.Location = new System.Drawing.Point(580, 47);
+            this.sampleMidoriImg.Location = new System.Drawing.Point(663, 47);
             this.sampleMidoriImg.Name = "sampleMidoriImg";
             this.sampleMidoriImg.Size = new System.Drawing.Size(32, 32);
             this.sampleMidoriImg.TabIndex = 22;
@@ -414,7 +452,7 @@ namespace Cubokta.Puyo
             // 
             // sampleAoImg
             // 
-            this.sampleAoImg.Location = new System.Drawing.Point(611, 47);
+            this.sampleAoImg.Location = new System.Drawing.Point(694, 47);
             this.sampleAoImg.Name = "sampleAoImg";
             this.sampleAoImg.Size = new System.Drawing.Size(32, 32);
             this.sampleAoImg.TabIndex = 23;
@@ -422,7 +460,7 @@ namespace Cubokta.Puyo
             // 
             // sampleKiImg
             // 
-            this.sampleKiImg.Location = new System.Drawing.Point(642, 47);
+            this.sampleKiImg.Location = new System.Drawing.Point(725, 47);
             this.sampleKiImg.Name = "sampleKiImg";
             this.sampleKiImg.Size = new System.Drawing.Size(32, 32);
             this.sampleKiImg.TabIndex = 24;
@@ -430,7 +468,7 @@ namespace Cubokta.Puyo
             // 
             // sampleMurasakiImg
             // 
-            this.sampleMurasakiImg.Location = new System.Drawing.Point(673, 47);
+            this.sampleMurasakiImg.Location = new System.Drawing.Point(756, 47);
             this.sampleMurasakiImg.Name = "sampleMurasakiImg";
             this.sampleMurasakiImg.Size = new System.Drawing.Size(32, 32);
             this.sampleMurasakiImg.TabIndex = 25;
@@ -439,13 +477,13 @@ namespace Cubokta.Puyo
             // similarityValueBar
             // 
             this.similarityValueBar.LargeChange = 10000;
-            this.similarityValueBar.Location = new System.Drawing.Point(550, 101);
+            this.similarityValueBar.Location = new System.Drawing.Point(641, 100);
             this.similarityValueBar.Maximum = 95000;
             this.similarityValueBar.Minimum = 5000;
             this.similarityValueBar.Name = "similarityValueBar";
             this.similarityValueBar.Size = new System.Drawing.Size(147, 45);
             this.similarityValueBar.SmallChange = 1000;
-            this.similarityValueBar.TabIndex = 7;
+            this.similarityValueBar.TabIndex = 8;
             this.similarityValueBar.TickFrequency = 10000;
             this.similarityValueBar.Value = 30000;
             this.similarityValueBar.Scroll += new System.EventHandler(this.similarityValueBar_Scroll);
@@ -453,7 +491,7 @@ namespace Cubokta.Puyo
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(515, 101);
+            this.label1.Location = new System.Drawing.Point(606, 100);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(29, 12);
             this.label1.TabIndex = 28;
@@ -462,7 +500,7 @@ namespace Cubokta.Puyo
             // similarityValueLbl
             // 
             this.similarityValueLbl.AutoSize = true;
-            this.similarityValueLbl.Location = new System.Drawing.Point(515, 118);
+            this.similarityValueLbl.Location = new System.Drawing.Point(606, 117);
             this.similarityValueLbl.Name = "similarityValueLbl";
             this.similarityValueLbl.Size = new System.Drawing.Size(35, 12);
             this.similarityValueLbl.TabIndex = 29;
@@ -470,24 +508,24 @@ namespace Cubokta.Puyo
             // 
             // sampleNoneImg
             // 
-            this.sampleNoneImg.Location = new System.Drawing.Point(518, 47);
+            this.sampleNoneImg.Location = new System.Drawing.Point(601, 47);
             this.sampleNoneImg.Name = "sampleNoneImg";
             this.sampleNoneImg.Size = new System.Drawing.Size(32, 32);
             this.sampleNoneImg.TabIndex = 30;
             this.sampleNoneImg.TabStop = false;
             // 
-            // tagsTxt
+            // tagsTxt1
             // 
-            this.tagsTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tagsTxt.Location = new System.Drawing.Point(525, 237);
-            this.tagsTxt.Name = "tagsTxt";
-            this.tagsTxt.Size = new System.Drawing.Size(200, 19);
-            this.tagsTxt.TabIndex = 11;
+            this.tagsTxt1.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.tagsTxt1.Location = new System.Drawing.Point(140, 455);
+            this.tagsTxt1.Name = "tagsTxt1";
+            this.tagsTxt1.Size = new System.Drawing.Size(192, 19);
+            this.tagsTxt1.TabIndex = 12;
             // 
             // tagsLbl
             // 
             this.tagsLbl.AutoSize = true;
-            this.tagsLbl.Location = new System.Drawing.Point(451, 240);
+            this.tagsLbl.Location = new System.Drawing.Point(88, 458);
             this.tagsLbl.Name = "tagsLbl";
             this.tagsLbl.Size = new System.Drawing.Size(46, 12);
             this.tagsLbl.TabIndex = 32;
@@ -500,7 +538,7 @@ namespace Cubokta.Puyo
             this.MMConfigurationMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
-            this.mainMenu.Size = new System.Drawing.Size(752, 26);
+            this.mainMenu.Size = new System.Drawing.Size(900, 26);
             this.mainMenu.TabIndex = 33;
             this.mainMenu.Text = "menuStrip1";
             // 
@@ -529,17 +567,79 @@ namespace Cubokta.Puyo
             // fpsLbl
             // 
             this.fpsLbl.AutoSize = true;
-            this.fpsLbl.Location = new System.Drawing.Point(22, 458);
+            this.fpsLbl.Location = new System.Drawing.Point(841, 510);
             this.fpsLbl.Name = "fpsLbl";
-            this.fpsLbl.Size = new System.Drawing.Size(0, 12);
+            this.fpsLbl.Size = new System.Drawing.Size(26, 12);
             this.fpsLbl.TabIndex = 34;
+            this.fpsLbl.Text = "FPS";
+            // 
+            // fieldImg2
+            // 
+            this.fieldImg2.Location = new System.Drawing.Point(390, 32);
+            this.fieldImg2.Name = "fieldImg2";
+            this.fieldImg2.Size = new System.Drawing.Size(192, 384);
+            this.fieldImg2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.fieldImg2.TabIndex = 35;
+            this.fieldImg2.TabStop = false;
+            this.fieldImg2.Paint += new System.Windows.Forms.PaintEventHandler(this.fieldImg_Paint);
+            this.fieldImg2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.fieldImg_MouseClick);
+            this.fieldImg2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.fieldImg_MouseMove);
+            // 
+            // nextImg2
+            // 
+            this.nextImg2.Location = new System.Drawing.Point(354, 208);
+            this.nextImg2.Name = "nextImg2";
+            this.nextImg2.Size = new System.Drawing.Size(32, 64);
+            this.nextImg2.TabIndex = 36;
+            this.nextImg2.TabStop = false;
+            this.nextImg2.Paint += new System.Windows.Forms.PaintEventHandler(this.nextImg_Paint);
+            // 
+            // playerNameTxt2
+            // 
+            this.playerNameTxt2.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.playerNameTxt2.Location = new System.Drawing.Point(390, 432);
+            this.playerNameTxt2.Name = "playerNameTxt2";
+            this.playerNameTxt2.Size = new System.Drawing.Size(192, 19);
+            this.playerNameTxt2.TabIndex = 14;
+            // 
+            // tagsTxt2
+            // 
+            this.tagsTxt2.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.tagsTxt2.Location = new System.Drawing.Point(390, 455);
+            this.tagsTxt2.Name = "tagsTxt2";
+            this.tagsTxt2.Size = new System.Drawing.Size(192, 19);
+            this.tagsTxt2.TabIndex = 15;
+            // 
+            // recordTxt2
+            // 
+            this.recordTxt2.Location = new System.Drawing.Point(390, 480);
+            this.recordTxt2.Name = "recordTxt2";
+            this.recordTxt2.Size = new System.Drawing.Size(192, 19);
+            this.recordTxt2.TabIndex = 16;
+            // 
+            // fieldRadioBoth
+            // 
+            this.fieldRadioBoth.AccessibleName = "";
+            this.fieldRadioBoth.AutoSize = true;
+            this.fieldRadioBoth.Location = new System.Drawing.Point(31, 230);
+            this.fieldRadioBoth.Name = "fieldRadioBoth";
+            this.fieldRadioBoth.Size = new System.Drawing.Size(55, 16);
+            this.fieldRadioBoth.TabIndex = 5;
+            this.fieldRadioBoth.Text = "1P・2P";
+            this.fieldRadioBoth.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
-            this.ClientSize = new System.Drawing.Size(752, 482);
+            this.ClientSize = new System.Drawing.Size(900, 531);
+            this.Controls.Add(this.fieldRadioBoth);
+            this.Controls.Add(this.recordTxt2);
+            this.Controls.Add(this.tagsTxt2);
+            this.Controls.Add(this.playerNameTxt2);
+            this.Controls.Add(this.nextImg2);
+            this.Controls.Add(this.fieldImg2);
             this.Controls.Add(this.fpsLbl);
             this.Controls.Add(this.tagsLbl);
-            this.Controls.Add(this.tagsTxt);
+            this.Controls.Add(this.tagsTxt1);
             this.Controls.Add(this.sampleNoneImg);
             this.Controls.Add(this.similarityValueLbl);
             this.Controls.Add(this.label1);
@@ -552,21 +652,21 @@ namespace Cubokta.Puyo
             this.Controls.Add(this.cancelBtn);
             this.Controls.Add(this.stepIdTxt);
             this.Controls.Add(this.stepDataTxt);
-            this.Controls.Add(this.recordTxt);
+            this.Controls.Add(this.recordTxt1);
             this.Controls.Add(this.recordLbl);
             this.Controls.Add(this.startBtn);
-            this.Controls.Add(this.splitter1);
-            this.Controls.Add(this.playerNameTxt);
+            this.Controls.Add(this.splitter);
+            this.Controls.Add(this.playerNameTxt1);
             this.Controls.Add(this.playDate);
             this.Controls.Add(this.stepIdLbl);
             this.Controls.Add(this.playerNameLbl);
             this.Controls.Add(this.playDateLbl);
-            this.Controls.Add(this.nextImg);
-            this.Controls.Add(this.FieldRadio2P);
-            this.Controls.Add(this.FieldRadio1P);
+            this.Controls.Add(this.nextImg1);
+            this.Controls.Add(this.fieldRadio2P);
+            this.Controls.Add(this.fieldRadio1P);
             this.Controls.Add(this.colorInfoLbl);
             this.Controls.Add(this.statusLabel);
-            this.Controls.Add(this.fieldImg);
+            this.Controls.Add(this.fieldImg1);
             this.Controls.Add(this.captureBtn);
             this.Controls.Add(this.spoitBtn);
             this.Controls.Add(this.mainMenu);
@@ -574,8 +674,8 @@ namespace Cubokta.Puyo
             this.Name = "MainForm";
             this.Text = "PuyofuCapture";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            ((System.ComponentModel.ISupportInitialize)(this.fieldImg)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nextImg)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fieldImg1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nextImg1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleAkaImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleMidoriImg)).EndInit();
@@ -586,6 +686,8 @@ namespace Cubokta.Puyo
             ((System.ComponentModel.ISupportInitialize)(this.sampleNoneImg)).EndInit();
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fieldImg2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nextImg2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -605,14 +707,14 @@ namespace Cubokta.Puyo
             captureTimer.Stop();
             IsCapturing = false;
 
-            int fieldNo = FieldRadio1P.Checked ? 0 : 1;
+            int fieldNo = fieldRadio1P.Checked ? 0 : 1;
             Form captureForm = new CaptureForm(fieldNo);
             captureForm.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CaptureForm_FormClosed);
             captureForm.Show();
         }
 
-        private Bitmap captureBmp;
-        private Bitmap nextBmp;
+        private Bitmap[] captureBmps = new Bitmap[2];
+        private Bitmap[] nextBmps = new Bitmap[2];
 
         private void CaptureForm_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -622,32 +724,39 @@ namespace Cubokta.Puyo
                 return;
             }
 
-            config.CaptureRect = f.GetCaptureRect();
-            config.NextRect = f.GetNextRect();
+            config.CaptureRect = f.CaptureRects.CaptureRect;
             config.Save();
 
-            beginCapturing();
+            captureRects = f.CaptureRects;
+            BeginCapturing();
         }
 
-        private void beginCapturing()
+        private void BeginCapturing()
         {
             IsCapturing = true;
             spoitBtn.Enabled = true;
             startBtn.Enabled = true;
             captureTimer.Start();
 
-            if (captureBmp != null)
-            {
-                captureBmp.Dispose();
-            }
-            captureBmp = new Bitmap(config.CaptureRect.Width, config.CaptureRect.Height);
+            ReadyForCaptureingAt(0);
+            ReadyForCaptureingAt(1);
+        }
 
-            if (nextBmp != null)
+        private void ReadyForCaptureingAt(int fieldNo)
+        {
+            if (captureBmps[fieldNo] != null)
             {
-                nextBmp.Dispose();
+                captureBmps[fieldNo].Dispose();
             }
-            captureBmp = new Bitmap(config.CaptureRect.Width, config.CaptureRect.Height);
-            nextBmp = new Bitmap(config.NextRect.Width, config.NextRect.Height);
+            Rectangle fieldRect = captureRects.GetFieldRect(fieldNo);
+            captureBmps[fieldNo] = new Bitmap(fieldRect.Width, fieldRect.Height);
+
+            if (nextBmps[fieldNo] != null)
+            {
+                nextBmps[fieldNo].Dispose();
+            }
+            Rectangle nextRect = captureRects.GetNextRect(fieldNo);
+            nextBmps[fieldNo] = new Bitmap(nextRect.Width, nextRect.Height);
         }
 
         FpsCalculator fpsCalculator = new FpsCalculator();
@@ -658,55 +767,91 @@ namespace Cubokta.Puyo
             fpsLbl.Text = "fps:" + fpsCalculator.GetFpsInt();
         }
 
+        // TODO: captureBmpsは使い捨てかも。それなら2つ用意する必要がない？
+
         private bool IsCapturing { get; set; }
-        private CaptureField prevField = new CaptureField();
-        private CaptureField curField = new CaptureField();
+        private CaptureField[] prevFields = new CaptureField[2]{ new CaptureField(), new CaptureField() };
+        private CaptureField[] curFields = new CaptureField[2]{ new CaptureField(), new CaptureField() };
+
+        private void PaintField(object sender, PaintEventArgs e, int fieldNo)
+        {
+            if (!IsCapturing)
+            {
+                return;
+            }
+
+            PictureBox fieldImg = (PictureBox)sender;
+            Graphics fieldImgG = e.Graphics;
+            using (Graphics captureBmpG = Graphics.FromImage(captureBmps[fieldNo]))
+            using (Bitmap forAnalyzeBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
+            using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
+            {
+                // フィールドのキャプチャ範囲を取り込む
+                Rectangle fieldRect = captureRects.GetFieldRect(fieldNo);
+                captureBmpG.CopyFromScreen(
+                    new Point(fieldRect.Left, fieldRect.Top), new Point(0, 0), captureBmps[fieldNo].Size);
+
+                // 取り込んだ画像を解析用のBMPに出力
+                Rectangle dest = new Rectangle(0, 0, 192, 384);
+                Rectangle src = new Rectangle(0, 0, fieldRect.Width, fieldRect.Height);
+                forAnalyzeG.DrawImage(captureBmps[fieldNo], dest, src, GraphicsUnit.Pixel);
+
+                // 取り込んだ画像を画面に出力
+                fieldImgG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
+
+                if (!isPixeling)
+                {
+                    // フィールドの状態を解析し、結果を描画
+                    curFields[fieldNo] = a(forAnalyzeBmp);
+                    if (config.DebugRectEnabled)
+                    {
+                        DrawDebugRect(fieldImgG, curFields[fieldNo]);
+                    }
+                }
+                else if (fieldNo == fieldNoMouseIsOn)
+                {
+                    // サンプル選択枠を描画
+                    int x = pointOnFieldImg.X - (pointOnFieldImg.X % CaptureField.UNIT);
+                    int y = pointOnFieldImg.Y - (pointOnFieldImg.Y % CaptureField.UNIT);
+
+                    Rectangle pixelingCellRect = new Rectangle(x, y, CaptureField.UNIT, CaptureField.UNIT);
+                    fieldImgG.DrawRectangle(new Pen(Color.Red, 2), pixelingCellRect);
+                }
+            }
+        }
+
+        private int GetFieldNumberFromControl(Control control)
+        {
+            return int.Parse(control.Name.Substring(control.Name.Length - 1)) - 1;
+        }
+
+        private bool IsProcessingField(int fieldNo)
+        {
+            if ((fieldRadio1P.Checked || fieldRadioBoth.Checked) && fieldNo == 0)
+            {
+                return true;
+            }
+
+            if ((fieldRadio2P.Checked || fieldRadioBoth.Checked) && fieldNo == 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         private void fieldImg_Paint(object sender, PaintEventArgs e)
         {
             try
             {
-                if (!IsCapturing)
+                Control img = (Control)sender;
+                int fieldNo = GetFieldNumberFromControl(img);
+                if (!IsProcessingField(fieldNo))
                 {
                     return;
                 }
-
-                Graphics fieldImgG = e.Graphics;
-                using (Graphics captureBmpG = Graphics.FromImage(captureBmp))
-                using (Bitmap forAnalyzeBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
-                using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
-                {
-                    // フィールドのキャプチャ範囲を取り込む
-                    captureBmpG.CopyFromScreen(
-                        new Point(config.CaptureRect.Left, config.CaptureRect.Top), new Point(0, 0), captureBmp.Size);
-
-                    // 取り込んだ画像を画面に出力 // TODO: コメント反対？
-                    Rectangle dest = new Rectangle(0, 0, 192, 384);
-                    Rectangle src = new Rectangle(0, 0, config.CaptureRect.Width, config.CaptureRect.Height);
-                    forAnalyzeG.DrawImage(captureBmp, dest, src, GraphicsUnit.Pixel);
-
-                    // 解析用のBMPにも画面と同じ内容を出力
-                    fieldImgG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
-
-                    if (!isPixeling)
-                    {
-                        // フィールドの状態を解析し、結果を描画
-                        curField = a(forAnalyzeBmp);
-                        if (config.DebugRectEnabled)
-                        {
-                            DrawDebugRect(fieldImgG, curField);
-                        }
-                    }
-                    else
-                    {
-                        // サンプル選択枠を描画
-                        int x = pointOnFieldImg.X - (pointOnFieldImg.X % CaptureField.UNIT);
-                        int y = pointOnFieldImg.Y - (pointOnFieldImg.Y % CaptureField.UNIT);
-
-                        Rectangle pixelingCellRect = new Rectangle(x, y, CaptureField.UNIT, CaptureField.UNIT);
-                        fieldImgG.DrawRectangle(new Pen(Color.Red, 2), pixelingCellRect);
-                    }
-                }
+                
+                PaintField(sender, e, fieldNo);
             }
             catch (Exception exp)
             {
@@ -787,19 +932,14 @@ namespace Cubokta.Puyo
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (captureBmp != null)
-            {
-                captureBmp.Dispose();
-            }
-
-            if (nextBmp != null)
-            {
-                nextBmp.Dispose();
-            }
+            UninitializeField(0);
+            UninitializeField(1);
 
             config.RecordId = (int)stepIdTxt.Value;
             config.RecordDate = playDate.Text;
-            config.PlayerName = playerNameTxt.Text;
+            config.PlayerName1 = playerNameTxt1.Text;
+            config.PlayerName2 = playerNameTxt2.Text;
+            config.TargetField = GetTargetFieldValue();
             config.Save();
 
             if (recordFileWriter != null)
@@ -808,12 +948,43 @@ namespace Cubokta.Puyo
             }
         }
 
-        private void fieldImg_MouseClick(object sender, MouseEventArgs e)
+        private string GetTargetFieldValue()
+        {
+            if (fieldRadio1P.Checked)
+            {
+                return "1";
+            }
+            else if (fieldRadio2P.Checked)
+            {
+                return "2";
+            }
+            else
+            {
+                return "3";
+            }
+        }
+
+        private void UninitializeField(int fieldNo)
+        {
+            if (captureBmps[fieldNo] != null)
+            {
+                captureBmps[fieldNo].Dispose();
+            }
+
+            if (nextBmps[fieldNo] != null)
+            {
+                nextBmps[fieldNo].Dispose();
+            }
+        }
+
+        private void ClickField(object sender, MouseEventArgs e, int fieldNo)
         {
             if (!isPixeling)
             {
                 return;
             }
+
+            PictureBox fieldImg = (PictureBox)sender;
 
             if (e.Button == MouseButtons.Left)
             {
@@ -822,20 +993,21 @@ namespace Cubokta.Puyo
                 int y = pointOnFieldImg.Y - (pointOnFieldImg.Y % CaptureField.UNIT);
                 Rectangle pixelingCellRect = new Rectangle(x, y, CaptureField.UNIT, CaptureField.UNIT);
 
-                using (Graphics captureBmpG = Graphics.FromImage(captureBmp))
+                using (Graphics captureBmpG = Graphics.FromImage(captureBmps[fieldNo]))
                 using (Bitmap forAnalyzeBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
                 using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
                 {
                     // フィールドのキャプチャ範囲を取り込む
+                    Rectangle captureRect = captureRects.GetFieldRect(fieldNo);
                     captureBmpG.CopyFromScreen(
-                        new Point(config.CaptureRect.Left, config.CaptureRect.Top), new Point(0, 0), captureBmp.Size);
+                        new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBmps[fieldNo].Size);
+
+                    // 取り込んだ画像を解析用のBMPに出力
+                    Rectangle dest = new Rectangle(0, 0, 192, 384);
+                    Rectangle src = new Rectangle(0, 0, captureRect.Width, captureRect.Height);
+                    forAnalyzeG.DrawImage(captureBmps[fieldNo], dest, src, GraphicsUnit.Pixel);
 
                     // 取り込んだ画像を画面に出力
-                    Rectangle dest = new Rectangle(0, 0, 192, 384);
-                    Rectangle src = new Rectangle(0, 0, config.CaptureRect.Width, config.CaptureRect.Height);
-                    forAnalyzeG.DrawImage(captureBmp, dest, src, GraphicsUnit.Pixel);
-
-                    // 解析用のBMPにも画面と同じ内容を出力
                     Bitmap cellBmp = forAnalyzeBmp.Clone(pixelingCellRect, forAnalyzeBmp.PixelFormat);
                     PuyoType puyoType = (PuyoType)pixelingTargetIndex;
 
@@ -868,62 +1040,89 @@ namespace Cubokta.Puyo
             }
         }
 
-        PuyofuRecorder recorder = new PuyofuRecorder();
+        private void fieldImg_MouseClick(object sender, MouseEventArgs e)
+        {
+            Control img = (Control)sender;
+            int fieldNo = GetFieldNumberFromControl(img);
+            if (!IsProcessingField(fieldNo))
+            {
+                return;
+            }
+
+            ClickField(sender, e, fieldNo);
+        }
+
+        PuyofuRecorder[] recorders = new PuyofuRecorder[2] { new PuyofuRecorder(), new PuyofuRecorder() };
+
+        private void PaintNext(object sender, PaintEventArgs e, int fieldNo)
+        {
+            if (!IsCapturing)
+            {
+                return;
+            }
+
+            PictureBox nextImg = (PictureBox)sender;
+
+            Graphics nextG = e.Graphics;
+            using (Graphics nextBmpG = Graphics.FromImage(nextBmps[fieldNo]))
+            using (Bitmap forAnalyzeBmp = new Bitmap(nextImg.Width, nextImg.Height))
+            using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
+            {
+                // ネクストのキャプチャ範囲を取り込む
+                Rectangle nextRect = captureRects.GetNextRect(fieldNo);
+                nextBmpG.CopyFromScreen(new Point(nextRect.Left, nextRect.Top), new Point(0, 0), nextBmps[fieldNo].Size);
+                Rectangle dest = new Rectangle(0, 0, 32, 64);
+                Rectangle src = new Rectangle(0, 0, nextRect.Width, nextRect.Height);
+
+                // 取り込んだ画像を画面に出力
+                forAnalyzeG.DrawImage(nextBmps[fieldNo], dest, src, GraphicsUnit.Pixel);
+
+                // 解析用のBMPにも画面と同じ内容を出力
+                nextG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
+
+                // ツモ情報を解析し、結果を描画
+                CaptureField field = b(forAnalyzeBmp);
+                if (config.DebugRectEnabled)
+                {
+                    DrawDebugNextRect(nextG, field);
+                }
+
+                ColorPairPuyo next = field.GetNext(0);
+                RecordResult result = recorders[fieldNo].DoNext(curFields[fieldNo], next);
+                switch (result)
+                {
+                    case RecordResult.RECORD_SUCCESS:
+                        updateStepData();
+                        cancelBtn.Enabled = false;
+                        break;
+                    case RecordResult.RECORD_FAILURE:
+                        statusLabel.Text = "キャプチャ失敗！！";
+                        updateStepData();
+                        break;
+                    case RecordResult.RECORD_FORWARD:
+                        recordTxts[fieldNo].Text = recorders[fieldNo].GetRecord();
+                        break;
+                    case RecordResult.RECORD_ENDED:
+                        updateStepData();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
         private void nextImg_Paint(object sender, PaintEventArgs e)
         {
             try
             {
-                if (!IsCapturing)
+                Control img = (Control)sender;
+                int fieldNo = GetFieldNumberFromControl(img);
+                if (!IsProcessingField(fieldNo))
                 {
                     return;
-                }
-
-                Graphics nextG = e.Graphics;
-                using (Graphics nextBmpG = Graphics.FromImage(nextBmp))
-                using (Bitmap forAnalyzeBmp = new Bitmap(nextImg.Width, nextImg.Height))
-                using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
-                {
-                    // ネクストのキャプチャ範囲を取り込む
-                    nextBmpG.CopyFromScreen(new Point(config.NextRect.Left, config.NextRect.Top), new Point(0, 0), nextBmp.Size);
-                    Rectangle dest = new Rectangle(0, 0, 32, 64);
-                    Rectangle src = new Rectangle(0, 0, config.NextRect.Width, config.NextRect.Height);
-
-
-                    // 取り込んだ画像を画面に出力
-                    forAnalyzeG.DrawImage(nextBmp, dest, src, GraphicsUnit.Pixel);
-
-                    // 解析用のBMPにも画面と同じ内容を出力
-                    nextG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
-
-                    // ツモ情報を解析し、結果を描画
-                    CaptureField field = b(forAnalyzeBmp);
-                    if (config.DebugRectEnabled)
-                    {
-                        DrawDebugNextRect(nextG, field);
-                    }
-
-                    ColorPairPuyo next = field.GetNext(0);
-                    RecordResult result = recorder.DoNext(curField, next);
-                    switch (result)
-                    {
-                        case RecordResult.RECORD_SUCCESS:
-                            updateStepData();
-                            cancelBtn.Enabled = false;
-                            break;
-                        case RecordResult.RECORD_FAILURE:
-                            statusLabel.Text = "キャプチャ失敗！！";
-                            updateStepData();
-                            break;
-                        case RecordResult.RECORD_FORWARD:
-                            recordTxt.Text = recorder.GetRecord();
-                            break;
-                        case RecordResult.RECORD_ENDED:
-                            updateStepData();
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                } 
+                
+                PaintNext(sender, e, fieldNo);
             }
             catch (Exception exp)
             {
@@ -942,22 +1141,46 @@ namespace Cubokta.Puyo
 
         private void updateStepData()
         {
+            string step1 = GetStepData(0);
+            string step2 = GetStepData(1);
+            string step = "";
+            if (step1 != null)
+            {
+                step += step1 + "\r\n";
+            }
+
+            if (step2 != null)
+            {
+                step += step2 + "\r\n";
+            }
+
+            stepDataTxt.Text = step;
+        }
+
+        private string GetStepData(int fieldNo)
+        {
+            if (!recorders[fieldNo].IsRecordEnded)
+            {
+                return "";
+            }
+
             // タグ文字列を組み立てる
             List<string> tagList = new List<string>();
-            if (playerNameTxt.Text.Trim() != "")
+            if (playerNameTxts[fieldNo].Text.Trim() != "")
             {
-                tagList.Add(playerNameTxt.Text);
+                tagList.Add(playerNameTxts[fieldNo].Text);
             }
 
             // 追加タグの処理
             StringBuilder sb = new StringBuilder();
-            if (tagsTxt.Text.Trim() != "")
+            if (tagsTxt1.Text.Trim() != "")
             {
-                tagList.AddRange(tagsTxt.Text.Split(new char[] {' ', '　'}, StringSplitOptions.RemoveEmptyEntries));
+                tagList.AddRange(tagsTxts[fieldNo].Text.Split(
+                    new char[] { ' ', '　' }, StringSplitOptions.RemoveEmptyEntries));
             }
 
             // 初手3手の処理
-            List<PairPuyo> steps = recorder.GetSteps();
+            List<PairPuyo> steps = recorders[fieldNo].GetSteps();
             FirstStepAnalyzer firstStepAnalyzer = new FirstStepAnalyzer();
             if (steps.Count < 3)
             {
@@ -977,11 +1200,11 @@ namespace Cubokta.Puyo
             // テンプレート変換
             string text = RECORD_TEMPLATE;
             text = text.Replace("#date", playDate.Text);
-            text = text.Replace("#id", stepIdTxt.Value.ToString());
-            text = text.Replace("#record", recordTxt.Text);
+            text = text.Replace("#id", (stepIdTxt.Value + fieldNo).ToString());
+            text = text.Replace("#record", recordTxt1.Text);
             text = text.Replace("#tags", sb.ToString());
 
-            stepDataTxt.Text = text;
+            return text;
         }
 
         private CaptureField b(Bitmap bmp)
@@ -1049,8 +1272,6 @@ namespace Cubokta.Puyo
             }
         }
 
-        private List<PairPuyo> steps = new List<PairPuyo>();
-
         private void startBtn_Click(object sender, EventArgs e)
         {
             if (recordFileWriter == null)
@@ -1059,34 +1280,56 @@ namespace Cubokta.Puyo
             }
             else
             {
-                if (recorder.IsRecordEnded)
+                if (IsProcessingField(0) && recorders[0].IsRecordEnded
+                    && IsProcessingField(1) && recorders[1].IsRecordEnded)
                 {
                     recordFileWriter.WriteLine(stepDataTxt.Text);
                     recordFileWriter.Flush();
                 }
             }
 
-            steps = new List<PairPuyo>();
-            stepIdTxt.UpButton();
             stepDataTxt.Text = "";
             cancelBtn.Enabled = true;
-            prevField = new CaptureField();
-            curField = new CaptureField();
-
             statusLabel.Text = "";
 
-            recorder = new PuyofuRecorder();
-            recorder.BeginRecord(captureTimer.Interval);
+            if (IsProcessingField(0))
+            {
+                stepIdTxt.UpButton();
+                prevFields[0] = new CaptureField();
+                curFields[0] = new CaptureField();
+                recorders[0] = new PuyofuRecorder();
+                recorders[0].BeginRecord(captureTimer.Interval);
+            }
+
+            if (IsProcessingField(1))
+            {
+                stepIdTxt.UpButton();
+                prevFields[1] = new CaptureField();
+                curFields[1] = new CaptureField();
+                recorders[1] = new PuyofuRecorder();
+                recorders[1].BeginRecord(captureTimer.Interval);
+            }
         }
 
         private void cancelBtn_Click(object sender, EventArgs e)
         {
             cancelBtn.Enabled = false;
-            stepIdTxt.DownButton();
             statusLabel.Text = "";
-            recorder = new PuyofuRecorder();
+
+            if (IsProcessingField(0))
+            {
+                stepIdTxt.DownButton();
+                recorders[0] = new PuyofuRecorder();
+            }
+
+            if (IsProcessingField(1))
+            {
+                stepIdTxt.DownButton();
+                recorders[1] = new PuyofuRecorder();
+            }
         }
 
+        private int fieldNoMouseIsOn = -1;
         private Point pointOnFieldImg;
         private void fieldImg_MouseMove(object sender, MouseEventArgs e)
         {
@@ -1095,6 +1338,14 @@ namespace Cubokta.Puyo
                 return;
             }
 
+            Control img = (Control)sender;
+            int fieldNo = GetFieldNumberFromControl(img);
+            if (!IsProcessingField(fieldNo))
+            {
+                return;
+            }
+
+            fieldNoMouseIsOn = fieldNo;
             pointOnFieldImg = e.Location;
         }
 

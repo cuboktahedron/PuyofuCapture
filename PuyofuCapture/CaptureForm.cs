@@ -39,6 +39,8 @@ namespace Cubokta.Puyo
         /// <summary>キャプチャ範囲指定が開始されているかどうか</summary>
         public bool IsSelecting { get; private set; }
 
+        public CaptureRects CaptureRects { get; private set; }
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -124,6 +126,7 @@ namespace Cubokta.Puyo
                 yUnit = 0f;
 
                 IsSelecting = true;
+                CaptureRects = new CaptureRects();
 
                 Refresh();
             }
@@ -164,63 +167,63 @@ namespace Cubokta.Puyo
             xUnit = captureWidth / (X_BLOCK_NUM);
             yUnit = captureHeight / Y_BLOCK_NUM;
 
+            CaptureRects.CalculateRects(startPoint, endPoint);
             Refresh();
         }
 
+        ///// <summary>
+        ///// キャプチャ範囲を取得する
+        ///// </summary>
+        ///// <returns>
+        ///// キャプチャ範囲
+        ///// </returns>
+        //public Rectangle GetCaptureRect()
+        //{
+        //    if (!IsSelecting)
+        //    {
+        //        return new Rectangle(0, 0, 0, 0);
+        //    }
 
-        /// <summary>
-        /// キャプチャ範囲を取得する
-        /// </summary>
-        /// <returns>
-        /// キャプチャ範囲
-        /// </returns>
-        public Rectangle GetCaptureRect()
-        {
-            if (!IsSelecting)
-            {
-                return new Rectangle(0, 0, 0, 0);
-            }
+        //    int captureWidth = Math.Abs(endPoint.X - startPoint.X);
+        //    int captureHeight = Math.Abs(endPoint.Y - startPoint.Y);
+        //    int left = Math.Min(startPoint.X, endPoint.X);
+        //    int top = Math.Min(startPoint.Y, endPoint.Y);
 
-            int captureWidth = Math.Abs(endPoint.X - startPoint.X);
-            int captureHeight = Math.Abs(endPoint.Y - startPoint.Y);
-            int left = Math.Min(startPoint.X, endPoint.X);
-            int top = Math.Min(startPoint.Y, endPoint.Y);
+        //    return new Rectangle(left, top, (int)(xUnit * 6), captureHeight);
+        //}
 
-            return new Rectangle(left, top, (int)(xUnit * 6), captureHeight);
-        }
+        ///// <summary>
+        ///// ネクスト範囲を取得する
+        ///// </summary>
+        ///// <returns>
+        ///// ネクスト範囲
+        ///// </returns>
+        //public Rectangle GetNextRect()
+        //{
+        //    if (!IsSelecting)
+        //    {
+        //        return new Rectangle(0, 0, 0, 0);
+        //    }
 
-        /// <summary>
-        /// ネクスト範囲を取得する
-        /// </summary>
-        /// <returns>
-        /// ネクスト範囲
-        /// </returns>
-        public Rectangle GetNextRect()
-        {
-            if (!IsSelecting)
-            {
-                return new Rectangle(0, 0, 0, 0);
-            }
+        //    int captureWidth = Math.Abs(endPoint.X - startPoint.X);
+        //    int captureHeight = Math.Abs(endPoint.Y - startPoint.Y);
+        //    int left = Math.Min(startPoint.X, endPoint.X);
+        //    int top = Math.Min(startPoint.Y, endPoint.Y);
 
-            int captureWidth = Math.Abs(endPoint.X - startPoint.X);
-            int captureHeight = Math.Abs(endPoint.Y - startPoint.Y);
-            int left = Math.Min(startPoint.X, endPoint.X);
-            int top = Math.Min(startPoint.Y, endPoint.Y);
+        //    int nextLeft;
+        //    int nextTop = top + (int)(yUnit * 2);
 
-            int nextLeft;
-            int nextTop = top + (int)(yUnit * 2);
+        //    if (fieldNo == 0)
+        //    {
+        //        nextLeft = left + captureWidth + (int)xUnit;
+        //    }
+        //    else
+        //    {
+        //        nextLeft = left - (int)(xUnit * 2);
+        //    }
 
-            if (fieldNo == 0)
-            {
-                nextLeft = left + captureWidth + (int)xUnit;
-            }
-            else
-            {
-                nextLeft = left - (int)(xUnit * 2);
-            }
-
-            return new Rectangle(nextLeft, nextTop, (int)xUnit, (int)(yUnit * 2));
-        }
+        //    return new Rectangle(nextLeft, nextTop, (int)xUnit, (int)(yUnit * 2));
+        //}
 
         private const int X_BLOCK_NUM = 6;
         private const int Y_BLOCK_NUM = 12;
@@ -244,34 +247,12 @@ namespace Cubokta.Puyo
                 }
 
                 // 選択範囲を描画
-                Rectangle rect = GetCaptureRect();
-                Rectangle nextRect = GetNextRect();
-
                 using (Pen pen = new Pen(System.Drawing.Color.Red, 2))
                 {
-                    for (int y = 0; y <= Y_BLOCK_NUM; y++)
-                    {
-                        float yy = yUnit * y + rect.Top;
-                        g.DrawLine(pen, rect.Left, yy, rect.Left + xUnit * X_BLOCK_NUM, yy);
-                    }
-
-                    for (int x = 0; x <= X_BLOCK_NUM; x++)
-                    {
-                        float xx = xUnit * x + rect.Left;
-                        g.DrawLine(pen, xx, rect.Top, xx, rect.Top + yUnit * Y_BLOCK_NUM);
-                    }
-
-                    for (int y = 0; y <= 2; y++)
-                    {
-                        float yy = yUnit * y + nextRect.Top;
-                        g.DrawLine(pen, nextRect.Left, yy, nextRect.Left + nextRect.Width, yy);
-                    }
-
-                    for (int x = 0; x <= 1; x++)
-                    {
-                        float xx = xUnit * x + nextRect.Left;
-                        g.DrawLine(pen, xx, nextRect.Top, xx, nextRect.Top + nextRect.Height);
-                    }
+                    g.DrawRectangle(pen, CaptureRects.GetFieldRect(0));
+                    g.DrawRectangle(pen, CaptureRects.GetFieldRect(1));
+                    g.DrawRectangle(pen, CaptureRects.GetNextRect(0));
+                    g.DrawRectangle(pen, CaptureRects.GetNextRect(1));
                 }
             }
         }
