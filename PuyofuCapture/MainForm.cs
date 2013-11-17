@@ -476,16 +476,16 @@ namespace Cubokta.Puyo
             // 
             // similarityValueBar
             // 
-            this.similarityValueBar.LargeChange = 10000;
+            this.similarityValueBar.LargeChange = 100;
             this.similarityValueBar.Location = new System.Drawing.Point(641, 100);
-            this.similarityValueBar.Maximum = 95000;
-            this.similarityValueBar.Minimum = 5000;
+            this.similarityValueBar.Maximum = 10000;
+            this.similarityValueBar.Minimum = 100;
             this.similarityValueBar.Name = "similarityValueBar";
             this.similarityValueBar.Size = new System.Drawing.Size(147, 45);
-            this.similarityValueBar.SmallChange = 1000;
+            this.similarityValueBar.SmallChange = 10;
             this.similarityValueBar.TabIndex = 8;
-            this.similarityValueBar.TickFrequency = 10000;
-            this.similarityValueBar.Value = 30000;
+            this.similarityValueBar.TickFrequency = 1000;
+            this.similarityValueBar.Value = 2500;
             this.similarityValueBar.Scroll += new System.EventHandler(this.similarityValueBar_Scroll);
             // 
             // label1
@@ -713,9 +713,6 @@ namespace Cubokta.Puyo
             captureForm.Show();
         }
 
-        private Bitmap[] captureBmps = new Bitmap[2];
-        private Bitmap[] nextBmps = new Bitmap[2];
-
         private void CaptureForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             CaptureForm f = sender as CaptureForm;
@@ -738,36 +735,27 @@ namespace Cubokta.Puyo
             startBtn.Enabled = true;
             captureTimer.Start();
 
-            ReadyForCaptureingAt(0);
-            ReadyForCaptureingAt(1);
-        }
-
-        private void ReadyForCaptureingAt(int fieldNo)
-        {
-            if (captureBmps[fieldNo] != null)
+            if (screenBmp != null)
             {
-                captureBmps[fieldNo].Dispose();
+                screenBmp.Dispose();
             }
-            Rectangle fieldRect = captureRects.GetFieldRect(fieldNo);
-            captureBmps[fieldNo] = new Bitmap(fieldRect.Width, fieldRect.Height);
-
-            if (nextBmps[fieldNo] != null)
-            {
-                nextBmps[fieldNo].Dispose();
-            }
-            Rectangle nextRect = captureRects.GetNextRect(fieldNo);
-            nextBmps[fieldNo] = new Bitmap(nextRect.Width, nextRect.Height);
+            screenBmp = new Bitmap(captureRects.CaptureRect.Width, captureRects.CaptureRect.Height);
         }
 
         FpsCalculator fpsCalculator = new FpsCalculator();
+        private Bitmap screenBmp;
         private void captureTimer_Tick(object sender, EventArgs e)
         {
+            using (Graphics g = Graphics.FromImage(screenBmp))
+            {
+                Rectangle captureRect = captureRects.CaptureRect;
+                g.CopyFromScreen(new Point(captureRect.X, captureRect.Y), new Point(0, 0), screenBmp.Size);
+            }
+
             Refresh();
             fpsCalculator.Refresh();
             fpsLbl.Text = "fps:" + fpsCalculator.GetFpsInt();
         }
-
-        // TODO: captureBmpsは使い捨てかも。それなら2つ用意する必要がない？
 
         private bool IsCapturing { get; set; }
         private CaptureField[] prevFields = new CaptureField[2]{ new CaptureField(), new CaptureField() };
@@ -782,19 +770,21 @@ namespace Cubokta.Puyo
 
             PictureBox fieldImg = (PictureBox)sender;
             Graphics fieldImgG = e.Graphics;
-            using (Graphics captureBmpG = Graphics.FromImage(captureBmps[fieldNo]))
             using (Bitmap forAnalyzeBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
             using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
             {
                 // フィールドのキャプチャ範囲を取り込む
                 Rectangle fieldRect = captureRects.GetFieldRect(fieldNo);
-                captureBmpG.CopyFromScreen(
-                    new Point(fieldRect.Left, fieldRect.Top), new Point(0, 0), captureBmps[fieldNo].Size);
 
-                // 取り込んだ画像を解析用のBMPに出力
+                //取り込んだ画像を解析用のBMPに出力
                 Rectangle dest = new Rectangle(0, 0, 192, 384);
-                Rectangle src = new Rectangle(0, 0, fieldRect.Width, fieldRect.Height);
-                forAnalyzeG.DrawImage(captureBmps[fieldNo], dest, src, GraphicsUnit.Pixel);
+                Rectangle src = new Rectangle() {
+                    X = fieldRect.X - captureRects.CaptureRect.X,
+                    Y = fieldRect.Y - captureRects.CaptureRect.Y,
+                    Width = fieldRect.Width,
+                    Height = fieldRect.Height
+                };
+                forAnalyzeG.DrawImage(screenBmp, dest, src, GraphicsUnit.Pixel);
 
                 // 取り込んだ画像を画面に出力
                 fieldImgG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
@@ -932,15 +922,17 @@ namespace Cubokta.Puyo
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            UninitializeField(0);
-            UninitializeField(1);
-
             config.RecordId = (int)stepIdTxt.Value;
             config.RecordDate = playDate.Text;
             config.PlayerName1 = playerNameTxt1.Text;
             config.PlayerName2 = playerNameTxt2.Text;
             config.TargetField = GetTargetFieldValue();
             config.Save();
+
+            if (screenBmp != null)
+            {
+                screenBmp.Dispose();
+            }
 
             if (recordFileWriter != null)
             {
@@ -964,19 +956,6 @@ namespace Cubokta.Puyo
             }
         }
 
-        private void UninitializeField(int fieldNo)
-        {
-            if (captureBmps[fieldNo] != null)
-            {
-                captureBmps[fieldNo].Dispose();
-            }
-
-            if (nextBmps[fieldNo] != null)
-            {
-                nextBmps[fieldNo].Dispose();
-            }
-        }
-
         private void ClickField(object sender, MouseEventArgs e, int fieldNo)
         {
             if (!isPixeling)
@@ -993,21 +972,23 @@ namespace Cubokta.Puyo
                 int y = pointOnFieldImg.Y - (pointOnFieldImg.Y % CaptureField.UNIT);
                 Rectangle pixelingCellRect = new Rectangle(x, y, CaptureField.UNIT, CaptureField.UNIT);
 
-                using (Graphics captureBmpG = Graphics.FromImage(captureBmps[fieldNo]))
                 using (Bitmap forAnalyzeBmp = new Bitmap(fieldImg.Width, fieldImg.Height))
                 using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
                 {
                     // フィールドのキャプチャ範囲を取り込む
-                    Rectangle captureRect = captureRects.GetFieldRect(fieldNo);
-                    captureBmpG.CopyFromScreen(
-                        new Point(captureRect.Left, captureRect.Top), new Point(0, 0), captureBmps[fieldNo].Size);
+                    Rectangle fieldRect = captureRects.GetFieldRect(fieldNo);
 
-                    // 取り込んだ画像を解析用のBMPに出力
+                    //取り込んだ画像を解析用のBMPに出力
                     Rectangle dest = new Rectangle(0, 0, 192, 384);
-                    Rectangle src = new Rectangle(0, 0, captureRect.Width, captureRect.Height);
-                    forAnalyzeG.DrawImage(captureBmps[fieldNo], dest, src, GraphicsUnit.Pixel);
+                    Rectangle src = new Rectangle()
+                    {
+                        X = fieldRect.X - captureRects.CaptureRect.X,
+                        Y = fieldRect.Y - captureRects.CaptureRect.Y,
+                        Width = fieldRect.Width,
+                        Height = fieldRect.Height
+                    };
+                    forAnalyzeG.DrawImage(screenBmp, dest, src, GraphicsUnit.Pixel);
 
-                    // 取り込んだ画像を画面に出力
                     Bitmap cellBmp = forAnalyzeBmp.Clone(pixelingCellRect, forAnalyzeBmp.PixelFormat);
                     PuyoType puyoType = (PuyoType)pixelingTargetIndex;
 
@@ -1064,20 +1045,24 @@ namespace Cubokta.Puyo
             PictureBox nextImg = (PictureBox)sender;
 
             Graphics nextG = e.Graphics;
-            using (Graphics nextBmpG = Graphics.FromImage(nextBmps[fieldNo]))
             using (Bitmap forAnalyzeBmp = new Bitmap(nextImg.Width, nextImg.Height))
             using (Graphics forAnalyzeG = Graphics.FromImage(forAnalyzeBmp))
             {
                 // ネクストのキャプチャ範囲を取り込む
                 Rectangle nextRect = captureRects.GetNextRect(fieldNo);
-                nextBmpG.CopyFromScreen(new Point(nextRect.Left, nextRect.Top), new Point(0, 0), nextBmps[fieldNo].Size);
+
+                //取り込んだ画像を解析用のBMPに出力
                 Rectangle dest = new Rectangle(0, 0, 32, 64);
-                Rectangle src = new Rectangle(0, 0, nextRect.Width, nextRect.Height);
+                Rectangle src = new Rectangle()
+                {
+                    X = nextRect.X - captureRects.CaptureRect.X,
+                    Y = nextRect.Y - captureRects.CaptureRect.Y,
+                    Width = nextRect.Width,
+                    Height = nextRect.Height
+                };
+                forAnalyzeG.DrawImage(screenBmp, dest, src, GraphicsUnit.Pixel);
 
                 // 取り込んだ画像を画面に出力
-                forAnalyzeG.DrawImage(nextBmps[fieldNo], dest, src, GraphicsUnit.Pixel);
-
-                // 解析用のBMPにも画面と同じ内容を出力
                 nextG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
 
                 // ツモ情報を解析し、結果を描画

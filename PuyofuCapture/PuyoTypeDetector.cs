@@ -17,7 +17,6 @@ namespace Cubokta.Puyo
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>色識別用にRGBの各要素を分類する際に必要となるビット数</summary>
-        /// <remarks>3、4、5、6のいずれかを指定する。</remarks>
         private const int COLOR_ELEMENT_BIT = 3;
 
         /// <summary>色の分類数(0～255を何分割するか)</summary>
@@ -134,9 +133,9 @@ namespace Cubokta.Puyo
         private int[,,] DetectPattern(RapidBitmapAccessor ba, Rectangle rect)
         {
             int[,,] patterns = new int[COLOR_DIVISION_NUM, COLOR_DIVISION_NUM, COLOR_DIVISION_NUM];
-            for (int x = rect.X; x < rect.X + rect.Width; x++)
+            for (int x = rect.X; x < rect.X + rect.Width; x = x + 2)
             {
-                for (int y = rect.Y; y < rect.Y + rect.Height; y++)
+                for (int y = rect.Y; y < rect.Y + rect.Height; y = y + 2)
                 {
                     if (MASK[x - rect.X, y - rect.Y] != 1)
                     {
