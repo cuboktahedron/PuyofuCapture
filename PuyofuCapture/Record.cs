@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cubokta.Puyo
 {
+    /// <summary>
+    /// ぷよ譜１レコード分の情報
+    /// </summary>
     [DataContract]
     public class Record
     {

@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Windows.Forms;
 using System.Drawing;
-using Cubokta;
 using System.Collections.Generic;
 using Cubokta.Common;
 using Cubokta.Puyo.Common;
-using System.Diagnostics;
 using System.IO;
 using System.Drawing.Imaging;
-using System.Configuration;
 using log4net;
 
 namespace Cubokta.Puyo
@@ -1072,7 +1066,7 @@ namespace Cubokta.Puyo
                     DrawDebugNextRect(nextG, field);
                 }
 
-                ColorPairPuyo next = field.GetNext(0);
+                ColorPairPuyo next = field.Next;
                 RecordResult result = recorders[fieldNo].DoNext(curFields[fieldNo], next);
                 switch (result)
                 {
@@ -1212,7 +1206,7 @@ namespace Cubokta.Puyo
             {
                 pp[y] = detector.Detect(ba, field.GetNextRect(0, y));
             }
-            field.SetNext(0, pp);
+            field.Next = pp;
 
             ba.EndAccess();
             return field;
@@ -1226,7 +1220,7 @@ namespace Cubokta.Puyo
             using (Pen yellowPen = new Pen(Color.Yellow, 2))
             using (Pen purplePen = new Pen(Color.Purple, 2))
             {
-                ColorPairPuyo pp = field.GetNext(0);
+                ColorPairPuyo pp = field.Next;
                 for (int y = 0; y < 2; y++)
                 {
                     if (pp[y] == PuyoType.NONE)

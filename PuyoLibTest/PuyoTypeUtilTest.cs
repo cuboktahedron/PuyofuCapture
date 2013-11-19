@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Cubokta;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Cubokta.Puyo.Common
 {

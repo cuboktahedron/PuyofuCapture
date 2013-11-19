@@ -6,19 +6,33 @@ using System.Threading.Tasks;
 
 namespace Cubokta.Puyo.Common
 {
+    /// <summary>
+    /// 初手解析機
+    /// </summary>
     public class FirstStepAnalyzer
     {
+        /// <summary>
+        /// 初手の配色パターンを取得する
+        /// </summary>
+        /// <param name="steps">譜情報</param>
+        /// <param name="stepNum">解析手数</param>
+        /// <returns>初手の配色パターン</returns>
         public string GetPattern(List<PairPuyo> steps, int stepNum)
         {
             string pattern = "";
-            IDictionary<PuyoType, char> mapping = new Dictionary<PuyoType, char>();
             char mapChar = 'A';
+            IDictionary<PuyoType, char> mapping = new Dictionary<PuyoType, char>();
+
             List<List<PuyoType>> candidates = new List<List<PuyoType>>();
             for (int i = 0; i < stepNum; i++)
             {
                 ColorPairPuyo cpp = (ColorPairPuyo)steps[i];
                 List<PuyoType> priorList = new List<PuyoType>();
                 List<PuyoType> posteriorList = new List<PuyoType>();
+
+                // まずはまだパターン文字が決定していない色を
+                // 優先順にごとに分類された候補リストに追加する。
+                // 既に前の譜情報で出現している色は優先順位が高い。
 
                 List<PuyoType> list;
                 if (candidates.Count == 0)
@@ -113,6 +127,12 @@ namespace Cubokta.Puyo.Common
             return pattern;
         }
 
+        /// <summary>
+        /// 配色パターンを取得する
+        /// 渡された全譜の配色パターンを解析し返却する
+        /// </summary>
+        /// <param name="steps">譜情報</param>
+        /// <returns>配色パターン</returns>
         public string GetPattern(List<PairPuyo> steps)
         {
             return GetPattern(steps, steps.Count());

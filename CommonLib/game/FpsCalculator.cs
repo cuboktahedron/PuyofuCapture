@@ -1,17 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cubokta.Puyo
 {
+    /// <summary>
+    /// FPS計算機
+    /// </summary>
+    /// <remarks>FPSの計算はミリ秒精度で行われる。</remarks>
     public class FpsCalculator
     {
+        /// <summary>
+        /// 周波数
+        /// </summary>
         private const int FREQUENCY = 1000;
         private float fps;
         private int prevMills = DateTime.Now.Millisecond;
 
+        /// <summary>
+        /// FPSを更新する
+        /// </summary>
         public void Refresh()
         {
             int curMills = DateTime.Now.Millisecond;
@@ -22,6 +28,10 @@ namespace Cubokta.Puyo
             prevMills = curMills;
         }
 
+        /// <summary>
+        /// FPSを取得（整数）
+        /// </summary>
+        /// <returns>FPS</returns>
         public int GetFpsInt()
         {
             return (int)fps;

@@ -1,17 +1,21 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Cubokta.Puyo.Common
 {
+    /// <summary>
+    /// 譜情報をFコードに生成するエンコーダ
+    /// 
+    /// Fコードとは対戦ぷよパーク！！(http://www.puyop.com/)のぷよぷよ連鎖シミュレータで使用されている
+    /// URLパラメータとなるコードのこと。
+    /// </summary>
     public class FCodeEncoder
     {
         /// <summary>エンコードに使用する文字</summary>
         private const string ENCODE_CHAR = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[]";
 
+        /// <summary>ぷよ種別⇒値の変換テーブル</summary>
         private static readonly IDictionary<PuyoType, int> PUYO_TYPE_CONV = new Dictionary<PuyoType, int>()
         {
             { PuyoType.AKA     , 0 },
@@ -21,14 +25,20 @@ namespace Cubokta.Puyo.Common
             { PuyoType.MURASAKI, 4 },
         };
 
-        private static readonly IDictionary<Direction, int> DIR_CONV = new Dictionary<Direction, int>()
+        /// <summary>方向⇒値の変換テーブル</summary>
+        private static readonly IDictionary<Direction4, int> DIR_CONV = new Dictionary<Direction4, int>()
         {
-            { Direction.UP   , 0 },
-            { Direction.RIGHT, 1 },
-            { Direction.DOWN , 2 },
-            { Direction.LEFT , 3 },
+            { Direction4.UP   , 0 },
+            { Direction4.RIGHT, 1 },
+            { Direction4.DOWN , 2 },
+            { Direction4.LEFT , 3 },
         };
 
+        /// <summary>
+        /// 譜情報からFコードを生成する
+        /// </summary>
+        /// <param name="steps">譜情報</param>
+        /// <returns>Fコード</returns>
         public string Encode(List<PairPuyo> steps)
         {
             List<int> stepValues = new List<int>();
@@ -54,6 +64,12 @@ namespace Cubokta.Puyo.Common
             return "_" + ConvertValueToFcode(stepValues);
         }
 
+        /// <summary>
+        /// 2進数情報をFコード値に変換する
+        /// 2進数の各ビットはお邪魔ぷよの端数を表している。
+        /// </summary>
+        /// <param name="bits">Fコード値</param>
+        /// <returns>2進数情報</returns>
         private int BinaryToDecimal(BitArray bits)
         {
             int value = 0;
@@ -66,6 +82,11 @@ namespace Cubokta.Puyo.Common
             return value;
         }
 
+        /// <summary>
+        /// Fコード値リストをFコードに変換する
+        /// </summary>
+        /// <param name="stepValues">Fコード値リスト</param>
+        /// <returns>Fコード</returns>
         private string ConvertValueToFcode(List<int> stepValues)
         {
             StringBuilder sb = new StringBuilder();

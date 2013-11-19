@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Cubokta.Puyo.Common
 {
+    /// <summary>
+    /// フィールド関係の定数
+    /// </summary>
     public class FieldConst {
         public const int OJAMA_ROW_MAX = 5;
         public const int FIELD_X = 6;
         public const int FIELD_Y = 12;
     }
 
+    /// <summary>
+    /// ぷよ種別
+    /// </summary>
     public enum PuyoType {
         NONE = 0,
         AKA,
@@ -22,13 +23,10 @@ namespace Cubokta.Puyo.Common
         OJAMA,
     }
 
-    public enum HandType {
-        NONE = 0,
-        TWO = 20,
-        OJAMA = 99,
-    }
-
-    public enum Direction
+    /// <summary>
+    /// 方向
+    /// </summary>
+    public enum Direction4
     {
         NONE = -1,
         UP,

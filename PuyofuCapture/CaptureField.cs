@@ -1,49 +1,69 @@
 ﻿using Cubokta.Puyo.Common;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Cubokta.Puyo
 {
+    /// <summary>
+    /// フィールド状態を表すクラス
+    /// </summary>
+    /// <remarks>
+    /// フィールドのサイズは6×12
+    /// フィールドの左下のセルの座標を(0, 0)とする。
+    /// 
+    /// </remarks>
     public class CaptureField
     {
+        /// <summary>フィールドの幅</summary>
         public const int X_MAX = FieldConst.FIELD_X;
+
+        /// <summary>フィールドの高さ</summary>
         public const int Y_MAX = FieldConst.FIELD_Y;
+
+        /// <summary>1セルの辺の長さ(ピクセル)</summary>
         public const int UNIT = 32;
 
         private PuyoType[,] Types { get; set; }
-        private ColorPairPuyo[] Nexts { get; set; }
+        public ColorPairPuyo Next { get; set; }
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public CaptureField()
+        {
+            Types = new PuyoType[Y_MAX, X_MAX];
+        }
+
+        /// <summary>
+        /// 指定した座標のぷよ種別を取得する
+        /// </summary>
+        /// <param name="x">X座標</param>
+        /// <param name="y">Y座標</param>
+        /// <returns>ぷよ種別</returns>
         public PuyoType GetPuyoType(int x, int y)
         {
             return Types[(Y_MAX - 1) - y, x];
         }
 
+        /// <summary>
+        /// 指定した座標のぷよ種別を設定する
+        /// </summary>
+        /// <param name="x">X座標</param>
+        /// <param name="y">Y座標</param>
+        /// <param name="type">設定するぷよ種別</param>
         public void SetPuyoType(int x, int y, PuyoType type)
         {
             Types[(Y_MAX - 1) - y, x] = type;
         }
 
-        public ColorPairPuyo GetNext(int no)
-        {
-            return Nexts[no];
-        }
-
-        public void SetNext(int no, ColorPairPuyo pp)
-        {
-            Nexts[no] = pp;
-        }
-
-        public CaptureField()
-        {
-            Types = new PuyoType[Y_MAX, X_MAX];
-            Nexts = new ColorPairPuyo[1];
-        }
-
+        /// <summary>
+        /// 1セルのキャプチャ範囲を取得する
+        /// </summary>
+        /// <param name="x">X座標</param>
+        /// <param name="y">Y座標</param>
+        /// <returns>1セルのキャプチャ範囲</returns>
         public Rectangle GetRect(int x, int y)
         {
             return new Rectangle()
@@ -55,25 +75,40 @@ namespace Cubokta.Puyo
             };
         }
 
-        public Rectangle GetNextRect(int no, int y)
+        /// <summary>
+        /// ネクストツモのキャプチャ範囲を取得する
+        /// </summary>
+        /// <param name="no">フィールド番号</param>
+        /// <param name="puyoNo">ぷよ番号(軸ぷよ：0、衛星ぷよ：1)</param>
+        /// <returns>ネクストのキャプチャ範囲</returns>
+        public Rectangle GetNextRect(int no, int puyoNo)
         {
             return new Rectangle()
             {
                 X = 0,
-                Y = (1 - y) * UNIT,
+                Y = (1 - puyoNo) * UNIT,
                 Width = UNIT,
                 Height = UNIT,
             };
         }
 
+        /// <summary>
+        /// キャプチャ範囲の差分からツモの設置情報を特定する
+        /// </summary>
+        /// <param name="f2">ツモを設置後のキャプチャフィールド</param>
+        /// <param name="pp">設置したツモ</param>
+        /// <returns>ツモの設置情報</returns>
         public ColorPairPuyo GetStepFromDiff(CaptureField f2, ColorPairPuyo pp)
         {
+            // TODO: ここはリファクタリングを検討する
+
             CaptureField f1 = this;
             bool foundPivot = false;
             bool foundSatellite = false;
             ColorPairPuyo p2 = new ColorPairPuyo();
             Point pivotPt = new Point(-1, -1);
             Point satellitePt = new Point(-1, -1);
+
             for (int x = 0; x < X_MAX; x++)
             {
                 for (int y = 0; y < Y_MAX; y++)
@@ -107,19 +142,19 @@ namespace Cubokta.Puyo
                         {
                             if (pivotPt.X == satellitePt.X && pivotPt.Y < satellitePt.Y)
                             {
-                                p2.Dir = Direction.UP;
+                                p2.Dir = Direction4.UP;
                             }
                             else if (pivotPt.X == satellitePt.X)
                             {
-                                p2.Dir = Direction.DOWN;
+                                p2.Dir = Direction4.DOWN;
                             }
                             else if (pivotPt.X < satellitePt.X)
                             {
-                                p2.Dir = Direction.RIGHT;
+                                p2.Dir = Direction4.RIGHT;
                             }
                             else
                             {
-                                p2.Dir = Direction.LEFT;
+                                p2.Dir = Direction4.LEFT;
                             }
 
                             p2.Pos++;
@@ -132,30 +167,24 @@ namespace Cubokta.Puyo
             return null;
         }
 
-        private static readonly IDictionary<PuyoType, string> TYPE2KANJI = new Dictionary<PuyoType, string>()
-        {
-            { PuyoType.NONE, "□" },
-            { PuyoType.AKA, "赤" },
-            { PuyoType.MIDORI, "緑" },
-            { PuyoType.AO, "青" },
-            { PuyoType.KI, "黄" },
-            { PuyoType.MURASAKI, "紫" },
-        };
-
+        /// <summary>
+        /// ツモを落下させフィールド情報を更新する
+        /// </summary>
+        /// <param name="pp">ツモ</param>
         public void Drop(ColorPairPuyo pp)
         {
             int pos = pp.Pos - 1;
-            if (pp.Dir == Direction.UP)
+            if (pp.Dir == Direction4.UP)
             {
                 DropOne(pp.Pivot, pos);
                 DropOne(pp.Satellite, pos);
             }
-            else if (pp.Dir == Direction.DOWN)
+            else if (pp.Dir == Direction4.DOWN)
             {
                 DropOne(pp.Satellite, pos);
                 DropOne(pp.Pivot, pos);
             }
-            else if (pp.Dir == Direction.LEFT)
+            else if (pp.Dir == Direction4.LEFT)
             {
                 DropOne(pp.Pivot, pos);
                 DropOne(pp.Satellite, pos - 1);
@@ -167,6 +196,11 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// １つのぷよを落下させフィールド情報を更新する
+        /// </summary>
+        /// <param name="type">ぷよ種別</param>
+        /// <param name="pos">落下位置</param>
         private void DropOne(PuyoType type, int pos)
         {
             for (int y = 0; y < Y_MAX; y++)
@@ -179,9 +213,12 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// フィールド状態を補正する
+        /// 中に浮いているぷよは除外する
+        /// </summary>
         public void Correct()
         {
-            // 浮いているぷよは除外する
             for (int y = 1; y < Y_MAX; y++)
             {
                 for (int x = 0; x < X_MAX; x++)
@@ -194,6 +231,23 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// 文字列表現用の変換テーブル
+        /// </summary>
+        private static readonly IDictionary<PuyoType, string> TYPE2CHAR = new Dictionary<PuyoType, string>()
+        {
+            { PuyoType.NONE, "□" },
+            { PuyoType.AKA, "赤" },
+            { PuyoType.MIDORI, "緑" },
+            { PuyoType.AO, "青" },
+            { PuyoType.KI, "黄" },
+            { PuyoType.MURASAKI, "紫" },
+        };
+
+        /// <summary>
+        /// このオブジェクトの文字列表現
+        /// </summary>
+        /// <returns></returns>
         public override String ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -201,7 +255,7 @@ namespace Cubokta.Puyo
             {
                 for (int x = 0; x < X_MAX; x++)
                 {
-                    sb.Append(TYPE2KANJI[Types[y, x]]);
+                    sb.Append(TYPE2CHAR[Types[y, x]]);
                 }
 
                 sb.Append("\n");

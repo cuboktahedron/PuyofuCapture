@@ -1,18 +1,5 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Windows.Forms;
-using System.Drawing;
-using Cubokta;
-using System.Collections.Generic;
-using Cubokta.Common;
-using Cubokta.Puyo.Common;
-using System.Diagnostics;
-using System.IO;
-using System.Drawing.Imaging;
-using System.Configuration;
 using log4net;
 
 namespace Cubokta.Puyo
