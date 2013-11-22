@@ -1,4 +1,5 @@
-﻿using Cubokta.Puyo.Common;
+﻿using Cubokta.Common.game;
+using Cubokta.Puyo.Common;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

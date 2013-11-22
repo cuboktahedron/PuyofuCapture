@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Collections;
+using Cubokta.Common.game;
 
 namespace Cubokta.Puyo.Common
 {

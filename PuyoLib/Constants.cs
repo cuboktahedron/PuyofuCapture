@@ -22,16 +22,4 @@ namespace Cubokta.Puyo.Common
         MURASAKI,
         OJAMA,
     }
-
-    /// <summary>
-    /// 方向
-    /// </summary>
-    public enum Direction4
-    {
-        NONE = -1,
-        UP,
-        LEFT,
-        DOWN,
-        RIGHT,
-    }
 }

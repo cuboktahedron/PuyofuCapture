@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cubokta.Common.game;
+using System;
 using System.Collections;
 
 namespace Cubokta.Puyo.Common

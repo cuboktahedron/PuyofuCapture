@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="drawing\RapidBitmapAccessor.cs" />
+    <Compile Include="game\Direciton.cs" />
     <Compile Include="game\FpsCalculator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
