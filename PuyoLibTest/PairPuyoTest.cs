@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections;
 
 namespace Cubokta.Puyo.Common
 {
@@ -57,8 +58,11 @@ namespace Cubokta.Puyo.Common
         {
             OjamaPairPuyo pp = new OjamaPairPuyo();
             pp.OjamaRow = 3;
-            pp.OjamaBit[0] = true;
-            pp.OjamaBit[5] = false;
+            BitArray ojamaBit = pp.OjamaBit;
+            ojamaBit[0] = true;
+            ojamaBit[5] = false;
+            pp.OjamaBit = ojamaBit;
+
             Assert.AreEqual(4, pp.OjamaAt(0));
             Assert.AreEqual(3, pp.OjamaAt(4));
         }
