@@ -11,7 +11,7 @@ namespace Cubokta.Puyo.Common
         private FCodeEncoder encoder = new FCodeEncoder();
 
         [TestMethod]
-        public void EncodeTest()
+        public void 譜情報からFコードが生成されること()
         {
             Assert.AreEqual("_", encoder.Encode(new List<PairPuyo>()));
             Assert.AreEqual("_58hu4AbGlX", encoder.Encode(new List<PairPuyo>()

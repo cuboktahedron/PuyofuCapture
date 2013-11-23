@@ -6,7 +6,7 @@ namespace Cubokta.Puyo.Common
     public class PuyoTypeUtilTest
     {
         [TestMethod]
-        public void IsColorTest()
+        public void 色ぷよはtrue_色ぷよ以外はfalseになること()
         {
             Assert.IsFalse(PuyoTypeUtil.IsColor(PuyoType.NONE));
             Assert.IsTrue(PuyoTypeUtil.IsColor(PuyoType.AKA));
@@ -17,7 +17,7 @@ namespace Cubokta.Puyo.Common
         }
 
         [TestMethod]
-        public void IsOjamaTest()
+        public void お邪魔ぷよはtrue_お邪魔ぷよ以外はfalseになること()
         {
             Assert.IsFalse(PuyoTypeUtil.IsOjama(PuyoType.NONE));
             Assert.IsFalse(PuyoTypeUtil.IsOjama(PuyoType.AKA));

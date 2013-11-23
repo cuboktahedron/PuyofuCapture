@@ -7,7 +7,7 @@ namespace Cubokta.Puyo.Common
     public class ColorPairPuyoTest
     {
         [TestMethod]
-        public void ぷよタイプ取得設定の確認()
+        public void ぷよ番号で設定したぷよ種別が取得できること()
         {
             ColorPairPuyo pp = new ColorPairPuyo();
             pp[0] = PuyoType.AKA;
@@ -16,7 +16,12 @@ namespace Cubokta.Puyo.Common
             Assert.AreEqual(PuyoType.MIDORI, pp[1]);
             Assert.AreEqual(PuyoType.AKA, pp.Pivot);
             Assert.AreEqual(PuyoType.MIDORI, pp.Satellite);
+        }
 
+        [TestMethod]
+        public void ぷよ名称で設定したぷよ種別が取得できること()
+        {
+            ColorPairPuyo pp = new ColorPairPuyo();
             pp.Pivot = PuyoType.KI;
             pp.Satellite = PuyoType.MURASAKI;
             Assert.AreEqual(PuyoType.KI, pp[0]);
@@ -26,7 +31,7 @@ namespace Cubokta.Puyo.Common
         }
 
         [TestMethod]
-        public void お邪魔ぷよではないことを確認()
+        public void お邪魔ぷよと判定されないこと()
         {
             ColorPairPuyo pp = new ColorPairPuyo();
             Assert.IsFalse(pp.IsOjama);
@@ -37,24 +42,14 @@ namespace Cubokta.Puyo.Common
     public class OjaamPairPuyoTest
     {
         [TestMethod]
-        public void お邪魔ぷよではないことを確認()
+        public void お邪魔ぷよと判定されること()
         {
             OjamaPairPuyo pp = new OjamaPairPuyo();
             Assert.IsTrue(pp.IsOjama);
         }
 
         [TestMethod]
-        public void お邪魔段数の取得設定の確認()
-        {
-            OjamaPairPuyo pp = new OjamaPairPuyo();
-            Assert.AreEqual(0, pp.OjamaRow);
-
-            pp.OjamaRow = 5;
-            Assert.AreEqual(5, pp.OjamaRow);
-        }
-
-        [TestMethod]
-        public void お邪魔数の確認()
+        public void 指定列のお邪魔数が正しく計算されること()
         {
             OjamaPairPuyo pp = new OjamaPairPuyo();
             pp.OjamaRow = 3;

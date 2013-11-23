@@ -9,89 +9,63 @@ namespace Cubokta.Puyo.Common
         private FirstStepAnalyzer analyzer = new FirstStepAnalyzer();
 
         [TestMethod]
-        public void GetPattern()
+        public void 譜情報が空の場合空文字となること()
         {
             List<PairPuyo> steps = new List<PairPuyo>();
             Assert.AreEqual("", analyzer.GetPattern(steps));
-
-            steps.Add(new ColorPairPuyo()
-            {
-                Pivot = PuyoType.AKA,
-                Satellite = PuyoType.MIDORI,
-            });
-            Assert.AreEqual("AB", analyzer.GetPattern(steps));
-            steps.Add(new ColorPairPuyo()
-            {
-                Pivot = PuyoType.MIDORI,
-                Satellite = PuyoType.KI,
-            });
-            Assert.AreEqual("ABAC", analyzer.GetPattern(steps));
-
-            steps.Add(new ColorPairPuyo()
-            {
-                Pivot = PuyoType.AKA,
-                Satellite = PuyoType.KI,
-            });
-            Assert.AreEqual("ABACBC", analyzer.GetPattern(steps));
-
-            steps.Add(new ColorPairPuyo()
-            {
-                Pivot = PuyoType.AKA,
-                Satellite = PuyoType.KI,
-            });
-            Assert.AreEqual("ABAC", analyzer.GetPattern(steps, 2));
-
         }
 
         [TestMethod]
-        public void GetPattern2()
+        public void ABACBCが生成されること()
         {
             List<PairPuyo> steps = new List<PairPuyo>();
-            Assert.AreEqual("", analyzer.GetPattern(steps));
+            steps.Add(CreateColors(PuyoType.AKA, PuyoType.MIDORI));
+            steps.Add(CreateColors(PuyoType.MIDORI, PuyoType.KI));
+            steps.Add(CreateColors(PuyoType.AKA, PuyoType.KI));
 
-            steps.Add(new ColorPairPuyo()
-            {
-                Pivot = PuyoType.AKA,
-                Satellite = PuyoType.AKA,
-            });
-            Assert.AreEqual("AA", analyzer.GetPattern(steps));
-            steps.Add(new ColorPairPuyo()
-            {
-                Pivot = PuyoType.MIDORI,
-                Satellite = PuyoType.MIDORI,
-            });
-            Assert.AreEqual("AABB", analyzer.GetPattern(steps));
+            Assert.AreEqual("ABACBC", analyzer.GetPattern(steps));
+        }
 
-            steps.Add(new ColorPairPuyo()
-            {
-                Pivot = PuyoType.AKA,
-                Satellite = PuyoType.AKA,
-            });
+        [TestMethod]
+        public void 指定した手数分の初手パターンが生成されること()
+        {
+            List<PairPuyo> steps = new List<PairPuyo>();
+            steps.Add(CreateColors(PuyoType.AKA, PuyoType.MIDORI));
+            steps.Add(CreateColors(PuyoType.MIDORI, PuyoType.KI));
+            steps.Add(CreateColors(PuyoType.AKA, PuyoType.KI));
+
+            Assert.AreEqual("ABAC", analyzer.GetPattern(steps, 2));
+        }
+
+        [TestMethod]
+        public void AABBAAが生成されること()
+        {
+            List<PairPuyo> steps = new List<PairPuyo>();
+            steps.Add(CreateColors(PuyoType.AKA, PuyoType.AKA));
+            steps.Add(CreateColors(PuyoType.MIDORI, PuyoType.MIDORI));
+            steps.Add(CreateColors(PuyoType.AKA, PuyoType.AKA));
+
             Assert.AreEqual("AABBAA", analyzer.GetPattern(steps));
         }
 
         [TestMethod]
-        public void GetPattern3()
+        public void ABABCCが生成されること()
         {
             List<PairPuyo> steps = new List<PairPuyo>();
 
-            steps.Add(new ColorPairPuyo()
-            {
-                Pivot = PuyoType.KI,
-                Satellite = PuyoType.MIDORI,
-            });
-            steps.Add(new ColorPairPuyo()
-            {
-                Pivot = PuyoType.KI,
-                Satellite = PuyoType.MIDORI,
-            });
-            steps.Add(new ColorPairPuyo()
-            {
-                Pivot = PuyoType.AKA,
-                Satellite = PuyoType.AKA,
-            });
+            steps.Add(CreateColors(PuyoType.KI, PuyoType.MIDORI));
+            steps.Add(CreateColors(PuyoType.KI, PuyoType.MIDORI));
+            steps.Add(CreateColors(PuyoType.AKA, PuyoType.AKA));
             Assert.AreEqual("ABABCC", analyzer.GetPattern(steps));
         }
 
+        private static ColorPairPuyo CreateColors(PuyoType pivot, PuyoType satellite)
+        {
+            return new ColorPairPuyo()
+            {
+                Pivot = pivot,
+                Satellite = satellite,
+            };
+        }
     }
 }

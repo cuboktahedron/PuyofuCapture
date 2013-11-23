@@ -11,7 +11,7 @@ namespace Cubokta.Puyo.Common
         private FCodeDecoder decoder = new FCodeDecoder();
 
         [TestMethod]
-        public void DecodeTest()
+        public void Fコードから譜情報が復元されること()
         {
             Assert.AreEqual(0, decoder.Decode("_").Count);
             List<PairPuyo> steps = decoder.Decode("_58hu4AbGlX");
