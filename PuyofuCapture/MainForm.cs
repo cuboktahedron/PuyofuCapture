@@ -1196,7 +1196,7 @@ namespace Cubokta.Puyo
             string text = RECORD_TEMPLATE;
             text = text.Replace("#date", playDate.Text);
             text = text.Replace("#id", recordId.ToString());
-            text = text.Replace("#record", recordTxt1.Text);
+            text = text.Replace("#record", recordTxts[fieldNo].Text);
             text = text.Replace("#tags", sb.ToString());
 
             return text;
