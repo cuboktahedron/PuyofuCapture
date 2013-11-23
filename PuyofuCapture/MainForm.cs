@@ -1183,9 +1183,19 @@ namespace Cubokta.Puyo
             sb.Append("\r\n    ");
 
             // テンプレート変換
+            int recordId;
+            if (fieldRadioBoth.Checked)
+            {
+                recordId = (int)stepIdTxt.Value + fieldNo;
+            }
+            else
+            {
+                recordId = (int)stepIdTxt.Value;
+            }
+
             string text = RECORD_TEMPLATE;
             text = text.Replace("#date", playDate.Text);
-            text = text.Replace("#id", (stepIdTxt.Value + fieldNo).ToString());
+            text = text.Replace("#id", recordId.ToString());
             text = text.Replace("#record", recordTxt1.Text);
             text = text.Replace("#tags", sb.ToString());
 
