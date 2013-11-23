@@ -1265,8 +1265,8 @@ namespace Cubokta.Puyo
             }
             else
             {
-                if (IsProcessingField(0) && recorders[0].IsRecordEnded
-                    && IsProcessingField(1) && recorders[1].IsRecordEnded)
+                if ((!IsProcessingField(0) || (IsProcessingField(0) && recorders[0].IsRecordEnded))
+                    && (!IsProcessingField(1) || (IsProcessingField(1) && recorders[1].IsRecordEnded)))
                 {
                     recordFileWriter.WriteLine(stepDataTxt.Text);
                     recordFileWriter.Flush();
