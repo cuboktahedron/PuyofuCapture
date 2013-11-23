@@ -247,12 +247,12 @@ namespace Cubokta.Puyo.Common
         {
             get
             {
-                return ojamaBit;
+                return new BitArray(ojamaBit);
             }
 
             set
             {
-                ojamaBit = value;
+                ojamaBit = new BitArray(value);
             }
         }
 
