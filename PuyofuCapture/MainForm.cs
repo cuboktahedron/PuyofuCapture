@@ -1158,7 +1158,7 @@ namespace Cubokta.Puyo
 
             // 追加タグの処理
             StringBuilder sb = new StringBuilder();
-            if (tagsTxt1.Text.Trim() != "")
+            if (tagsTxts[fieldNo].Text.Trim() != "")
             {
                 tagList.AddRange(tagsTxts[fieldNo].Text.Split(
                     new char[] { ' ', '　' }, StringSplitOptions.RemoveEmptyEntries));
