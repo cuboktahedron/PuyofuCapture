@@ -1072,7 +1072,6 @@ namespace Cubokta.Puyo
                 {
                     case RecordResult.RECORD_SUCCESS:
                         updateStepData();
-                        cancelBtn.Enabled = false;
                         break;
                     case RecordResult.RECORD_FAILURE:
                         statusLabel.Text = "キャプチャ失敗！！";
