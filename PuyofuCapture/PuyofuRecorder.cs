@@ -32,6 +32,8 @@ namespace Cubokta.Puyo
         private bool isReadyForNextStepRecord2;
         private bool isRecording;
         public bool IsRecordEnded { get; set; }
+        public bool IsRecordSucceeded { get; set; }
+        public bool IsRecordFailed { get; set; }
         private int captureFailCount;
         private IDictionary<ColorPairPuyo, int> currents = new Dictionary<ColorPairPuyo, int>();
         private CaptureField prevField = new CaptureField();
@@ -70,6 +72,7 @@ namespace Cubokta.Puyo
             {
                 // TODO: キャプチャする手数については設定で変えられるようにした方がよい。
                 isRecording = false;
+                IsRecordSucceeded = true;
                 IsRecordEnded = true;
                 return RecordResult.RECORD_SUCCESS;
             }
@@ -152,6 +155,7 @@ namespace Cubokta.Puyo
                         if (captureFailCount > (1000 / captureInterval))
                         {
                             isRecording = false;
+                            IsRecordFailed = true;
                             IsRecordEnded = true;
                             return RecordResult.RECORD_FAILURE;
                         }
@@ -171,8 +175,8 @@ namespace Cubokta.Puyo
             // ツモの待機中に一番長い間検出されていた色の組み合わせを現在のツモとする
             // これによりツモ移動中による誤判定の確率を減らすことができる
             ColorPairPuyo next = (from n in currents
-                        where n.Value == (from nn in currents select nn.Value).Max()
-                        select n.Key).ElementAt(0);
+                                  where n.Value == (from nn in currents select nn.Value).Max()
+                                  select n.Key).ElementAt(0);
 
             if (currents.Count > 1)
             {

@@ -1119,8 +1119,9 @@ namespace Cubokta.Puyo
 
         private void updateStepData()
         {
-            string step1 = GetStepData(0);
-            string step2 = GetStepData(1);
+            int idCount = 0;
+            string step1 = GetStepData(0, ref idCount);
+            string step2 = GetStepData(1, ref idCount);
             string step = "";
             if (step1 != "")
             {
@@ -1135,9 +1136,9 @@ namespace Cubokta.Puyo
             stepDataTxt.Text = step;
         }
 
-        private string GetStepData(int fieldNo)
+        private string GetStepData(int fieldNo, ref int idCount)
         {
-            if (!recorders[fieldNo].IsRecordEnded)
+            if (!recorders[fieldNo].IsRecordSucceeded)
             {
                 return "";
             }
@@ -1176,22 +1177,13 @@ namespace Cubokta.Puyo
             sb.Append("\r\n    ");
 
             // テンプレート変換
-            int recordId;
-            if (fieldRadioBoth.Checked)
-            {
-                recordId = (int)stepIdTxt.Value + fieldNo;
-            }
-            else
-            {
-                recordId = (int)stepIdTxt.Value;
-            }
-
             string text = RECORD_TEMPLATE;
             text = text.Replace("#date", playDate.Text);
-            text = text.Replace("#id", recordId.ToString());
+            text = text.Replace("#id", (stepIdTxt.Value + idCount).ToString());
             text = text.Replace("#record", recordTxts[fieldNo].Text);
             text = text.Replace("#tags", sb.ToString());
 
+            idCount++;
             return text;
         }
 
@@ -1280,24 +1272,30 @@ namespace Cubokta.Puyo
             cancelBtn.Enabled = true;
             statusLabel.Text = "";
 
-            recorders[0] = new PuyofuRecorder();
-            recorders[1] = new PuyofuRecorder();
-
             if (IsProcessingField(0))
             {
-                stepIdTxt.UpButton();
+                if (recorders[0].IsRecordSucceeded)
+                {
+                    stepIdTxt.UpButton();
+                }
                 prevFields[0] = new CaptureField();
                 curFields[0] = new CaptureField();
+                recorders[0] = new PuyofuRecorder();
                 recorders[0].BeginRecord(captureTimer.Interval);
             }
 
             if (IsProcessingField(1))
             {
-                stepIdTxt.UpButton();
+                if (recorders[1].IsRecordSucceeded)
+                {
+                    stepIdTxt.UpButton();
+                }
                 prevFields[1] = new CaptureField();
                 curFields[1] = new CaptureField();
+                recorders[1] = new PuyofuRecorder();
                 recorders[1].BeginRecord(captureTimer.Interval);
             }
+
         }
 
         private void cancelBtn_Click(object sender, EventArgs e)
@@ -1307,16 +1305,6 @@ namespace Cubokta.Puyo
 
             recorders[0] = new PuyofuRecorder();
             recorders[1] = new PuyofuRecorder();
-
-            if (IsProcessingField(0))
-            {
-                stepIdTxt.DownButton();
-            }
-
-            if (IsProcessingField(1))
-            {
-                stepIdTxt.DownButton();
-            }
         }
 
         private int fieldNoMouseIsOn = -1;
