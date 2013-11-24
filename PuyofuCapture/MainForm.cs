@@ -1123,12 +1123,12 @@ namespace Cubokta.Puyo
             string step1 = GetStepData(0);
             string step2 = GetStepData(1);
             string step = "";
-            if (step1 != null)
+            if (step1 != "")
             {
                 step += step1 + "\r\n";
             }
 
-            if (step2 != null)
+            if (step2 != "")
             {
                 step += step2 + "\r\n";
             }
@@ -1272,7 +1272,7 @@ namespace Cubokta.Puyo
                 if ((!IsProcessingField(0) || (IsProcessingField(0) && recorders[0].IsRecordEnded))
                     && (!IsProcessingField(1) || (IsProcessingField(1) && recorders[1].IsRecordEnded)))
                 {
-                    recordFileWriter.WriteLine(stepDataTxt.Text);
+                    recordFileWriter.Write(stepDataTxt.Text);
                     recordFileWriter.Flush();
                 }
             }
