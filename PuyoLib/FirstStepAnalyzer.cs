@@ -54,7 +54,6 @@ namespace Cubokta.Puyo.Common
                     }
                     else
                     {
-                        list.Remove(cpp.Pivot);
                         posteriorList.Add(cpp.Pivot);
                     }
                 }
@@ -68,7 +67,6 @@ namespace Cubokta.Puyo.Common
                     }
                     else
                     {
-                        list.Remove(cpp.Satellite);
                         posteriorList.Add(cpp.Satellite);
                     }
                 }
@@ -86,9 +84,12 @@ namespace Cubokta.Puyo.Common
                     }
                     else if (candidate.Count == 1)
                     {
-                        // マッピングが確定
-                        mapping[candidate[0]] = mapChar;
-                        mapChar++;
+                        if (!mapping.ContainsKey(candidate[0]))
+                        {
+                            // マッピングが確定
+                            mapping[candidate[0]] = mapChar;
+                            mapChar++;
+                        }
                         removeTargets.Add(candidate);
                     }
                 }
@@ -101,8 +102,11 @@ namespace Cubokta.Puyo.Common
             {
                 foreach (PuyoType p in candidate)
                 {
-                    mapping[p] = mapChar;
-                    mapChar++;
+                    if (!mapping.ContainsKey(p))
+                    {
+                        mapping[p] = mapChar;
+                        mapChar++;
+                    }
                 }
             }
 

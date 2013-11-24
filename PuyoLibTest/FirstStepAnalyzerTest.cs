@@ -59,6 +59,28 @@ namespace Cubokta.Puyo.Common
             Assert.AreEqual("ABABCC", analyzer.GetPattern(steps));
         }
 
+        [TestMethod]
+        public void ABCCACが生成されること()
+        {
+            List<PairPuyo> steps = new List<PairPuyo>();
+
+            steps.Add(CreateColors(PuyoType.KI, PuyoType.MIDORI));
+            steps.Add(CreateColors(PuyoType.AKA, PuyoType.AKA));
+            steps.Add(CreateColors(PuyoType.KI, PuyoType.AKA));
+            Assert.AreEqual("ABCCAC", analyzer.GetPattern(steps));
+        }
+
+        [TestMethod]
+        public void ABCCCCが生成されること()
+        {
+            List<PairPuyo> steps = new List<PairPuyo>();
+
+            steps.Add(CreateColors(PuyoType.KI, PuyoType.MIDORI));
+            steps.Add(CreateColors(PuyoType.AKA, PuyoType.AKA));
+            steps.Add(CreateColors(PuyoType.AKA, PuyoType.AKA));
+            Assert.AreEqual("ABCCCC", analyzer.GetPattern(steps));
+        }
+
         private static ColorPairPuyo CreateColors(PuyoType pivot, PuyoType satellite)
         {
             return new ColorPairPuyo()
