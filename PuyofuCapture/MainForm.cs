@@ -142,7 +142,7 @@ namespace Cubokta.Puyo
             sampleImgs[puyoType].Image = sampleBmp;
         }
 
-        private Button spoitBtn;
+        private Button samplingBtn;
         private Button captureBtn;
         private PictureBox fieldImg1;
         private System.Windows.Forms.Timer captureTimer;
@@ -168,7 +168,7 @@ namespace Cubokta.Puyo
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.spoitBtn = new System.Windows.Forms.Button();
+            this.samplingBtn = new System.Windows.Forms.Button();
             this.captureBtn = new System.Windows.Forms.Button();
             this.fieldImg1 = new System.Windows.Forms.PictureBox();
             this.captureTimer = new System.Windows.Forms.Timer(this.components);
@@ -226,16 +226,16 @@ namespace Cubokta.Puyo
             ((System.ComponentModel.ISupportInitialize)(this.nextImg2)).BeginInit();
             this.SuspendLayout();
             // 
-            // spoitBtn
+            // samplingBtn
             // 
-            this.spoitBtn.Enabled = false;
-            this.spoitBtn.Location = new System.Drawing.Point(24, 32);
-            this.spoitBtn.Name = "spoitBtn";
-            this.spoitBtn.Size = new System.Drawing.Size(110, 63);
-            this.spoitBtn.TabIndex = 1;
-            this.spoitBtn.Text = "スポイト";
-            this.spoitBtn.UseVisualStyleBackColor = true;
-            this.spoitBtn.Click += new System.EventHandler(this.spoitBtn_Click);
+            this.samplingBtn.Enabled = false;
+            this.samplingBtn.Location = new System.Drawing.Point(24, 57);
+            this.samplingBtn.Name = "samplingBtn";
+            this.samplingBtn.Size = new System.Drawing.Size(110, 63);
+            this.samplingBtn.TabIndex = 1;
+            this.samplingBtn.Text = "サンプリング";
+            this.samplingBtn.UseVisualStyleBackColor = true;
+            this.samplingBtn.Click += new System.EventHandler(this.samplingBtn_Click);
             // 
             // captureBtn
             // 
@@ -278,9 +278,9 @@ namespace Cubokta.Puyo
             this.colorInfoLbl.AutoSize = true;
             this.colorInfoLbl.Location = new System.Drawing.Point(606, 32);
             this.colorInfoLbl.Name = "colorInfoLbl";
-            this.colorInfoLbl.Size = new System.Drawing.Size(67, 12);
+            this.colorInfoLbl.Size = new System.Drawing.Size(82, 12);
             this.colorInfoLbl.TabIndex = 5;
-            this.colorInfoLbl.Text = "サンプル画像";
+            this.colorInfoLbl.Text = "サンプリング画像";
             // 
             // fieldRadio1P
             // 
@@ -662,7 +662,7 @@ namespace Cubokta.Puyo
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.fieldImg1);
             this.Controls.Add(this.captureBtn);
-            this.Controls.Add(this.spoitBtn);
+            this.Controls.Add(this.samplingBtn);
             this.Controls.Add(this.mainMenu);
             this.MainMenuStrip = this.mainMenu;
             this.Name = "MainForm";
@@ -687,13 +687,13 @@ namespace Cubokta.Puyo
 
         }
 
-        int pixelingTargetIndex;
-        bool isPixeling = false;
-        private void spoitBtn_Click(object sender, EventArgs e)
+        int samplingTargetIndex;
+        bool isSampling = false;
+        private void samplingBtn_Click(object sender, EventArgs e)
         {
-            isPixeling = true;
-            pixelingTargetIndex = (int)PuyoType.NONE;
-            statusLabel.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
+            isSampling = true;
+            samplingTargetIndex = (int)PuyoType.NONE;
+            statusLabel.Text = (PuyoType)samplingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
         }
 
         private void captureBtn_Click(object sender, EventArgs e)
@@ -725,7 +725,7 @@ namespace Cubokta.Puyo
         private void BeginCapturing()
         {
             IsCapturing = true;
-            spoitBtn.Enabled = true;
+            samplingBtn.Enabled = true;
             startBtn.Enabled = true;
             captureTimer.Start();
 
@@ -783,7 +783,7 @@ namespace Cubokta.Puyo
                 // 取り込んだ画像を画面に出力
                 fieldImgG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
 
-                if (!isPixeling)
+                if (!isSampling)
                 {
                     // フィールドの状態を解析し、結果を描画
                     curFields[fieldNo] = a(forAnalyzeBmp);
@@ -952,7 +952,7 @@ namespace Cubokta.Puyo
 
         private void ClickField(object sender, MouseEventArgs e, int fieldNo)
         {
-            if (!isPixeling)
+            if (!isSampling)
             {
                 return;
             }
@@ -984,7 +984,7 @@ namespace Cubokta.Puyo
                     forAnalyzeG.DrawImage(screenBmp, dest, src, GraphicsUnit.Pixel);
 
                     Bitmap cellBmp = forAnalyzeBmp.Clone(pixelingCellRect, forAnalyzeBmp.PixelFormat);
-                    PuyoType puyoType = (PuyoType)pixelingTargetIndex;
+                    PuyoType puyoType = (PuyoType)samplingTargetIndex;
 
                     // 選択したサンプルを設定
                     RapidBitmapAccessor ba = new RapidBitmapAccessor(cellBmp);
@@ -999,19 +999,19 @@ namespace Cubokta.Puyo
                     }
                     sampleImgs[puyoType].Image = cellBmp;
                     Directory.CreateDirectory("img");
-                    cellBmp.Save("img/" + (PuyoType)pixelingTargetIndex + ".bmp", ImageFormat.Bmp);
+                    cellBmp.Save("img/" + (PuyoType)samplingTargetIndex + ".bmp", ImageFormat.Bmp);
                 }
             }
 
-            pixelingTargetIndex++;
-            if (pixelingTargetIndex > (int)PuyoType.MURASAKI)
+            samplingTargetIndex++;
+            if (samplingTargetIndex > (int)PuyoType.MURASAKI)
             {
-                isPixeling = false;
+                isSampling = false;
                 statusLabel.Text = "";
             }
             else
             {
-                statusLabel.Text = (PuyoType)pixelingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
+                statusLabel.Text = (PuyoType)samplingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
             }
         }
 
@@ -1311,7 +1311,7 @@ namespace Cubokta.Puyo
         private Point pointOnFieldImg;
         private void fieldImg_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isPixeling)
+            if (!isSampling)
             {
                 return;
             }
