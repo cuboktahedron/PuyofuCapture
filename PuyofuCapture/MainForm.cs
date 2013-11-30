@@ -694,15 +694,23 @@ namespace Cubokta.Puyo
             statusLabel.Text = sampler.GetText();
         }
 
+        CaptureForm captureForm = new CaptureForm(0);
         private void captureBtn_Click(object sender, EventArgs e)
         {
-            captureTimer.Stop();
-            IsCapturing = false;
+            if (captureForm.IsCapturing)
+            {
+                captureForm.Close();
+            }
 
-            int fieldNo = fieldRadio1P.Checked ? 0 : 1;
-            Form captureForm = new CaptureForm(fieldNo);
-            captureForm.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CaptureForm_FormClosed);
-            captureForm.Show();
+            else
+            {
+                captureBtn.Text = "選択中止";
+                captureTimer.Stop();
+                IsCapturing = false;
+                captureForm.IsCapturing = true;
+                captureForm.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CaptureForm_FormClosed);
+                captureForm.Show();
+            }
         }
 
         private void CaptureForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -713,11 +721,24 @@ namespace Cubokta.Puyo
                 return;
             }
 
-            config.CaptureRect = f.CaptureRects.CaptureRect;
-            config.Save();
+            if (f.IsCaptureEnd)
+            {
+                config.CaptureRect = f.CaptureRects.CaptureRect;
+                config.Save();
 
-            captureRects = f.CaptureRects;
-            BeginCapturing();
+                captureRects = f.CaptureRects;
+                BeginCapturing();
+            }
+            else if (config.CaptureRect.Top > 0
+                && config.CaptureRect.Left > 0
+                && config.CaptureRect.Width > 0
+                && config.CaptureRect.Height > 0)
+            {
+                BeginCapturing();
+            }
+
+            captureBtn.Text = "キャプチャスクリーン";
+            captureForm = new CaptureForm(0);
         }
 
         private void BeginCapturing()

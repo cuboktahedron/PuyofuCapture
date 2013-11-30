@@ -37,6 +37,12 @@ namespace Cubokta.Puyo
 
         public CaptureRects CaptureRects { get; private set; }
 
+        /// <summary>キャプチャ選択処理中か</summary>
+        public bool IsCapturing { get; set; }
+
+        /// <summary>キャプチャが終了したかどうか</summary>
+        public bool IsCaptureEnd { get; set; }
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -76,6 +82,7 @@ namespace Cubokta.Puyo
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CaptureForm_FormClosed);
             this.Load += new System.EventHandler(this.CaptureForm_Load);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CaptureForm_KeyPress);
             ((System.ComponentModel.ISupportInitialize)(this.screenImg)).EndInit();
             this.ResumeLayout(false);
 
@@ -141,6 +148,8 @@ namespace Cubokta.Puyo
                 int captureHeight = Math.Abs(endPoint.Y - startPoint.Y);
                 xUnit = captureWidth / (X_BLOCK_NUM);
                 yUnit = captureHeight / Y_BLOCK_NUM;
+
+                IsCaptureEnd = true;
                 this.Close();
             }
         }
@@ -261,6 +270,19 @@ namespace Cubokta.Puyo
         private void CaptureForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             rawScreenImage.Dispose();
+        }
+
+        /// <summary>
+        /// キーを入力した
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
+        private void CaptureForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Escape)
+            {
+                Close();
+            }
         }
     }
 }
