@@ -479,7 +479,7 @@ namespace Cubokta.Puyo
             this.similarityValueBar.SmallChange = 10;
             this.similarityValueBar.TabIndex = 8;
             this.similarityValueBar.TickFrequency = 1000;
-            this.similarityValueBar.Value = 2500;
+            this.similarityValueBar.Value = 2700;
             this.similarityValueBar.Scroll += new System.EventHandler(this.similarityValueBar_Scroll);
             // 
             // label1
@@ -496,9 +496,9 @@ namespace Cubokta.Puyo
             this.similarityValueLbl.AutoSize = true;
             this.similarityValueLbl.Location = new System.Drawing.Point(606, 117);
             this.similarityValueLbl.Name = "similarityValueLbl";
-            this.similarityValueLbl.Size = new System.Drawing.Size(35, 12);
+            this.similarityValueLbl.Size = new System.Drawing.Size(29, 12);
             this.similarityValueLbl.TabIndex = 29;
-            this.similarityValueLbl.Text = "30000";
+            this.similarityValueLbl.Text = "2700";
             // 
             // sampleNoneImg
             // 
