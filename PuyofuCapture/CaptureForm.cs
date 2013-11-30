@@ -9,12 +9,16 @@ namespace Cubokta.Puyo
     /// </summary>
     public partial class CaptureForm : Form
     {
+        /// <summary>横のセル数</summary>
+        private const int X_BLOCK_NUM = 6;
+
+        /// <summary>縦のセル数</summary>
+        private const int Y_BLOCK_NUM = 12;
+
         /// <summary>スクリーン画像表示用ピクチャボックス</summary>
         private PictureBox screenImg;
 
-        /// <summary>
-        /// キャプチャ開始時点の画面イメージ
-        /// </summary>
+        /// <summary>キャプチャ開始時点の画面イメージ</summary>
         private Bitmap rawScreenImage;
 
         /// <summary>選択範囲の始点</summary>
@@ -35,6 +39,7 @@ namespace Cubokta.Puyo
         /// <summary>キャプチャ範囲指定が開始されているかどうか</summary>
         public bool IsSelecting { get; private set; }
 
+        /// <summary>キャプチャ範囲</summary>
         public CaptureRects CaptureRects { get; private set; }
 
         /// <summary>キャプチャ選択処理中か</summary>
@@ -175,63 +180,6 @@ namespace Cubokta.Puyo
             CaptureRects.CalculateRects(startPoint, endPoint);
             Refresh();
         }
-
-        ///// <summary>
-        ///// キャプチャ範囲を取得する
-        ///// </summary>
-        ///// <returns>
-        ///// キャプチャ範囲
-        ///// </returns>
-        //public Rectangle GetCaptureRect()
-        //{
-        //    if (!IsSelecting)
-        //    {
-        //        return new Rectangle(0, 0, 0, 0);
-        //    }
-
-        //    int captureWidth = Math.Abs(endPoint.X - startPoint.X);
-        //    int captureHeight = Math.Abs(endPoint.Y - startPoint.Y);
-        //    int left = Math.Min(startPoint.X, endPoint.X);
-        //    int top = Math.Min(startPoint.Y, endPoint.Y);
-
-        //    return new Rectangle(left, top, (int)(xUnit * 6), captureHeight);
-        //}
-
-        ///// <summary>
-        ///// ネクスト範囲を取得する
-        ///// </summary>
-        ///// <returns>
-        ///// ネクスト範囲
-        ///// </returns>
-        //public Rectangle GetNextRect()
-        //{
-        //    if (!IsSelecting)
-        //    {
-        //        return new Rectangle(0, 0, 0, 0);
-        //    }
-
-        //    int captureWidth = Math.Abs(endPoint.X - startPoint.X);
-        //    int captureHeight = Math.Abs(endPoint.Y - startPoint.Y);
-        //    int left = Math.Min(startPoint.X, endPoint.X);
-        //    int top = Math.Min(startPoint.Y, endPoint.Y);
-
-        //    int nextLeft;
-        //    int nextTop = top + (int)(yUnit * 2);
-
-        //    if (fieldNo == 0)
-        //    {
-        //        nextLeft = left + captureWidth + (int)xUnit;
-        //    }
-        //    else
-        //    {
-        //        nextLeft = left - (int)(xUnit * 2);
-        //    }
-
-        //    return new Rectangle(nextLeft, nextTop, (int)xUnit, (int)(yUnit * 2));
-        //}
-
-        private const int X_BLOCK_NUM = 6;
-        private const int Y_BLOCK_NUM = 12;
 
         /// <summary>
         /// 画面を再描画
