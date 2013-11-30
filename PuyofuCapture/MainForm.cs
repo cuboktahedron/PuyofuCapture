@@ -805,7 +805,7 @@ namespace Cubokta.Puyo
                 if (!sampler.IsSampling)
                 {
                     // フィールドの状態を解析し、結果を描画
-                    curFields[fieldNo] = a(forAnalyzeBmp);
+                    curFields[fieldNo] = AnalyzeField(forAnalyzeBmp);
                     if (config.DebugRectEnabled)
                     {
                         DrawDebugRect(fieldImgG, curFields[fieldNo]);
@@ -914,7 +914,7 @@ namespace Cubokta.Puyo
             }
         }
 
-        private CaptureField a(Bitmap bmp)
+        private CaptureField AnalyzeField(Bitmap bmp)
         {
             CaptureField field = new CaptureField();
             RapidBitmapAccessor ba = new RapidBitmapAccessor(bmp);
@@ -1070,7 +1070,7 @@ namespace Cubokta.Puyo
                 nextG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
 
                 // ツモ情報を解析し、結果を描画
-                CaptureField field = b(forAnalyzeBmp);
+                CaptureField field = AnalyzeNext(forAnalyzeBmp);
                 if (config.DebugRectEnabled)
                 {
                     DrawDebugNextRect(nextG, field);
@@ -1197,7 +1197,7 @@ namespace Cubokta.Puyo
             return text;
         }
 
-        private CaptureField b(Bitmap bmp)
+        private CaptureField AnalyzeNext(Bitmap bmp)
         {
             CaptureField field = new CaptureField();
             RapidBitmapAccessor ba = new RapidBitmapAccessor(bmp);
