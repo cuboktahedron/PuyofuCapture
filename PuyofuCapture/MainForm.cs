@@ -694,7 +694,7 @@ namespace Cubokta.Puyo
             statusLabel.Text = sampler.GetText();
         }
 
-        CaptureForm captureForm = new CaptureForm(0);
+        CaptureForm captureForm = new CaptureForm();
         private void captureBtn_Click(object sender, EventArgs e)
         {
             if (captureForm.IsCapturing)
@@ -738,7 +738,7 @@ namespace Cubokta.Puyo
             }
 
             captureBtn.Text = "キャプチャスクリーン";
-            captureForm = new CaptureForm(0);
+            captureForm = new CaptureForm();
         }
 
         private void BeginCapturing()

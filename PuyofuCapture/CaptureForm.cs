@@ -27,9 +27,6 @@ namespace Cubokta.Puyo
         /// <summary>選択範囲の終点</summary>
         private Point endPoint;
 
-        /// <summary>フィールド番号</summary>
-        private int fieldNo;
-
         /// <summary>選択範囲の1ブロックの幅</summary>
         private float xUnit;
 
@@ -51,10 +48,8 @@ namespace Cubokta.Puyo
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="fieldNo">フィールド版の具</param>
-        public CaptureForm(int fieldNo)
+        public CaptureForm()
         {
-            this.fieldNo = fieldNo;
             InitializeComponent();
         }
 
