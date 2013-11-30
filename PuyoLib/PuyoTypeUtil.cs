@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 namespace Cubokta.Puyo.Common
 {
     /// <summary>
@@ -6,6 +7,19 @@ namespace Cubokta.Puyo.Common
     /// </summary>
     public class PuyoTypeUtil
     {
+        /// <summary>
+        /// ぷよ種別名への変換テーブル
+        /// </summary>
+        private static readonly IDictionary<PuyoType, string> TYPE2CHAR = new Dictionary<PuyoType, string>()
+        {
+            { PuyoType.NONE, "空白" },
+            { PuyoType.AKA, "赤ぷよ" },
+            { PuyoType.MIDORI, "緑ぷよ" },
+            { PuyoType.AO, "青ぷよ" },
+            { PuyoType.KI, "黄ぷよ" },
+            { PuyoType.MURASAKI, "紫ぷよ" },
+        };
+        
         /// <summary>
         /// 色ぷよかどうかを判定する
         /// </summary>
@@ -25,5 +39,16 @@ namespace Cubokta.Puyo.Common
         {
             return type == PuyoType.OJAMA;
         }
+
+        /// <summary>
+        /// ぷよ種別名を返却する
+        /// </summary>
+        /// <param name="type">ぷよ種別</param>
+        /// <returns>ぷよ種別の名前</returns>
+        public static string GetTypeName(PuyoType type)
+        {
+            return TYPE2CHAR[type];
+        }
+    
     }
 }

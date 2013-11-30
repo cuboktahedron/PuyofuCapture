@@ -687,13 +687,11 @@ namespace Cubokta.Puyo
 
         }
 
-        int samplingTargetIndex;
-        bool isSampling = false;
+        private Sampler sampler = new Sampler();
         private void samplingBtn_Click(object sender, EventArgs e)
         {
-            isSampling = true;
-            samplingTargetIndex = (int)PuyoType.NONE;
-            statusLabel.Text = (PuyoType)samplingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
+            sampler.Begin();
+            statusLabel.Text = sampler.GetText();
         }
 
         private void captureBtn_Click(object sender, EventArgs e)
@@ -783,7 +781,7 @@ namespace Cubokta.Puyo
                 // 取り込んだ画像を画面に出力
                 fieldImgG.DrawImage(forAnalyzeBmp, dest, dest, GraphicsUnit.Pixel);
 
-                if (!isSampling)
+                if (!sampler.IsSampling)
                 {
                     // フィールドの状態を解析し、結果を描画
                     curFields[fieldNo] = a(forAnalyzeBmp);
@@ -952,7 +950,7 @@ namespace Cubokta.Puyo
 
         private void ClickField(object sender, MouseEventArgs e, int fieldNo)
         {
-            if (!isSampling)
+            if (!sampler.IsSampling)
             {
                 return;
             }
@@ -984,7 +982,7 @@ namespace Cubokta.Puyo
                     forAnalyzeG.DrawImage(screenBmp, dest, src, GraphicsUnit.Pixel);
 
                     Bitmap cellBmp = forAnalyzeBmp.Clone(pixelingCellRect, forAnalyzeBmp.PixelFormat);
-                    PuyoType puyoType = (PuyoType)samplingTargetIndex;
+                    PuyoType puyoType = sampler.GetSamplingType();
 
                     // 選択したサンプルを設定
                     RapidBitmapAccessor ba = new RapidBitmapAccessor(cellBmp);
@@ -998,21 +996,12 @@ namespace Cubokta.Puyo
                         sampleImgs[puyoType].Image.Dispose();
                     }
                     sampleImgs[puyoType].Image = cellBmp;
-                    Directory.CreateDirectory("img");
-                    cellBmp.Save("img/" + (PuyoType)samplingTargetIndex + ".bmp", ImageFormat.Bmp);
+                    sampler.SaveSample(cellBmp);
                 }
             }
 
-            samplingTargetIndex++;
-            if (samplingTargetIndex > (int)PuyoType.MURASAKI)
-            {
-                isSampling = false;
-                statusLabel.Text = "";
-            }
-            else
-            {
-                statusLabel.Text = (PuyoType)samplingTargetIndex + "のサンプルピクセルをクリックしてください。右クリックでスキップします。";
-            }
+            sampler.Proceed();
+            statusLabel.Text = sampler.GetText();
         }
 
         private void fieldImg_MouseClick(object sender, MouseEventArgs e)
@@ -1311,7 +1300,7 @@ namespace Cubokta.Puyo
         private Point pointOnFieldImg;
         private void fieldImg_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isSampling)
+            if (!sampler.IsSampling)
             {
                 return;
             }

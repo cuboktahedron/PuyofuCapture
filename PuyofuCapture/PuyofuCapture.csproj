@@ -67,6 +67,7 @@
     <Compile Include="ConfigurationForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Sampler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonLib\CommonLib.csproj">
