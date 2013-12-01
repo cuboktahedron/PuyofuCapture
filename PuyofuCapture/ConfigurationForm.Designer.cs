@@ -41,8 +41,10 @@ namespace Cubokta.Puyo
             this.ClientSize = new System.Drawing.Size(538, 404);
             this.Controls.Add(this.DebugRectEnabledChk);
             this.Controls.Add(this.OkBtn);
+            this.KeyPreview = true;
             this.Name = "ConfigurationForm";
             this.Text = "設定";
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ConfigurationForm_KeyPress);
             this.ResumeLayout(false);
             this.PerformLayout();
 
