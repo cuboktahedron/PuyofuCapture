@@ -3,17 +3,38 @@ using System.Drawing;
 
 namespace Cubokta.Puyo
 {
+    /// <summary>
+    /// 設定情報
+    /// </summary>
     public class PuyofuConfiguration
     {
+        /// <summary>デバッグ枠を表示するかどうか</summary>
         public bool DebugRectEnabled { get; set; }
+
+        /// <summary>閾値</summary>
         public int SimilarityThreshold { get; set; }
+
+        /// <summary>スクリーンキャプチャ範囲</summary>
         public Rectangle CaptureRect { get; set; }
+
+        /// <summary>レコードID</summary>
         public int RecordId { get; set; }
+
+        /// <summary>レコード日付</summary>
         public string RecordDate { get; set; }
+
+        /// <summary>プレイヤ名１</summary>
         public string PlayerName1 { get; set; }
+
+        /// <summary>プレイヤ名２</summary>
         public string PlayerName2 { get; set; }
+
+        /// <summary>処理対象フィールド値</summary>
         public string TargetField { get; set; }
 
+        /// <summary>
+        /// 初期化する
+        /// </summary>
         public void Init()
         {
             DebugRectEnabled = ConfigurationManager.AppSettings["DebugRectEnabled"] == "1";
@@ -26,6 +47,9 @@ namespace Cubokta.Puyo
             TargetField = ConfigurationManager.AppSettings["TargetField"];
         }
 
+        /// <summary>
+        /// 保存する
+        /// </summary>
         public void Save()
         {
             Configuration appConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -40,11 +64,21 @@ namespace Cubokta.Puyo
             appConfig.Save();
         }
 
+        /// <summary>
+        /// 領域を文字列に変換する
+        /// </summary>
+        /// <param name="r">領域</param>
+        /// <returns>変換した文字列</returns>
         private string RectToSaveString(Rectangle r)
         {
             return r.Left + "," + r.Top + "," + r.Width + "," + r.Height;
         }
 
+        /// <summary>
+        /// 文字列を領域に変換する
+        /// </summary>
+        /// <param name="str">文字列</param>
+        /// <returns>変換した領域</returns>
         private Rectangle StringToRectangle(string str)
         {
             string[] values = str.Split(',');

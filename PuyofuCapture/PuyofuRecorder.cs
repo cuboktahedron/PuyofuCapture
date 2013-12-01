@@ -18,6 +18,9 @@ namespace Cubokta.Puyo
         RECORD_ENDED,
     }
 
+    /// <summary>
+    /// ぷよ譜レコーダ
+    /// </summary>
     public class PuyofuRecorder
     {
         /// <summary>ロガー</summary>

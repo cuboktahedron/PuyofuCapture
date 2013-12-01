@@ -9,15 +9,19 @@ namespace Cubokta.Puyo
     [DataContract]
     public class Record
     {
+        /// <summary>レコード日付</summary>
         [DataMember(Name = "date")]
         public string Date { get; set; }
 
+        /// <summary>レコードID</summary>
         [DataMember(Name = "id")]
         public string Id { get; set; }
 
+        /// <summary>レコード</summary>
         [DataMember(Name = "record")]
         public string StepRecord { get; set; }
 
+        /// <summary>タグ</summary>
         [DataMember(Name = "tags")]
         public List<string> Tags { get; set; }
     }

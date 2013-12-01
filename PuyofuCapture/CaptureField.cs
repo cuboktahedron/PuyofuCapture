@@ -26,8 +26,24 @@ namespace Cubokta.Puyo
         /// <summary>1セルの辺の長さ(ピクセル)</summary>
         public const int UNIT = 32;
 
+        /// <summary>フィールド情報</summary>
         private PuyoType[,] Types { get; set; }
+
+        /// <summary>ネクスト情報</summary>
         public ColorPairPuyo Next { get; set; }
+
+        /// <summary>
+        /// 文字列表現用の変換テーブル
+        /// </summary>
+        private static readonly IDictionary<PuyoType, string> TYPE2CHAR = new Dictionary<PuyoType, string>()
+        {
+            { PuyoType.NONE, "□" },
+            { PuyoType.AKA, "赤" },
+            { PuyoType.MIDORI, "緑" },
+            { PuyoType.AO, "青" },
+            { PuyoType.KI, "黄" },
+            { PuyoType.MURASAKI, "紫" },
+        };
 
         /// <summary>
         /// コンストラクタ
@@ -233,22 +249,9 @@ namespace Cubokta.Puyo
         }
 
         /// <summary>
-        /// 文字列表現用の変換テーブル
-        /// </summary>
-        private static readonly IDictionary<PuyoType, string> TYPE2CHAR = new Dictionary<PuyoType, string>()
-        {
-            { PuyoType.NONE, "□" },
-            { PuyoType.AKA, "赤" },
-            { PuyoType.MIDORI, "緑" },
-            { PuyoType.AO, "青" },
-            { PuyoType.KI, "黄" },
-            { PuyoType.MURASAKI, "紫" },
-        };
-
-        /// <summary>
         /// このオブジェクトの文字列表現
         /// </summary>
-        /// <returns></returns>
+        /// <returns>オブジェクトの文字列表現</returns>
         public override String ToString()
         {
             StringBuilder sb = new StringBuilder();

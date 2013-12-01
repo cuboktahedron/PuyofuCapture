@@ -11,6 +11,9 @@ using log4net;
 
 namespace Cubokta.Puyo
 {
+    /// <summary>
+    /// メインフォーム
+    /// </summary>
     public partial class MainForm : Form
     {
         private static readonly ILog LOGGER =
@@ -22,13 +25,49 @@ namespace Cubokta.Puyo
         {
             Application.Run(new MainForm());
         }
-        
+
+        /// <summary>ぷよ種別検出機</summary>
         private PuyoTypeDetector detector = new PuyoTypeDetector();
+        
+        /// <summary>キャプチャ領域</summary>
         private CaptureRects captureRects;
+
+        /// <summary>プレイヤ名テキスト</summary>
         private TextBox[] playerNameTxts;
+
+        /// <summary>タグテキスト</summary>
         private TextBox[] tagsTxts;
+
+        /// <summary>レコードテキスト</summary>
         private TextBox[] recordTxts;
 
+        /// <summary>サンプル画像テーブル</summary>
+        private IDictionary<PuyoType, PictureBox> sampleImgs;
+
+        /// <summary>ぷよ画像サンプラ</summary>
+        private Sampler sampler = new Sampler();
+
+        /// <summary>キャプチャフォーム</summary>
+        CaptureForm captureForm = new CaptureForm();
+
+        /// <summary>FPS計算機</summary>
+        FpsCalculator fpsCalculator = new FpsCalculator();
+
+        /// <summary>スクリーンキャプチャ用BMP</summary>
+        private Bitmap screenBmp;
+
+        /// <summary>ぷよ譜レコーダ</summary>
+        PuyofuRecorder[] recorders = new PuyofuRecorder[2] { new PuyofuRecorder(), new PuyofuRecorder() };
+
+        /// <summary>マウスが上にあるフィールド番号</summary>
+        private int fieldNoMouseIsOn = -1;
+
+        /// <summary>フィールド上のマウスの位置</summary>
+        private Point pointOnFieldImg;
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
@@ -64,6 +103,10 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// 処理対象フィールドラジオボタンを選択する
+        /// </summary>
+        /// <param name="targetFieldValue">選択対象のラジオボタンの値</param>
         private void CheckFieldRadio(string targetFieldValue)
         {
             if (targetFieldValue == "1")
@@ -80,8 +123,9 @@ namespace Cubokta.Puyo
             }
         }
 
-        private IDictionary<PuyoType, PictureBox> sampleImgs;
-
+        /// <summary>
+        /// 全サンプル画像の初期設定を行う
+        /// </summary>
         private void updateSamples()
         {
             sampleImgs = new Dictionary<PuyoType, PictureBox>();
@@ -100,6 +144,10 @@ namespace Cubokta.Puyo
             updateSample(PuyoType.MURASAKI);
         }
 
+        /// <summary>
+        /// サンプル画像の初期設定を行う
+        /// </summary>
+        /// <param name="puyoType">ぷよ種別</param>
         private void updateSample(PuyoType puyoType)
         {
             string filePath = Path.Combine("img", puyoType.ToString() + ".bmp");
@@ -117,14 +165,22 @@ namespace Cubokta.Puyo
             sampleImgs[puyoType].Image = sampleBmp;
         }
 
-        private Sampler sampler = new Sampler();
+        /// <summary>
+        /// サンプリングボタンをクリックした
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void samplingBtn_Click(object sender, EventArgs e)
         {
             sampler.Begin();
             statusLabel.Text = sampler.GetText();
         }
 
-        CaptureForm captureForm = new CaptureForm();
+        /// <summary>
+        /// キャプチャスクリーンボタンをクリックした
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void captureBtn_Click(object sender, EventArgs e)
         {
             if (captureForm.IsCapturing)
@@ -143,6 +199,11 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// キャプチャフォームが閉じられた
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void CaptureForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             CaptureForm f = sender as CaptureForm;
@@ -153,6 +214,7 @@ namespace Cubokta.Puyo
 
             if (f.IsCaptureEnd)
             {
+                // キャプチャ範囲が選択された場合
                 config.CaptureRect = f.CaptureRects.CaptureRect;
                 config.Save();
 
@@ -164,6 +226,7 @@ namespace Cubokta.Puyo
                 && config.CaptureRect.Width > 0
                 && config.CaptureRect.Height > 0)
             {
+                // キャプチャ範囲が選択されなかった場合でも、以前の選択範囲があるならキャプチャを開始
                 BeginCapturing();
             }
 
@@ -171,6 +234,9 @@ namespace Cubokta.Puyo
             captureForm = new CaptureForm();
         }
 
+        /// <summary>
+        /// キャプチャを開始する
+        /// </summary>
         private void BeginCapturing()
         {
             IsCapturing = true;
@@ -185,8 +251,11 @@ namespace Cubokta.Puyo
             screenBmp = new Bitmap(captureRects.CaptureRect.Width, captureRects.CaptureRect.Height);
         }
 
-        FpsCalculator fpsCalculator = new FpsCalculator();
-        private Bitmap screenBmp;
+        /// <summary>
+        /// キャプチャタイマー処理
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void captureTimer_Tick(object sender, EventArgs e)
         {
             using (Graphics g = Graphics.FromImage(screenBmp))
@@ -200,10 +269,21 @@ namespace Cubokta.Puyo
             fpsLbl.Text = "fps:" + fpsCalculator.GetFpsInt();
         }
 
+        /// <summary>キャプチャ処理中かどうか</summary>
         private bool IsCapturing { get; set; }
-        private CaptureField[] prevFields = new CaptureField[2]{ new CaptureField(), new CaptureField() };
-        private CaptureField[] curFields = new CaptureField[2]{ new CaptureField(), new CaptureField() };
 
+        /// <summary>一つ前のフィールド状態</summary>
+        private CaptureField[] prevFields = new CaptureField[2]{ new CaptureField(), new CaptureField() };
+
+        /// <summary>現在のフィールド状態</summary>
+        private CaptureField[] curFields = new CaptureField[2] { new CaptureField(), new CaptureField() };
+
+        /// <summary>
+        /// フィールドの再描画処理
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
+        /// <param name="fieldNo">フィールド番号</param>
         private void PaintField(object sender, PaintEventArgs e, int fieldNo)
         {
             if (!IsCapturing)
@@ -253,11 +333,20 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// 画面項目からフィールド番号を取得する
+        /// </summary>
+        /// <param name="control">画面項目</param>
         private int GetFieldNumberFromControl(Control control)
         {
             return int.Parse(control.Name.Substring(control.Name.Length - 1)) - 1;
         }
 
+        /// <summary>
+        /// 指定したフィールドが処理対象フィールドかどうかを判定する
+        /// </summary>
+        /// <param name="fieldNo">フィールド番号</param>
+        /// <returns>処理対象フィールドか</returns>
         private bool IsProcessingField(int fieldNo)
         {
             if ((fieldRadio1P.Checked || fieldRadioBoth.Checked) && fieldNo == 0)
@@ -273,6 +362,11 @@ namespace Cubokta.Puyo
             return false;
         }
 
+        /// <summary>
+        /// フィールドの再描画処理
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void fieldImg_Paint(object sender, PaintEventArgs e)
         {
             try
@@ -293,6 +387,11 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// デバッグ枠を表示する
+        /// </summary>
+        /// <param name="g">描画先グラフィックオブジェクト</param>
+        /// <param name="field">フィールド状態</param>
         private void DrawDebugRect(Graphics g, CaptureField field)
         {
             using (Pen redPen = new Pen(Color.Red, 2))
@@ -344,6 +443,11 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// フィールド状態を解析する
+        /// </summary>
+        /// <param name="bmp">解析対象画像</param>
+        /// <returns>フィールド状態</returns>
         private CaptureField AnalyzeField(Bitmap bmp)
         {
             CaptureField field = new CaptureField();
@@ -363,8 +467,14 @@ namespace Cubokta.Puyo
             return field;
         }
 
+        /// <summary>
+        /// メインフォームが閉じられた
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            // 現在の画面の情報を設定ファイルに保存
             config.RecordId = (int)stepIdTxt.Value;
             config.RecordDate = playDate.Text;
             config.PlayerName1 = playerNameTxt1.Text;
@@ -383,6 +493,10 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// 処理対象フィールドラジオボタンの値を取得する
+        /// </summary>
+        /// <returns>処理対象フィールドラジオボタンの値</returns>
         private string GetTargetFieldValue()
         {
             if (fieldRadio1P.Checked)
@@ -399,6 +513,12 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// フィールドがクリックされた
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
+        /// <param name="fieldNo">フィールド番号</param>
         private void ClickField(object sender, MouseEventArgs e, int fieldNo)
         {
             if (!sampler.IsSampling)
@@ -455,6 +575,11 @@ namespace Cubokta.Puyo
             statusLabel.Text = sampler.GetText();
         }
 
+        /// <summary>
+        /// フィールドがクリックされた
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void fieldImg_MouseClick(object sender, MouseEventArgs e)
         {
             Control img = (Control)sender;
@@ -467,8 +592,12 @@ namespace Cubokta.Puyo
             ClickField(sender, e, fieldNo);
         }
 
-        PuyofuRecorder[] recorders = new PuyofuRecorder[2] { new PuyofuRecorder(), new PuyofuRecorder() };
-
+        /// <summary>
+        /// ネクストの再描画処理
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
+        /// <param name="fieldNo">フィールド番号</param>
         private void PaintNext(object sender, PaintEventArgs e, int fieldNo)
         {
             if (!IsCapturing)
@@ -529,6 +658,11 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// ネクストの再描画処理
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void nextImg_Paint(object sender, PaintEventArgs e)
         {
             try
@@ -549,14 +683,9 @@ namespace Cubokta.Puyo
             }
         }
 
-        private static readonly string RECORD_TEMPLATE = @"  {
-    date: '#date',
-    id: '#id',
-    record: '#record',
-    tags: [#tags],
-  },
-";
-
+        /// <summary>
+        /// 譜情報を更新する
+        /// </summary>
         private void updateStepData()
         {
             int idCount = 0;
@@ -576,6 +705,12 @@ namespace Cubokta.Puyo
             stepDataTxt.Text = step;
         }
 
+        /// <summary>
+        /// 譜情報を取得する
+        /// </summary>
+        /// <param name="fieldNo">フィールド番号</param>
+        /// <param name="idCount">IDカウンタ</param>
+        /// <returns>譜情報</returns>
         private string GetStepData(int fieldNo, ref int idCount)
         {
             if (!recorders[fieldNo].IsRecordSucceeded)
@@ -617,7 +752,13 @@ namespace Cubokta.Puyo
             sb.Append("\r\n    ");
 
             // テンプレート変換
-            string text = RECORD_TEMPLATE;
+            string text = @"  {
+    date: '#date',
+    id: '#id',
+    record: '#record',
+    tags: [#tags],
+  },
+";
             text = text.Replace("#date", playDate.Text);
             text = text.Replace("#id", (stepIdTxt.Value + idCount).ToString());
             text = text.Replace("#record", recordTxts[fieldNo].Text);
@@ -627,6 +768,11 @@ namespace Cubokta.Puyo
             return text;
         }
 
+        /// <summary>
+        /// ネクスト画像を解析する
+        /// </summary>
+        /// <param name="bmp">解析する画像</param>
+        /// <returns>ネクスト状態</returns>
         private CaptureField AnalyzeNext(Bitmap bmp)
         {
             CaptureField field = new CaptureField();
@@ -643,6 +789,11 @@ namespace Cubokta.Puyo
             return field;
         }
 
+        /// <summary>
+        /// ネクストのデバッグ枠を表示する
+        /// </summary>
+        /// <param name="g">グラフィックオブジェクト</param>
+        /// <param name="field">ネクスト状態</param>
         private void DrawDebugNextRect(Graphics g, CaptureField field)
         {
             using (Pen redPen = new Pen(Color.Red, 2))
@@ -692,6 +843,11 @@ namespace Cubokta.Puyo
             }
         }
 
+        /// <summary>
+        /// 開始ボタンをクリックした
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void startBtn_Click(object sender, EventArgs e)
         {
             if (recordFileWriter == null)
@@ -738,6 +894,11 @@ namespace Cubokta.Puyo
 
         }
 
+        /// <summary>
+        /// やりなおすボタンをクリックした
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void cancelBtn_Click(object sender, EventArgs e)
         {
             cancelBtn.Enabled = false;
@@ -747,8 +908,11 @@ namespace Cubokta.Puyo
             recorders[1] = new PuyofuRecorder();
         }
 
-        private int fieldNoMouseIsOn = -1;
-        private Point pointOnFieldImg;
+        /// <summary>
+        /// フィールド上でマウスが移動した
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void fieldImg_MouseMove(object sender, MouseEventArgs e)
         {
             if (!sampler.IsSampling)
@@ -767,6 +931,11 @@ namespace Cubokta.Puyo
             pointOnFieldImg = e.Location;
         }
 
+        /// <summary>
+        /// 閾値バーがスクロールされた
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void similarityValueBar_Scroll(object sender, EventArgs e)
         {
             detector.SimilarityThreshold = similarityValueBar.Value;
@@ -775,19 +944,35 @@ namespace Cubokta.Puyo
             config.Save();
         }
 
+        /// <summary>
+        /// 譜情報テキストでキー入力された
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void stepDataTxt_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == System.Windows.Forms.Keys.A & e.Control == true)
             {
+                // Ctrl + Aでテキストを全選択
                 stepDataTxt.SelectAll();
             }
         }
 
+        /// <summary>
+        /// 閉じるメニューがクリックされた
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void MMFileEndMenuItem_Click(object sender, EventArgs e)
         {
             Close();
         }
 
+        /// <summary>
+        /// 設定メニューがクリックされた
+        /// </summary>
+        /// <param name="sender">イベント発生源</param>
+        /// <param name="e">イベント情報</param>
         private void MMConfigurationMenuItem_Click(object sender, EventArgs e)
         {
             ConfigurationForm form = new ConfigurationForm(config);
