@@ -19,7 +19,7 @@ namespace Cubokta.Puyo
         private PictureBox nextImg2;
         private TextBox playerNameTxt2;
         private TextBox tagsTxt2;
-        private TextBox recordTxt2;
+        private TextBox stepRecordTxt2;
         private RadioButton fieldRadioBoth;
         private StreamWriter recordFileWriter;
         private PictureBox sampleAkaImg;
@@ -51,13 +51,13 @@ namespace Cubokta.Puyo
         private Label playDateLbl;
         private Label playerNameLbl;
         private Label stepIdLbl;
-        private DateTimePicker playDate;
+        private DateTimePicker recordDate;
         private TextBox playerNameTxt1;
         private Button startBtn;
         private Label recordLbl;
-        private TextBox recordTxt1;
-        private TextBox stepDataTxt;
-        private NumericUpDown stepIdTxt;
+        private TextBox stepRecordTxt1;
+        private TextBox recordDataTxt;
+        private NumericUpDown recordIdTxt;
         private Button cancelBtn;
         private Splitter splitter;
 
@@ -76,14 +76,14 @@ namespace Cubokta.Puyo
             this.playDateLbl = new System.Windows.Forms.Label();
             this.playerNameLbl = new System.Windows.Forms.Label();
             this.stepIdLbl = new System.Windows.Forms.Label();
-            this.playDate = new System.Windows.Forms.DateTimePicker();
+            this.recordDate = new System.Windows.Forms.DateTimePicker();
             this.playerNameTxt1 = new System.Windows.Forms.TextBox();
             this.splitter = new System.Windows.Forms.Splitter();
             this.startBtn = new System.Windows.Forms.Button();
             this.recordLbl = new System.Windows.Forms.Label();
-            this.recordTxt1 = new System.Windows.Forms.TextBox();
-            this.stepDataTxt = new System.Windows.Forms.TextBox();
-            this.stepIdTxt = new System.Windows.Forms.NumericUpDown();
+            this.stepRecordTxt1 = new System.Windows.Forms.TextBox();
+            this.recordDataTxt = new System.Windows.Forms.TextBox();
+            this.recordIdTxt = new System.Windows.Forms.NumericUpDown();
             this.cancelBtn = new System.Windows.Forms.Button();
             this.sampleAkaImg = new System.Windows.Forms.PictureBox();
             this.sampleMidoriImg = new System.Windows.Forms.PictureBox();
@@ -105,11 +105,11 @@ namespace Cubokta.Puyo
             this.nextImg2 = new System.Windows.Forms.PictureBox();
             this.playerNameTxt2 = new System.Windows.Forms.TextBox();
             this.tagsTxt2 = new System.Windows.Forms.TextBox();
-            this.recordTxt2 = new System.Windows.Forms.TextBox();
+            this.stepRecordTxt2 = new System.Windows.Forms.TextBox();
             this.fieldRadioBoth = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextImg1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.recordIdTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleAkaImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleMidoriImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleAoImg)).BeginInit();
@@ -237,14 +237,14 @@ namespace Cubokta.Puyo
             this.stepIdLbl.TabIndex = 10;
             this.stepIdLbl.Text = "id";
             // 
-            // playDate
+            // recordDate
             // 
-            this.playDate.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.playDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.playDate.Location = new System.Drawing.Point(641, 179);
-            this.playDate.Name = "playDate";
-            this.playDate.Size = new System.Drawing.Size(200, 19);
-            this.playDate.TabIndex = 10;
+            this.recordDate.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.recordDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.recordDate.Location = new System.Drawing.Point(641, 179);
+            this.recordDate.Name = "recordDate";
+            this.recordDate.Size = new System.Drawing.Size(200, 19);
+            this.recordDate.TabIndex = 10;
             // 
             // playerNameTxt1
             // 
@@ -282,36 +282,36 @@ namespace Cubokta.Puyo
             this.recordLbl.TabIndex = 16;
             this.recordLbl.Text = "レコード";
             // 
-            // recordTxt1
+            // stepRecordTxt1
             // 
-            this.recordTxt1.Location = new System.Drawing.Point(140, 480);
-            this.recordTxt1.Name = "recordTxt1";
-            this.recordTxt1.Size = new System.Drawing.Size(192, 19);
-            this.recordTxt1.TabIndex = 13;
+            this.stepRecordTxt1.Location = new System.Drawing.Point(140, 480);
+            this.stepRecordTxt1.Name = "stepRecordTxt1";
+            this.stepRecordTxt1.Size = new System.Drawing.Size(192, 19);
+            this.stepRecordTxt1.TabIndex = 13;
             // 
-            // stepDataTxt
+            // recordDataTxt
             // 
-            this.stepDataTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.stepDataTxt.Location = new System.Drawing.Point(601, 219);
-            this.stepDataTxt.Multiline = true;
-            this.stepDataTxt.Name = "stepDataTxt";
-            this.stepDataTxt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.stepDataTxt.Size = new System.Drawing.Size(266, 280);
-            this.stepDataTxt.TabIndex = 17;
-            this.stepDataTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.stepDataTxt_KeyDown);
+            this.recordDataTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.recordDataTxt.Location = new System.Drawing.Point(601, 219);
+            this.recordDataTxt.Multiline = true;
+            this.recordDataTxt.Name = "recordDataTxt";
+            this.recordDataTxt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.recordDataTxt.Size = new System.Drawing.Size(266, 280);
+            this.recordDataTxt.TabIndex = 17;
+            this.recordDataTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.recordDataTxt_KeyDown);
             // 
-            // stepIdTxt
+            // recordIdTxt
             // 
-            this.stepIdTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.stepIdTxt.Location = new System.Drawing.Point(641, 153);
-            this.stepIdTxt.Maximum = new decimal(new int[] {
+            this.recordIdTxt.Font = new System.Drawing.Font("ＭＳ ゴシック", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.recordIdTxt.Location = new System.Drawing.Point(641, 153);
+            this.recordIdTxt.Maximum = new decimal(new int[] {
             999999999,
             0,
             0,
             0});
-            this.stepIdTxt.Name = "stepIdTxt";
-            this.stepIdTxt.Size = new System.Drawing.Size(120, 19);
-            this.stepIdTxt.TabIndex = 9;
+            this.recordIdTxt.Name = "recordIdTxt";
+            this.recordIdTxt.Size = new System.Drawing.Size(120, 19);
+            this.recordIdTxt.TabIndex = 9;
             // 
             // cancelBtn
             // 
@@ -500,12 +500,12 @@ namespace Cubokta.Puyo
             this.tagsTxt2.Size = new System.Drawing.Size(192, 19);
             this.tagsTxt2.TabIndex = 15;
             // 
-            // recordTxt2
+            // stepRecordTxt2
             // 
-            this.recordTxt2.Location = new System.Drawing.Point(390, 480);
-            this.recordTxt2.Name = "recordTxt2";
-            this.recordTxt2.Size = new System.Drawing.Size(192, 19);
-            this.recordTxt2.TabIndex = 16;
+            this.stepRecordTxt2.Location = new System.Drawing.Point(390, 480);
+            this.stepRecordTxt2.Name = "stepRecordTxt2";
+            this.stepRecordTxt2.Size = new System.Drawing.Size(192, 19);
+            this.stepRecordTxt2.TabIndex = 16;
             // 
             // fieldRadioBoth
             // 
@@ -522,7 +522,7 @@ namespace Cubokta.Puyo
             // 
             this.ClientSize = new System.Drawing.Size(900, 531);
             this.Controls.Add(this.fieldRadioBoth);
-            this.Controls.Add(this.recordTxt2);
+            this.Controls.Add(this.stepRecordTxt2);
             this.Controls.Add(this.tagsTxt2);
             this.Controls.Add(this.playerNameTxt2);
             this.Controls.Add(this.nextImg2);
@@ -540,14 +540,14 @@ namespace Cubokta.Puyo
             this.Controls.Add(this.sampleMidoriImg);
             this.Controls.Add(this.sampleAkaImg);
             this.Controls.Add(this.cancelBtn);
-            this.Controls.Add(this.stepIdTxt);
-            this.Controls.Add(this.stepDataTxt);
-            this.Controls.Add(this.recordTxt1);
+            this.Controls.Add(this.recordIdTxt);
+            this.Controls.Add(this.recordDataTxt);
+            this.Controls.Add(this.stepRecordTxt1);
             this.Controls.Add(this.recordLbl);
             this.Controls.Add(this.startBtn);
             this.Controls.Add(this.splitter);
             this.Controls.Add(this.playerNameTxt1);
-            this.Controls.Add(this.playDate);
+            this.Controls.Add(this.recordDate);
             this.Controls.Add(this.stepIdLbl);
             this.Controls.Add(this.playerNameLbl);
             this.Controls.Add(this.playDateLbl);
@@ -566,7 +566,7 @@ namespace Cubokta.Puyo
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.fieldImg1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nextImg1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.stepIdTxt)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.recordIdTxt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleAkaImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleMidoriImg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sampleAoImg)).EndInit();

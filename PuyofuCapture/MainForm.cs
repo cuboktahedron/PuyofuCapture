@@ -38,8 +38,8 @@ namespace Cubokta.Puyo
         /// <summary>タグテキスト</summary>
         private TextBox[] tagsTxts;
 
-        /// <summary>レコードテキスト</summary>
-        private TextBox[] recordTxts;
+        /// <summary>ぷよ譜コードテキスト</summary>
+        private TextBox[] stepRecordTxts;
 
         /// <summary>サンプル画像テーブル</summary>
         private IDictionary<PuyoType, PictureBox> sampleImgs;
@@ -74,7 +74,7 @@ namespace Cubokta.Puyo
 
             playerNameTxts = new TextBox[] { playerNameTxt1, playerNameTxt2 };
             tagsTxts = new TextBox[] { tagsTxt1, tagsTxt2 };
-            recordTxts = new TextBox[] { recordTxt1, recordTxt2 };
+            stepRecordTxts = new TextBox[] { stepRecordTxt1, stepRecordTxt2 };
 
             statusLabel.Text = "";
             fpsLbl.Text = "";
@@ -86,8 +86,8 @@ namespace Cubokta.Puyo
             detector.SimilarityThreshold = config.SimilarityThreshold;
             similarityValueBar.Value = config.SimilarityThreshold;
             similarityValueLbl.Text = similarityValueBar.Value.ToString();
-            stepIdTxt.Text = config.RecordId.ToString();
-            playDate.Text = config.RecordDate;
+            recordIdTxt.Text = config.RecordId.ToString();
+            recordDate.Text = config.RecordDate;
             playerNameTxt1.Text = config.PlayerName1;
             playerNameTxt2.Text = config.PlayerName2;
             CheckFieldRadio(config.TargetField);
@@ -475,8 +475,8 @@ namespace Cubokta.Puyo
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             // 現在の画面の情報を設定ファイルに保存
-            config.RecordId = (int)stepIdTxt.Value;
-            config.RecordDate = playDate.Text;
+            config.RecordId = (int)recordIdTxt.Value;
+            config.RecordDate = recordDate.Text;
             config.PlayerName1 = playerNameTxt1.Text;
             config.PlayerName2 = playerNameTxt2.Text;
             config.TargetField = GetTargetFieldValue();
@@ -640,17 +640,17 @@ namespace Cubokta.Puyo
                 switch (result)
                 {
                     case RecordResult.RECORD_SUCCESS:
-                        updateStepData();
+                        updateRecordDataTxt();
                         break;
                     case RecordResult.RECORD_FAILURE:
                         statusLabel.Text = "キャプチャ失敗！！";
-                        updateStepData();
+                        updateRecordDataTxt();
                         break;
                     case RecordResult.RECORD_FORWARD:
-                        recordTxts[fieldNo].Text = recorders[fieldNo].GetRecord();
+                        stepRecordTxts[fieldNo].Text = recorders[fieldNo].GetStepRecord();
                         break;
                     case RecordResult.RECORD_ENDED:
-                        updateStepData();
+                        updateRecordDataTxt();
                         break;
                     default:
                         break;
@@ -684,13 +684,13 @@ namespace Cubokta.Puyo
         }
 
         /// <summary>
-        /// 譜情報を更新する
+        /// レコード情報テキストを更新する
         /// </summary>
-        private void updateStepData()
+        private void updateRecordDataTxt()
         {
             int idCount = 0;
-            string step1 = GetStepData(0, ref idCount);
-            string step2 = GetStepData(1, ref idCount);
+            string step1 = GetRecordDataString(0, ref idCount);
+            string step2 = GetRecordDataString(1, ref idCount);
             string step = "";
             if (step1 != "")
             {
@@ -702,16 +702,16 @@ namespace Cubokta.Puyo
                 step += step2 + "\r\n";
             }
 
-            stepDataTxt.Text = step;
+            recordDataTxt.Text = step;
         }
 
         /// <summary>
-        /// 譜情報を取得する
+        /// レコード情報文字列を取得する
         /// </summary>
         /// <param name="fieldNo">フィールド番号</param>
         /// <param name="idCount">IDカウンタ</param>
-        /// <returns>譜情報</returns>
-        private string GetStepData(int fieldNo, ref int idCount)
+        /// <returns>レコード情報文字列</returns>
+        private string GetRecordDataString(int fieldNo, ref int idCount)
         {
             if (!recorders[fieldNo].IsRecordSucceeded)
             {
@@ -759,9 +759,9 @@ namespace Cubokta.Puyo
     tags: [#tags],
   },
 ";
-            text = text.Replace("#date", playDate.Text);
-            text = text.Replace("#id", (stepIdTxt.Value + idCount).ToString());
-            text = text.Replace("#record", recordTxts[fieldNo].Text);
+            text = text.Replace("#date", recordDate.Text);
+            text = text.Replace("#id", (recordIdTxt.Value + idCount).ToString());
+            text = text.Replace("#record", stepRecordTxts[fieldNo].Text);
             text = text.Replace("#tags", sb.ToString());
 
             idCount++;
@@ -859,12 +859,12 @@ namespace Cubokta.Puyo
                 if ((!IsProcessingField(0) || (IsProcessingField(0) && recorders[0].IsRecordEnded))
                     && (!IsProcessingField(1) || (IsProcessingField(1) && recorders[1].IsRecordEnded)))
                 {
-                    recordFileWriter.Write(stepDataTxt.Text);
+                    recordFileWriter.Write(recordDataTxt.Text);
                     recordFileWriter.Flush();
                 }
             }
 
-            stepDataTxt.Text = "";
+            recordDataTxt.Text = "";
             cancelBtn.Enabled = true;
             statusLabel.Text = "";
 
@@ -872,7 +872,7 @@ namespace Cubokta.Puyo
             {
                 if (recorders[0].IsRecordSucceeded)
                 {
-                    stepIdTxt.UpButton();
+                    recordIdTxt.UpButton();
                 }
                 prevFields[0] = new CaptureField();
                 curFields[0] = new CaptureField();
@@ -884,7 +884,7 @@ namespace Cubokta.Puyo
             {
                 if (recorders[1].IsRecordSucceeded)
                 {
-                    stepIdTxt.UpButton();
+                    recordIdTxt.UpButton();
                 }
                 prevFields[1] = new CaptureField();
                 curFields[1] = new CaptureField();
@@ -945,16 +945,16 @@ namespace Cubokta.Puyo
         }
 
         /// <summary>
-        /// 譜情報テキストでキー入力された
+        /// レコード情報テキストでキー入力された
         /// </summary>
         /// <param name="sender">イベント発生源</param>
         /// <param name="e">イベント情報</param>
-        private void stepDataTxt_KeyDown(object sender, KeyEventArgs e)
+        private void recordDataTxt_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == System.Windows.Forms.Keys.A & e.Control == true)
             {
                 // Ctrl + Aでテキストを全選択
-                stepDataTxt.SelectAll();
+                recordDataTxt.SelectAll();
             }
         }
 

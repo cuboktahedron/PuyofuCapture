@@ -6,7 +6,7 @@ using System.Linq;
 namespace Cubokta.Puyo
 {
     /// <summary>
-    /// ぷよ譜レコード処理の結果
+    /// レコード処理の結果
     /// </summary>
     public enum RecordResult
     {
@@ -27,19 +27,46 @@ namespace Cubokta.Puyo
         private static readonly ILog LOGGER =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        /// <summary>Fコードエンコーダ</summary>
         private FCodeEncoder encoder = new FCodeEncoder();
+
+        /// <summary>譜情報</summary>
         private List<PairPuyo> steps = new List<PairPuyo>();
+        
+        /// <summary>現在のツモ</summary>
         private ColorPairPuyo curNext;
+
+        /// <summary>前回のツモ</summary>
         private ColorPairPuyo prevNext;
+
+        /// <summary>次の譜のレコード処理フラグ１</summary>
         private bool isReadyForNextStepRecord;
+
+        /// <summary>次の譜のレコード処理フラグ２</summary>
         private bool isReadyForNextStepRecord2;
+
+        /// <summary>レコード中かどうか</summary>
         private bool isRecording;
+
+        /// <summary>レコードが終了したかどうか</summary>
         public bool IsRecordEnded { get; set; }
+
+        /// <summary>レコードが成功したかどうか</summary>
         public bool IsRecordSucceeded { get; set; }
+
+        /// <summary>レコードが失敗したかどうか</summary>
         public bool IsRecordFailed { get; set; }
+
+        /// <summary>キャプチャ失敗カウンタ</summary>
         private int captureFailCount;
+
+        /// <summary>ネクストツモ決定に使用するワーク用ディクショナリ</summary>
         private IDictionary<ColorPairPuyo, int> currents = new Dictionary<ColorPairPuyo, int>();
+
+        /// <summary>前回までのフィールド状態</summary>
         private CaptureField prevField = new CaptureField();
+
+        /// <summary>キャプチャ間隔(ms)</summary>
         private int captureInterval;
 
         /// <summary>
@@ -195,10 +222,10 @@ namespace Cubokta.Puyo
         }
 
         /// <summary>
-        /// 譜情報文字列を取得する
+        /// ぷよ譜コードを取得する
         /// </summary>
-        /// <returns>譜情報文字列</returns>
-        public string GetRecord()
+        /// <returns>ぷよ譜コード</returns>
+        public string GetStepRecord()
         {
             return encoder.Encode(steps);
         }

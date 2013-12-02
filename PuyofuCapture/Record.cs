@@ -17,7 +17,7 @@ namespace Cubokta.Puyo
         [DataMember(Name = "id")]
         public string Id { get; set; }
 
-        /// <summary>レコード</summary>
+        /// <summary>ぷよ譜コード</summary>
         [DataMember(Name = "record")]
         public string StepRecord { get; set; }
 
