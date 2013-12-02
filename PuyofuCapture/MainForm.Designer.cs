@@ -139,7 +139,7 @@ namespace Cubokta.Puyo
             this.captureBtn.Name = "captureBtn";
             this.captureBtn.Size = new System.Drawing.Size(110, 70);
             this.captureBtn.TabIndex = 2;
-            this.captureBtn.Text = "キャプチャスクリーン";
+            this.captureBtn.Text = "キャプチャ範囲選択";
             this.captureBtn.UseVisualStyleBackColor = true;
             this.captureBtn.Click += new System.EventHandler(this.captureBtn_Click);
             // 

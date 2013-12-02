@@ -177,7 +177,7 @@ namespace Cubokta.Puyo
         }
 
         /// <summary>
-        /// キャプチャスクリーンボタンをクリックした
+        /// キャプチャ範囲選択ボタンをクリックした
         /// </summary>
         /// <param name="sender">イベント発生源</param>
         /// <param name="e">イベント情報</param>
@@ -230,7 +230,7 @@ namespace Cubokta.Puyo
                 BeginCapturing();
             }
 
-            captureBtn.Text = "キャプチャスクリーン";
+            captureBtn.Text = "キャプチャ範囲選択";
             captureForm = new CaptureForm();
         }
 
