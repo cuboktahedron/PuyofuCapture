@@ -117,8 +117,6 @@ namespace Cubokta.Puyo
         /// <returns>ツモの設置情報</returns>
         public ColorPairPuyo GetStepFromDiff(CaptureField f2, ColorPairPuyo pp)
         {
-            // TODO: ここはリファクタリングを検討する
-
             CaptureField f1 = this;
             bool foundPivot = false;
             bool foundSatellite = false;
