@@ -30,6 +30,7 @@ namespace Cubokta.Puyo
         private void Init()
         {
             DebugRectEnabledChk.Checked = config.DebugRectEnabled;
+            captureStepNumTxt.Value = config.CaptureStepNum;
         }
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace Cubokta.Puyo
         private void OkBtn_Click(object sender, EventArgs e)
         {
             config.DebugRectEnabled = DebugRectEnabledChk.Checked;
+            config.CaptureStepNum = (int)captureStepNumTxt.Value;
             config.Save();
 
             DialogResult = DialogResult.OK;

@@ -32,6 +32,9 @@ namespace Cubokta.Puyo
         /// <summary>処理対象フィールド値</summary>
         public string TargetField { get; set; }
 
+        /// <summary>キャプチャする手数</summary>
+        public int CaptureStepNum { get; set; }
+
         /// <summary>
         /// 初期化する
         /// </summary>
@@ -45,6 +48,7 @@ namespace Cubokta.Puyo
             PlayerName1 = ConfigurationManager.AppSettings["PlayerName1"];
             PlayerName2 = ConfigurationManager.AppSettings["PlayerName2"];
             TargetField = ConfigurationManager.AppSettings["TargetField"];
+            CaptureStepNum = int.Parse(ConfigurationManager.AppSettings["CaptureStepNum"]);
         }
 
         /// <summary>
@@ -61,6 +65,7 @@ namespace Cubokta.Puyo
             appConfig.AppSettings.Settings["PlayerName1"].Value = PlayerName1;
             appConfig.AppSettings.Settings["PlayerName2"].Value = PlayerName2;
             appConfig.AppSettings.Settings["TargetField"].Value = TargetField;
+            appConfig.AppSettings.Settings["CaptureStepNum"].Value = CaptureStepNum.ToString();
             appConfig.Save();
         }
 

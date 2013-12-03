@@ -13,6 +13,9 @@ namespace Cubokta.Puyo
         {
             this.OkBtn = new System.Windows.Forms.Button();
             this.DebugRectEnabledChk = new System.Windows.Forms.CheckBox();
+            this.captureStepNumTxt = new System.Windows.Forms.NumericUpDown();
+            this.captureStepNumLbl = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.captureStepNumTxt)).BeginInit();
             this.SuspendLayout();
             // 
             // OkBtn
@@ -36,18 +39,50 @@ namespace Cubokta.Puyo
             this.DebugRectEnabledChk.Text = "色枠を表示する";
             this.DebugRectEnabledChk.UseVisualStyleBackColor = true;
             // 
+            // captureStepNumTxt
+            // 
+            this.captureStepNumTxt.Location = new System.Drawing.Point(12, 60);
+            this.captureStepNumTxt.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.captureStepNumTxt.Name = "captureStepNumTxt";
+            this.captureStepNumTxt.Size = new System.Drawing.Size(100, 19);
+            this.captureStepNumTxt.TabIndex = 2;
+            this.captureStepNumTxt.Value = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            // 
+            // captureStepNumLbl
+            // 
+            this.captureStepNumLbl.AutoSize = true;
+            this.captureStepNumLbl.Location = new System.Drawing.Point(12, 41);
+            this.captureStepNumLbl.Name = "captureStepNumLbl";
+            this.captureStepNumLbl.Size = new System.Drawing.Size(73, 12);
+            this.captureStepNumLbl.TabIndex = 3;
+            this.captureStepNumLbl.Text = "キャプチャ手数";
+            // 
             // ConfigurationForm
             // 
             this.ClientSize = new System.Drawing.Size(538, 404);
+            this.Controls.Add(this.captureStepNumLbl);
+            this.Controls.Add(this.captureStepNumTxt);
             this.Controls.Add(this.DebugRectEnabledChk);
             this.Controls.Add(this.OkBtn);
             this.KeyPreview = true;
             this.Name = "ConfigurationForm";
             this.Text = "設定";
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ConfigurationForm_KeyPress);
+            ((System.ComponentModel.ISupportInitialize)(this.captureStepNumTxt)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
+
+        private NumericUpDown captureStepNumTxt;
+        private Label captureStepNumLbl;
     }
 }

@@ -57,6 +57,9 @@ namespace Cubokta.Puyo
         /// <summary>レコードが失敗したかどうか</summary>
         public bool IsRecordFailed { get; set; }
 
+        /** キャプチャする手数 */
+        private int captureStepNum;
+
         /// <summary>キャプチャ失敗カウンタ</summary>
         private int captureFailCount;
 
@@ -73,11 +76,13 @@ namespace Cubokta.Puyo
         /// レコードを開始する
         /// </summary>
         /// <param name="captureInterval">キャプチャ間隔(ms)</param>
+        /// <param name="captureStepNum">キャプチャする手数</param>
         /// TODO: 現状はかなりエラー検出までに時間がかかっている。
-        public void BeginRecord(int captureInterval)
+        public void BeginRecord(int captureInterval, int captureStepNum)
         {
             isRecording = true;
             this.captureInterval = captureInterval;
+            this.captureStepNum = captureStepNum;
         }
 
         /// <summary>
@@ -98,9 +103,8 @@ namespace Cubokta.Puyo
                 return RecordResult.NOT_RECORDING;
             }
 
-            if (steps.Count() >= 16)
+            if (steps.Count() >= captureStepNum)
             {
-                // TODO: キャプチャする手数については設定で変えられるようにした方がよい。
                 isRecording = false;
                 IsRecordSucceeded = true;
                 IsRecordEnded = true;
