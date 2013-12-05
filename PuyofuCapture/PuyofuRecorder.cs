@@ -26,13 +26,10 @@ namespace Cubokta.Puyo
         /// <summary>ロガー</summary>
         private static readonly ILog LOGGER =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        /// <summary>Fコードエンコーダ</summary>
-        private FCodeEncoder encoder = new FCodeEncoder();
-
-        /// <summary>譜情報</summary>
-        private List<PairPuyo> steps = new List<PairPuyo>();
         
+        /// <summary>譜情報</summary>
+        private Steps steps = new Steps();
+
         /// <summary>現在のツモ</summary>
         private ColorPairPuyo curNext;
 
@@ -103,7 +100,7 @@ namespace Cubokta.Puyo
                 return RecordResult.NOT_RECORDING;
             }
 
-            if (steps.Count() >= captureStepNum)
+            if (steps.Count >= captureStepNum)
             {
                 isRecording = false;
                 IsRecordSucceeded = true;
@@ -231,16 +228,15 @@ namespace Cubokta.Puyo
         /// <returns>ぷよ譜コード</returns>
         public string GetStepRecord()
         {
-            return encoder.Encode(steps);
+            return steps.Encode();
         }
 
         /// <summary>
-        /// 譜情報を取得する
+        /// 初手の配色パターンを取得する
         /// </summary>
-        /// <returns>譜情報</returns>
-        internal List<PairPuyo> GetSteps()
-        {
-            return new List<PairPuyo>(steps);
+        /// <returns>初手の配色パターン</returns>
+        public string GetFirstStepsPattern() {
+            return steps.GetFirstStepsPattern(3);
         }
     }
 }

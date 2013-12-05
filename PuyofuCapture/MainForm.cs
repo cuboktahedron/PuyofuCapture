@@ -733,18 +733,8 @@ namespace Cubokta.Puyo
                     new char[] { ' ', '　' }, StringSplitOptions.RemoveEmptyEntries));
             }
 
-            // 初手3手の処理
-            List<PairPuyo> steps = recorders[fieldNo].GetSteps();
-            FirstStepAnalyzer firstStepAnalyzer = new FirstStepAnalyzer();
-            if (steps.Count < 3)
-            {
-                tagList.Add(firstStepAnalyzer.GetPattern(steps));
-            }
-            else
-            {
-                tagList.Add(firstStepAnalyzer.GetPattern(steps, 3));
-            }
-
+            // 初手パターンの処理
+            tagList.Add(recorders[fieldNo].GetFirstStepsPattern());
             foreach (string tag in tagList)
             {
                 sb.Append("\r\n      '" + tag + "',");
