@@ -82,10 +82,10 @@ namespace Cubokta.Puyo
             statusLabel.Text = "";
             fpsLbl.Text = "";
 
+            // 設定情報を読み込み初期化
             config = new PuyofuConfiguration();
             config.Init();
 
-            updateSamples();
             detector.SimilarityThreshold = config.SimilarityThreshold;
             similarityValueBar.Value = config.SimilarityThreshold;
             similarityValueLbl.Text = similarityValueBar.Value.ToString();
@@ -105,6 +105,10 @@ namespace Cubokta.Puyo
                 BeginCapturing();
             }
 
+            // サンプリング画像初期設定
+            updateSamples();
+
+            // ペンの初期化
             pens[PuyoType.AKA] = new Pen(Color.Red, 2);
             pens[PuyoType.MIDORI] = new Pen(Color.Green, 2);
             pens[PuyoType.AO] = new Pen(Color.LightBlue, 2);
