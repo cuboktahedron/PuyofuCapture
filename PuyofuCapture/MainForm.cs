@@ -824,30 +824,27 @@ namespace Cubokta.Puyo
             cancelBtn.Enabled = true;
             statusLabel.Text = "";
 
-            if (IsProcessingField(0))
+            ReadyField(0);
+            ReadyField(1);
+        }
+
+        /// <summary>
+        /// フィールドのキャプチャ準備を行う
+        /// </summary>
+        /// <param name="fieldNo">フィールド番号</param>
+        private void ReadyField(int fieldNo)
+        {
+            if (IsProcessingField(fieldNo))
             {
-                if (recorders[0].IsRecordSucceeded)
+                if (recorders[fieldNo].IsRecordSucceeded)
                 {
                     recordIdTxt.UpButton();
                 }
-                prevFields[0] = new CaptureField();
-                curFields[0] = new CaptureField();
-                recorders[0] = new PuyofuRecorder();
-                recorders[0].BeginRecord(captureTimer.Interval, config.CaptureStepNum);
+                prevFields[fieldNo] = new CaptureField();
+                curFields[fieldNo] = new CaptureField();
+                recorders[fieldNo] = new PuyofuRecorder();
+                recorders[fieldNo].BeginRecord(captureTimer.Interval, config.CaptureStepNum);
             }
-
-            if (IsProcessingField(1))
-            {
-                if (recorders[1].IsRecordSucceeded)
-                {
-                    recordIdTxt.UpButton();
-                }
-                prevFields[1] = new CaptureField();
-                curFields[1] = new CaptureField();
-                recorders[1] = new PuyofuRecorder();
-                recorders[1].BeginRecord(captureTimer.Interval, config.CaptureStepNum);
-            }
-
         }
 
         /// <summary>
