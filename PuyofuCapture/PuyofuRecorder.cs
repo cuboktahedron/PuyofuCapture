@@ -177,8 +177,8 @@ namespace Cubokta.Puyo
                     }
                     else
                     {
-                        LOGGER.Error("前回：\n" + prevField);
-                        LOGGER.Error("今回：\n" + curField);
+                        LOGGER.Info("前回：\n" + prevField);
+                        LOGGER.Info("今回：\n" + curField);
 
                         captureFailCount++;
 
