@@ -331,7 +331,7 @@ namespace Cubokta.Puyo
                     curFields[fieldNo] = AnalyzeField(forAnalyzeBmp);
                     if (config.DebugRectEnabled)
                     {
-                        DrawDebugRect(fieldImgG, curFields[fieldNo]);
+                        DrawDebugField(fieldImgG, curFields[fieldNo]);
                     }
                 }
                 else if (fieldNo == fieldNoMouseIsOn)
@@ -397,34 +397,6 @@ namespace Cubokta.Puyo
             {
                 LOGGER.Error("フィールドの描画処理中にエラーが発生", exp);
                 throw exp;
-            }
-        }
-
-        /// <summary>
-        /// デバッグ枠を表示する
-        /// </summary>
-        /// <param name="g">描画先グラフィックオブジェクト</param>
-        /// <param name="field">フィールド状態</param>
-        private void DrawDebugRect(Graphics g, CaptureField field)
-        {
-            for (int y = 0; y < CaptureField.Y_MAX; y++)
-            {
-                for (int x = 0; x < CaptureField.X_MAX; x++)
-                {
-                    PuyoType type = field.GetPuyoType(x, y);
-                    Pen pen = null;
-                    if (!pens.TryGetValue(type, out pen))
-                    {
-                        continue;
-                    }
-
-                    Rectangle rect = field.GetRect(x, y);
-                    rect.X++;
-                    rect.Width -= 2;
-                    rect.Y++;
-                    rect.Height -= 2;
-                    g.DrawRectangle(pen, rect);
-                }
             }
         }
 
@@ -625,7 +597,7 @@ namespace Cubokta.Puyo
                 CaptureField field = AnalyzeNext(forAnalyzeBmp);
                 if (config.DebugRectEnabled)
                 {
-                    DrawDebugNextRect(nextG, field);
+                    DrawDebugNext(nextG, field);
                 }
 
                 ColorPairPuyo next = field.Next;
@@ -773,30 +745,58 @@ namespace Cubokta.Puyo
         }
 
         /// <summary>
+        /// デバッグ枠を表示する
+        /// </summary>
+        /// <param name="g">描画先グラフィックオブジェクト</param>
+        /// <param name="field">フィールド状態</param>
+        private void DrawDebugField(Graphics g, CaptureField field)
+        {
+            for (int y = 0; y < CaptureField.Y_MAX; y++)
+            {
+                for (int x = 0; x < CaptureField.X_MAX; x++)
+                {
+                    PuyoType type = field.GetPuyoType(x, y);
+                    Rectangle rect = field.GetRect(x, y);
+                    DrawDebugRect(g, type, rect);
+                }
+            }
+        }
+
+        /// <summary>
         /// ネクストのデバッグ枠を表示する
         /// </summary>
         /// <param name="g">グラフィックオブジェクト</param>
         /// <param name="field">ネクスト状態</param>
-        private void DrawDebugNextRect(Graphics g, CaptureField field)
+        private void DrawDebugNext(Graphics g, CaptureField field)
         {
             ColorPairPuyo pp = field.Next;
             for (int y = 0; y < 2; y++)
             {
                 PuyoType type = pp[y];
-                Pen pen = null;
-                if (!pens.TryGetValue(type, out pen))
-                {
-                    continue;
-                }
-
                 Rectangle rect = field.GetNextRect(0, y);
-                rect.X++;
-                rect.Width -= 2;
-                rect.Y++;
-                rect.Height -= 2;
-                g.DrawRectangle(pen, rect);
-
+                DrawDebugRect(g, type, rect);
             }
+        }
+
+        /// <summary>
+        /// デバッグ枠を表示する
+        /// </summary>
+        /// <param name="g">描画先グラフィックオブジェクト</param>
+        /// <param name="type">ぷよ種別</param>
+        /// <param name="rect">描画範囲</param>
+        private void DrawDebugRect(Graphics g, PuyoType type, Rectangle rect)
+        {
+            Pen pen = null;
+            if (!pens.TryGetValue(type, out pen))
+            {
+                return;
+            }
+
+            rect.X++;
+            rect.Width -= 2;
+            rect.Y++;
+            rect.Height -= 2;
+            g.DrawRectangle(pen, rect);
         }
 
         /// <summary>
