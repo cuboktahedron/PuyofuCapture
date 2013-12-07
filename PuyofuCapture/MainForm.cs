@@ -44,6 +44,9 @@ namespace Cubokta.Puyo
         /// <summary>サンプル画像テーブル</summary>
         private IDictionary<PuyoType, PictureBox> sampleImgs;
 
+        /// <summary>ペンテーブル</summary>
+        private IDictionary<PuyoType, Pen> pens = new Dictionary<PuyoType, Pen>();
+
         /// <summary>ぷよ画像サンプラ</summary>
         private Sampler sampler = new Sampler();
 
@@ -101,6 +104,12 @@ namespace Cubokta.Puyo
                 captureRects.CalculateRects(config.CaptureRect);
                 BeginCapturing();
             }
+
+            pens[PuyoType.AKA] = new Pen(Color.Red, 2);
+            pens[PuyoType.MIDORI] = new Pen(Color.Green, 2);
+            pens[PuyoType.AO] = new Pen(Color.LightBlue, 2);
+            pens[PuyoType.KI] = new Pen(Color.Yellow, 2);
+            pens[PuyoType.MURASAKI] = new Pen(Color.Purple, 2);
         }
 
         /// <summary>
@@ -394,51 +403,23 @@ namespace Cubokta.Puyo
         /// <param name="field">フィールド状態</param>
         private void DrawDebugRect(Graphics g, CaptureField field)
         {
-            using (Pen redPen = new Pen(Color.Red, 2))
-            using (Pen greenPen = new Pen(Color.Green, 2))
-            using (Pen bluePen = new Pen(Color.LightBlue, 2))
-            using (Pen yellowPen = new Pen(Color.Yellow, 2))
-            using (Pen purplePen = new Pen(Color.Purple, 2))
+            for (int y = 0; y < CaptureField.Y_MAX; y++)
             {
-                for (int y = 0; y < CaptureField.Y_MAX; y++)
+                for (int x = 0; x < CaptureField.X_MAX; x++)
                 {
-                    for (int x = 0; x < CaptureField.X_MAX; x++)
+                    PuyoType type = field.GetPuyoType(x, y);
+                    Pen pen = null;
+                    if (!pens.TryGetValue(type, out pen))
                     {
-                        PuyoType type = field.GetPuyoType(x, y);
-                        if (type == PuyoType.NONE)
-                        {
-                            continue;
-                        }
-
-                        Rectangle rect = field.GetRect(x, y);
-                        Pen pen;
-                        switch (type)
-                        {
-                            case PuyoType.AKA:
-                                pen = redPen;
-                                break;
-                            case PuyoType.MIDORI:
-                                pen = greenPen;
-                                break;
-                            case PuyoType.AO:
-                                pen = bluePen;
-                                break;
-                            case PuyoType.KI:
-                                pen = yellowPen;
-                                break;
-                            case PuyoType.MURASAKI:
-                                pen = purplePen;
-                                break;
-                            default:
-                                continue;
-                        }
-
-                        rect.X++;
-                        rect.Width -= 2;
-                        rect.Y++;
-                        rect.Height -= 2;
-                        g.DrawRectangle(pen, rect);
+                        continue;
                     }
+
+                    Rectangle rect = field.GetRect(x, y);
+                    rect.X++;
+                    rect.Width -= 2;
+                    rect.Y++;
+                    rect.Height -= 2;
+                    g.DrawRectangle(pen, rect);
                 }
             }
         }
@@ -482,13 +463,21 @@ namespace Cubokta.Puyo
             config.TargetField = GetTargetFieldValue();
             config.Save();
 
+            // リソースの解放
             if (screenBmp != null)
             {
                 screenBmp.Dispose();
             }
 
+            pens[PuyoType.AKA].Dispose();
+            pens[PuyoType.MIDORI].Dispose();
+            pens[PuyoType.AO].Dispose();
+            pens[PuyoType.KI].Dispose();
+            pens[PuyoType.MURASAKI].Dispose();
+
             if (recordFileWriter != null)
             {
+                // レコードファイルを閉じる
                 recordFileWriter.Close();
             }
         }
@@ -786,50 +775,23 @@ namespace Cubokta.Puyo
         /// <param name="field">ネクスト状態</param>
         private void DrawDebugNextRect(Graphics g, CaptureField field)
         {
-            using (Pen redPen = new Pen(Color.Red, 2))
-            using (Pen greenPen = new Pen(Color.Green, 2))
-            using (Pen bluePen = new Pen(Color.LightBlue, 2))
-            using (Pen yellowPen = new Pen(Color.Yellow, 2))
-            using (Pen purplePen = new Pen(Color.Purple, 2))
+            ColorPairPuyo pp = field.Next;
+            for (int y = 0; y < 2; y++)
             {
-                ColorPairPuyo pp = field.Next;
-                for (int y = 0; y < 2; y++)
+                PuyoType type = pp[y];
+                Pen pen = null;
+                if (!pens.TryGetValue(type, out pen))
                 {
-                    if (pp[y] == PuyoType.NONE)
-                    {
-                        continue;
-                    }
-
-                    Rectangle rect = field.GetNextRect(0, y);
-                    Pen pen;
-                    switch (pp[y])
-                    {
-                        case PuyoType.AKA:
-                            pen = redPen;
-                            break;
-                        case PuyoType.MIDORI:
-                            pen = greenPen;
-                            break;
-                        case PuyoType.AO:
-                            pen = bluePen;
-                            break;
-                        case PuyoType.KI:
-                            pen = yellowPen;
-                            break;
-                        case PuyoType.MURASAKI:
-                            pen = purplePen;
-                            break;
-                        default:
-                            continue;
-                    }
-
-                    rect.X++;
-                    rect.Width -= 2;
-                    rect.Y++;
-                    rect.Height -= 2;
-                    g.DrawRectangle(pen, rect);
-
+                    continue;
                 }
+
+                Rectangle rect = field.GetNextRect(0, y);
+                rect.X++;
+                rect.Width -= 2;
+                rect.Y++;
+                rect.Height -= 2;
+                g.DrawRectangle(pen, rect);
+
             }
         }
 
