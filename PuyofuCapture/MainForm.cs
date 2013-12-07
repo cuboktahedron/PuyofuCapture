@@ -68,6 +68,15 @@ namespace Cubokta.Puyo
         /// <summary>フィールド上のマウスの位置</summary>
         private Point pointOnFieldImg;
 
+        /// <summary>キャプチャ処理中かどうか</summary>
+        private bool IsCapturing { get; set; }
+
+        /// <summary>一つ前のフィールド状態</summary>
+        private CaptureField[] prevFields = new CaptureField[2] { new CaptureField(), new CaptureField() };
+
+        /// <summary>現在のフィールド状態</summary>
+        private CaptureField[] curFields = new CaptureField[2] { new CaptureField(), new CaptureField() };
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -281,15 +290,6 @@ namespace Cubokta.Puyo
             fpsCalculator.Refresh();
             fpsLbl.Text = "fps:" + fpsCalculator.GetFpsInt();
         }
-
-        /// <summary>キャプチャ処理中かどうか</summary>
-        private bool IsCapturing { get; set; }
-
-        /// <summary>一つ前のフィールド状態</summary>
-        private CaptureField[] prevFields = new CaptureField[2]{ new CaptureField(), new CaptureField() };
-
-        /// <summary>現在のフィールド状態</summary>
-        private CaptureField[] curFields = new CaptureField[2] { new CaptureField(), new CaptureField() };
 
         /// <summary>
         /// フィールドの再描画処理
