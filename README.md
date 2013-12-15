@@ -1,8 +1,8 @@
 PuyofuCapture
 =============
 
-Version 1.0.0
-Copyright (C) 2013 cuboktahedron
+Version 1.0.0  
+Copyright (C) 2013 cuboktahedron  
 Released under the MIT license
 
 【どんなツールか】
