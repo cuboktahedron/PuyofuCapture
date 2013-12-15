@@ -1,4 +1,9 @@
-﻿using System.Drawing;
+﻿/*
+ * Copyright (c) 2013 cuboktahedron
+ * Released under the MIT license
+ * https://github.com/cuboktahedron/PuyofuCapture/license/LICENSE-MIT.txt
+ */
+using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace Cubokta.Common

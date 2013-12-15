@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * Copyright (c) 2013 cuboktahedron
+ * Released under the MIT license
+ * https://github.com/cuboktahedron/PuyofuCapture/license/LICENSE-MIT.txt
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

@@ -1,4 +1,9 @@
-﻿using Cubokta.Common.game;
+﻿/*
+ * Copyright (c) 2013 cuboktahedron
+ * Released under the MIT license
+ * https://github.com/cuboktahedron/PuyofuCapture/license/LICENSE-MIT.txt
+ */
+using Cubokta.Common.game;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;

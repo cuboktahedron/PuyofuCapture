@@ -1,4 +1,9 @@
-﻿using Cubokta.Puyo.Common;
+﻿/*
+ * Copyright (c) 2013 cuboktahedron
+ * Released under the MIT license
+ * https://github.com/cuboktahedron/PuyofuCapture/license/LICENSE-MIT.txt
+ */
+using Cubokta.Puyo.Common;
 using log4net;
 using System.Collections.Generic;
 using System.Linq;

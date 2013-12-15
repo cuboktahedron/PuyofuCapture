@@ -1,4 +1,9 @@
-﻿using System.Configuration;
+﻿/*
+ * Copyright (c) 2013 cuboktahedron
+ * Released under the MIT license
+ * https://github.com/cuboktahedron/PuyofuCapture/license/LICENSE-MIT.txt
+ */
+using System.Configuration;
 using System.Drawing;
 
 namespace Cubokta.Puyo

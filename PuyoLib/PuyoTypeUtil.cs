@@ -1,4 +1,8 @@
-﻿
+﻿/*
+ * Copyright (c) 2013 cuboktahedron
+ * Released under the MIT license
+ * https://github.com/cuboktahedron/PuyofuCapture/license/LICENSE-MIT.txt
+ */
 using System.Collections.Generic;
 namespace Cubokta.Puyo.Common
 {

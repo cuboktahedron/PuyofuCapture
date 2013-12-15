@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CaptureTest")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyProduct("PuyofuCapture")]
+[assembly: AssemblyCopyright("Copyright ©  2013 cuboktahedron")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
