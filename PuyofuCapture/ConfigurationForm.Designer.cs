@@ -15,6 +15,7 @@ namespace Cubokta.Puyo
             this.DebugRectEnabledChk = new System.Windows.Forms.CheckBox();
             this.captureStepNumTxt = new System.Windows.Forms.NumericUpDown();
             this.captureStepNumLbl = new System.Windows.Forms.Label();
+            this.captureOnlyTsumoChk = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.captureStepNumTxt)).BeginInit();
             this.SuspendLayout();
             // 
@@ -41,7 +42,7 @@ namespace Cubokta.Puyo
             // 
             // captureStepNumTxt
             // 
-            this.captureStepNumTxt.Location = new System.Drawing.Point(12, 60);
+            this.captureStepNumTxt.Location = new System.Drawing.Point(10, 86);
             this.captureStepNumTxt.Minimum = new decimal(new int[] {
             1,
             0,
@@ -59,15 +60,26 @@ namespace Cubokta.Puyo
             // captureStepNumLbl
             // 
             this.captureStepNumLbl.AutoSize = true;
-            this.captureStepNumLbl.Location = new System.Drawing.Point(12, 41);
+            this.captureStepNumLbl.Location = new System.Drawing.Point(10, 67);
             this.captureStepNumLbl.Name = "captureStepNumLbl";
             this.captureStepNumLbl.Size = new System.Drawing.Size(73, 12);
             this.captureStepNumLbl.TabIndex = 3;
             this.captureStepNumLbl.Text = "キャプチャ手数";
             // 
+            // captureOnlyTsumoChk
+            // 
+            this.captureOnlyTsumoChk.AutoSize = true;
+            this.captureOnlyTsumoChk.Location = new System.Drawing.Point(12, 34);
+            this.captureOnlyTsumoChk.Name = "captureOnlyTsumoChk";
+            this.captureOnlyTsumoChk.Size = new System.Drawing.Size(126, 16);
+            this.captureOnlyTsumoChk.TabIndex = 4;
+            this.captureOnlyTsumoChk.Text = "ツモのみキャプチャする";
+            this.captureOnlyTsumoChk.UseVisualStyleBackColor = true;
+            // 
             // ConfigurationForm
             // 
             this.ClientSize = new System.Drawing.Size(538, 404);
+            this.Controls.Add(this.captureOnlyTsumoChk);
             this.Controls.Add(this.captureStepNumLbl);
             this.Controls.Add(this.captureStepNumTxt);
             this.Controls.Add(this.DebugRectEnabledChk);
@@ -84,5 +96,6 @@ namespace Cubokta.Puyo
 
         private NumericUpDown captureStepNumTxt;
         private Label captureStepNumLbl;
+        private CheckBox captureOnlyTsumoChk;
     }
 }

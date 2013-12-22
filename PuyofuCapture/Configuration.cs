@@ -40,6 +40,9 @@ namespace Cubokta.Puyo
         /// <summary>キャプチャする手数</summary>
         public int CaptureStepNum { get; set; }
 
+        /// <summary>ツモのみキャプチャするかどうか</summary>
+        public bool CaptureOnlyTsumo { get; set; }
+
         /// <summary>
         /// 初期化する
         /// </summary>
@@ -54,6 +57,7 @@ namespace Cubokta.Puyo
             PlayerName2 = ConfigurationManager.AppSettings["PlayerName2"];
             TargetField = ConfigurationManager.AppSettings["TargetField"];
             CaptureStepNum = int.Parse(ConfigurationManager.AppSettings["CaptureStepNum"]);
+            CaptureOnlyTsumo = ConfigurationManager.AppSettings["CaptureOnlyTsumo"] == "1";
         }
 
         /// <summary>
@@ -71,6 +75,7 @@ namespace Cubokta.Puyo
             appConfig.AppSettings.Settings["PlayerName2"].Value = PlayerName2;
             appConfig.AppSettings.Settings["TargetField"].Value = TargetField;
             appConfig.AppSettings.Settings["CaptureStepNum"].Value = CaptureStepNum.ToString();
+            appConfig.AppSettings.Settings["CaptureOnlyTsumo"].Value = CaptureOnlyTsumo ? "1" : "0";
             appConfig.Save();
         }
 

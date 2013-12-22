@@ -848,7 +848,8 @@ namespace Cubokta.Puyo
                 prevFields[fieldNo] = new CaptureField();
                 curFields[fieldNo] = new CaptureField();
                 recorders[fieldNo] = new PuyofuRecorder();
-                recorders[fieldNo].BeginRecord(captureTimer.Interval, config.CaptureStepNum);
+                recorders[fieldNo].BeginRecord(
+                        captureTimer.Interval, config.CaptureStepNum, config.CaptureOnlyTsumo);
             }
         }
 

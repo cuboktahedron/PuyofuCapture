@@ -74,17 +74,22 @@ namespace Cubokta.Puyo
         /// <summary>キャプチャ間隔(ms)</summary>
         private int captureInterval;
 
+        /// <summary>ツモのみキャプチャするかどうか</summary>
+        private bool captureOnlyTsumo;
+
         /// <summary>
         /// レコードを開始する
         /// </summary>
         /// <param name="captureInterval">キャプチャ間隔(ms)</param>
         /// <param name="captureStepNum">キャプチャする手数</param>
+        /// <param name="captureOnlyTsumo">ツモのみキャプチャするかどうか</param>
         /// TODO: 現状はかなりエラー検出までに時間がかかっている。
-        public void BeginRecord(int captureInterval, int captureStepNum)
+        public void BeginRecord(int captureInterval, int captureStepNum, bool captureOnlyTsumo)
         {
             isRecording = true;
             this.captureInterval = captureInterval;
             this.captureStepNum = captureStepNum;
+            this.captureOnlyTsumo = captureOnlyTsumo;
         }
 
         /// <summary>
@@ -138,7 +143,40 @@ namespace Cubokta.Puyo
 
                 // ここに来るのはネクストがツモられた瞬間のみ
                 curNext = DecideCurNext();
-                isReadyForNextStepRecord2 = true;
+                if (captureOnlyTsumo)
+                {
+                    // ツモのみキャプチャする場合は、確定したツモを譜情報に追加し、次のツモ処理に戻る
+
+                    if (prevNext == null)
+                    {
+                        // 初手の場合
+
+                        prevNext = curNext;
+                        isReadyForNextStepRecord = false;
+                        currents = new Dictionary<ColorPairPuyo, int>();
+                        curNext = null;
+
+                        return RecordResult.RECORD_FORWARD;
+                    }
+                    else
+                    {
+                        // 2手目以降
+
+                        // 譜の情報を追記し、次のツモの処理待ち状態に戻す
+                        steps.Add(prevNext);
+                        prevNext = curNext;
+                        isReadyForNextStepRecord = false;
+                        currents = new Dictionary<ColorPairPuyo, int>();
+                        curNext = null;
+                        captureFailCount = 0;
+
+                        return RecordResult.RECORD_FORWARD;
+                    }
+                }
+                else
+                {
+                    isReadyForNextStepRecord2 = true;
+                }
             }
 
             if (isReadyForNextStepRecord2)
