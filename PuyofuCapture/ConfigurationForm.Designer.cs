@@ -16,6 +16,8 @@ namespace Cubokta.Puyo
             this.captureStepNumTxt = new System.Windows.Forms.NumericUpDown();
             this.captureStepNumLbl = new System.Windows.Forms.Label();
             this.captureOnlyTsumoChk = new System.Windows.Forms.CheckBox();
+            this.recordTemplateTxt = new System.Windows.Forms.TextBox();
+            this.templateLbl = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.captureStepNumTxt)).BeginInit();
             this.SuspendLayout();
             // 
@@ -25,7 +27,7 @@ namespace Cubokta.Puyo
             this.OkBtn.Location = new System.Drawing.Point(451, 369);
             this.OkBtn.Name = "OkBtn";
             this.OkBtn.Size = new System.Drawing.Size(75, 23);
-            this.OkBtn.TabIndex = 0;
+            this.OkBtn.TabIndex = 5;
             this.OkBtn.Text = "確定";
             this.OkBtn.UseVisualStyleBackColor = true;
             this.OkBtn.Click += new System.EventHandler(this.OkBtn_Click);
@@ -50,7 +52,7 @@ namespace Cubokta.Puyo
             0});
             this.captureStepNumTxt.Name = "captureStepNumTxt";
             this.captureStepNumTxt.Size = new System.Drawing.Size(100, 19);
-            this.captureStepNumTxt.TabIndex = 2;
+            this.captureStepNumTxt.TabIndex = 3;
             this.captureStepNumTxt.Value = new decimal(new int[] {
             16,
             0,
@@ -72,13 +74,34 @@ namespace Cubokta.Puyo
             this.captureOnlyTsumoChk.Location = new System.Drawing.Point(12, 34);
             this.captureOnlyTsumoChk.Name = "captureOnlyTsumoChk";
             this.captureOnlyTsumoChk.Size = new System.Drawing.Size(126, 16);
-            this.captureOnlyTsumoChk.TabIndex = 4;
+            this.captureOnlyTsumoChk.TabIndex = 2;
             this.captureOnlyTsumoChk.Text = "ツモのみキャプチャする";
             this.captureOnlyTsumoChk.UseVisualStyleBackColor = true;
+            // 
+            // recordTemplateTxt
+            // 
+            this.recordTemplateTxt.Location = new System.Drawing.Point(12, 145);
+            this.recordTemplateTxt.Multiline = true;
+            this.recordTemplateTxt.Name = "recordTemplateTxt";
+            this.recordTemplateTxt.Size = new System.Drawing.Size(318, 165);
+            this.recordTemplateTxt.TabIndex = 4;
+            this.recordTemplateTxt.Text = "  {\r\n    date: \'#date\',\r\n    id: \'#id\',\r\n    record: \'#record\',\r\n    tags: [#tags" +
+    "],\r\n  },\r\n";
+            // 
+            // templateLbl
+            // 
+            this.templateLbl.AutoSize = true;
+            this.templateLbl.Location = new System.Drawing.Point(12, 121);
+            this.templateLbl.Name = "templateLbl";
+            this.templateLbl.Size = new System.Drawing.Size(59, 12);
+            this.templateLbl.TabIndex = 6;
+            this.templateLbl.Text = "テンプレート";
             // 
             // ConfigurationForm
             // 
             this.ClientSize = new System.Drawing.Size(538, 404);
+            this.Controls.Add(this.templateLbl);
+            this.Controls.Add(this.recordTemplateTxt);
             this.Controls.Add(this.captureOnlyTsumoChk);
             this.Controls.Add(this.captureStepNumLbl);
             this.Controls.Add(this.captureStepNumTxt);
@@ -97,5 +120,7 @@ namespace Cubokta.Puyo
         private NumericUpDown captureStepNumTxt;
         private Label captureStepNumLbl;
         private CheckBox captureOnlyTsumoChk;
+        private TextBox recordTemplateTxt;
+        private Label templateLbl;
     }
 }

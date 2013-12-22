@@ -37,6 +37,7 @@ namespace Cubokta.Puyo
             DebugRectEnabledChk.Checked = config.DebugRectEnabled;
             captureStepNumTxt.Value = config.CaptureStepNum;
             captureOnlyTsumoChk.Checked = config.CaptureOnlyTsumo;
+            recordTemplateTxt.Text = config.RecordTemplate;
         }
 
         /// <summary>
@@ -49,6 +50,7 @@ namespace Cubokta.Puyo
             config.DebugRectEnabled = DebugRectEnabledChk.Checked;
             config.CaptureStepNum = (int)captureStepNumTxt.Value;
             config.CaptureOnlyTsumo = captureOnlyTsumoChk.Checked;
+            config.RecordTemplate = recordTemplateTxt.Text;
             config.Save();
 
             DialogResult = DialogResult.OK;

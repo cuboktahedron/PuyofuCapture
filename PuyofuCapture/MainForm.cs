@@ -712,13 +712,7 @@ namespace Cubokta.Puyo
             sb.Append("\r\n    ");
 
             // テンプレート変換
-            string text = @"  {
-    date: '#date',
-    id: '#id',
-    record: '#record',
-    tags: [#tags],
-  },
-";
+            string text = config.RecordTemplate;
             text = text.Replace("#date", recordDate.Text);
             text = text.Replace("#id", (recordIdTxt.Value + idCount).ToString());
             text = text.Replace("#record", stepRecordTxts[fieldNo].Text);

@@ -43,6 +43,9 @@ namespace Cubokta.Puyo
         /// <summary>ツモのみキャプチャするかどうか</summary>
         public bool CaptureOnlyTsumo { get; set; }
 
+        /// <summary>レコード出力用テンプレート</summary>
+        public string RecordTemplate { get; set; }
+
         /// <summary>
         /// 初期化する
         /// </summary>
@@ -58,6 +61,7 @@ namespace Cubokta.Puyo
             TargetField = ConfigurationManager.AppSettings["TargetField"];
             CaptureStepNum = int.Parse(ConfigurationManager.AppSettings["CaptureStepNum"]);
             CaptureOnlyTsumo = ConfigurationManager.AppSettings["CaptureOnlyTsumo"] == "1";
+            RecordTemplate = ConfigurationManager.AppSettings["RecordTemplate"];
         }
 
         /// <summary>
@@ -76,6 +80,7 @@ namespace Cubokta.Puyo
             appConfig.AppSettings.Settings["TargetField"].Value = TargetField;
             appConfig.AppSettings.Settings["CaptureStepNum"].Value = CaptureStepNum.ToString();
             appConfig.AppSettings.Settings["CaptureOnlyTsumo"].Value = CaptureOnlyTsumo ? "1" : "0";
+            appConfig.AppSettings.Settings["RecordTemplate"].Value = RecordTemplate;
             appConfig.Save();
         }
 
