@@ -1,8 +1,8 @@
 PuyofuCapture
 =============
 
-Version 1.0.0  
-Copyright (C) 2013 cuboktahedron  
+Version 1.0.1
+Copyright (C) 2013 cuboktahedron
 Released under the MIT license
 
 【どんなツールか】
@@ -36,5 +36,8 @@ Released under the MIT license
 また、対戦の途中からのキャプチャには対応していません。
 
 【開発履歴】
-
 2013/12/15 1.0.0公開
+2013/12/29 1.0.1公開
+　・保存ファイル先、レコード出力のテンプレート文字列を設定で変更できるようにした。  
+　・ツモのみキャプチャするモードを追加した。  
+　
