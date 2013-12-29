@@ -6,6 +6,7 @@
 using System;
 using System.Windows.Forms;
 using log4net;
+using System.IO;
 
 namespace Cubokta.Puyo
 {
@@ -37,6 +38,7 @@ namespace Cubokta.Puyo
             DebugRectEnabledChk.Checked = config.DebugRectEnabled;
             captureStepNumTxt.Value = config.CaptureStepNum;
             captureOnlyTsumoChk.Checked = config.CaptureOnlyTsumo;
+            saveFileTxt.Text = config.SaveFile;
             recordTemplateTxt.Text = config.RecordTemplate;
         }
 
@@ -50,6 +52,7 @@ namespace Cubokta.Puyo
             config.DebugRectEnabled = DebugRectEnabledChk.Checked;
             config.CaptureStepNum = (int)captureStepNumTxt.Value;
             config.CaptureOnlyTsumo = captureOnlyTsumoChk.Checked;
+            config.SaveFile = saveFileTxt.Text;
             config.RecordTemplate = recordTemplateTxt.Text;
             config.Save();
 

@@ -807,7 +807,7 @@ namespace Cubokta.Puyo
         {
             if (recordFileWriter == null)
             {
-                recordFileWriter = new StreamWriter("record.js", false, Encoding.UTF8);
+                recordFileWriter = new StreamWriter(config.SaveFile, false, Encoding.UTF8);
             }
             else
             {
