@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2013 cuboktahedron
  * Released under the MIT license
- * https://github.com/cuboktahedron/PuyofuCapture/license/LICENSE-MIT.txt
+ * https://github.com/cuboktahedron/PuyofuCapture/blob/master/license/LICENSE-MIT.txt
  */
 using Cubokta.Puyo.Common;
 using System.Drawing;
